@@ -36,7 +36,8 @@ struct cprover_library_entryt
 void add_cprover_library(
   const std::set<irep_idt> &functions,
   symbol_tablet &symbol_table,
-  message_handlert &message_handler)
+  message_handlert &message_handler,
+  const std::string library_text_prefix)
 {
   if(config.ansi_c.lib==configt::ansi_ct::LIB_NONE)
     return;
@@ -49,6 +50,8 @@ void add_cprover_library(
 
   if(config.ansi_c.string_abstraction)
     library_text << "#define __CPROVER_STRING_ABSTRACTION\n";
+
+  library_text << library_text_prefix;
 
   unsigned count=0;
   

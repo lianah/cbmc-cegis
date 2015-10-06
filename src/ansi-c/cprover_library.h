@@ -17,6 +17,7 @@ Author: Daniel Kroening, kroening@kroening.com
 void add_cprover_library(
   const std::set<irep_idt> &functions,
   symbol_tablet &symbol_table,
-  message_handlert &message_handler);
+  message_handlert &message_handler,
+  const std::string library_text_prefix="");
 
 #endif
