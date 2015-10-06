@@ -23,7 +23,7 @@ namespace Synth {
  *
  * @return
  */
-size_t default_constant_strategy(class Synth::synth_programt &program,
+size_t default_constant_strategy(class synth_programt &program,
     const size_t max_length);
 
 } 

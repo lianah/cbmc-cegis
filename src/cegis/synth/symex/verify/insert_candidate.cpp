@@ -9,6 +9,8 @@
 #include <cegis/synth/instrument/meta_variables.h>
 #include <cegis/synth/symex/verify/insert_candidate.h>
 
+using namespace Synth;
+
 namespace
 {
 class assign_x0t

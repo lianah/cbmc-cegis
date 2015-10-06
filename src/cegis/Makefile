@@ -26,9 +26,9 @@ SRC = util/program_helper.cpp util/copy_instructions.cpp \
       synth/symex/learn/replace_operators.cpp synth/symex/learn/solution_factory.cpp \
       synth/symex/learn/read_x0.cpp synth/symex/learn/instruction_set_factory.cpp \
       synth/symex/learn/synth_learn_config.cpp \
-      # synth/symex/verify/insert_candidate.cpp synth/symex/verify/insert_constraint.cpp \
-      # synth/symex/verify/extract_counterexample.cpp synth/symex/verify/restrict_counterexamples.cpp \
-      # synth/symex/verify/synth_verify_config.cpp
+      synth/symex/verify/insert_candidate.cpp synth/symex/verify/insert_constraint.cpp \
+      synth/symex/verify/extract_counterexample.cpp synth/symex/verify/restrict_counterexamples.cpp \
+      synth/symex/verify/synth_verify_config.cpp
 
 INCLUDES= -I ..
 

@@ -35,7 +35,8 @@ class optionst;
   "(smt1)(smt2)(fpa)(cvc3)(cvc4)(boolector)(yices)(z3)(opensmt)(mathsat)" \
   "(cegis)(cegis-root):(cegis-targets):(cegis-max-prog-size):(cegis-skolem):(cegis-ranking):" \
   "(danger)(danger-max-size):" \
-  "(no-sat-preprocessor)" \
+  "(synth)(synth-max-size):" \
+  "(no-sat-preprocessor)"	\
   "(no-pretty-names)(beautify)" \
   "(floatbv)(fixedbv)" \
   "(dimacs)(refine)(max-node-refinement):(refine-arrays)(refine-arithmetic)(aig)" \

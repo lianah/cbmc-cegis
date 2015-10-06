@@ -12,6 +12,8 @@
 
 #include <util/std_expr.h>
 
+class goto_tracet;
+
 namespace Synth {
 
 /**
@@ -31,6 +33,6 @@ typedef std::map<const irep_idt, exprt> counterexamplet;
  * @param quantifiers
  */
 void synth_extract_counterexample(counterexamplet &result,
-    const class goto_tracet &trace, const goto_programt::targetst &quantifiers);
+    const goto_tracet &trace, const goto_programt::targetst &quantifiers);
 }
 #endif /* CEGIS_SYNTH_EXTRACT_COUNTEREXAMPLE_H_ */

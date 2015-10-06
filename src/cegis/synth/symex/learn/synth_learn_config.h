@@ -35,8 +35,8 @@ class synth_learn_configt
   typedef std::map<const irep_idt, size_t> synth_variable_idst;
 
   const Synth::synth_programt &original_program;
-  Synth::synth_programt program;
-  Synth::synth_variable_idst var_ids;
+  synth_programt program;
+  synth_variable_idst var_ids;
 public:
   /**
    * @brief Counterexample type for this CEGIS component.

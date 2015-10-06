@@ -8,6 +8,8 @@
 #include <cegis/synth/instrument/meta_variables.h>
 #include <cegis/synth/symex/verify/insert_constraint.h>
 
+using namespace Synth;
+
 namespace
 {
 bool is_meta(const irep_idt &id, const typet &type)

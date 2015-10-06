@@ -12,6 +12,8 @@
 
 #include <util/irep.h>
 
+class goto_tracet;
+
 namespace Synth {
 typedef std::map<const irep_idt, size_t> synth_variable_idst;
 
@@ -29,7 +31,7 @@ typedef std::map<const irep_idt, size_t> synth_variable_idst;
  * @return
  */
 void create_synth_solution(class synth_goto_solutiont &result,
-    const class synth_programt &prog, const class goto_tracet &trace,
+    const class synth_programt &prog, const goto_tracet &trace,
     const synth_variable_idst &ids, const size_t max_solution_size);
 }
 #endif /* CEGIS_SYNTH_SOLUTION_FACTORY_H_ */

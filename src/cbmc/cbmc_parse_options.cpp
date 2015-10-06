@@ -43,6 +43,13 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <cegis/danger/preprocess/danger_preprocessing.h>
 #include <cegis/danger/symex/verify/danger_verify_config.h>
 #include <cegis/danger/symex/learn/danger_learn_config.h>
+
+#include <cegis/synth/constant/default_constant_strategy.h>
+#include <cegis/synth/preprocess/synth_preprocessing.h>
+#include <cegis/synth/symex/verify/synth_verify_config.h>
+#include <cegis/synth/symex/learn/synth_learn_config.h>
+
+
 #include <cegis/facade/cegis.h>
 
 #include <goto-instrument/full_slicer.h>
@@ -554,6 +561,24 @@ int cbmc_parse_optionst::doit()
     return run_cegis(learn, verify, preproc, max_prog_size, result());
   }
 
+  if(cmdline.isset("synth"))
+  {
+    size_t max_prog_size=100u;
+    if (cmdline.isset("synth-max-size"))
+      max_prog_size=string2integer(cmdline.get_value("function")).to_ulong();
+
+    const Synth::constant_strategyt strategy=Synth::default_constant_strategy;
+    Synth::synth_preprocessingt preproc(symbol_table, goto_functions, strategy);
+
+    const Synth::synth_programt &prog=preproc.get_synth_program();
+    Synth::synth_verify_configt verify_config(prog);
+    cegis_symex_verifyt<Synth::synth_verify_configt> verify(options, verify_config);
+    Synth::synth_learn_configt learn_config(prog);
+    cegis_symex_learnt<Synth::synth_learn_configt> learn(options, learn_config);
+    return run_cegis(learn, verify, preproc, max_prog_size, result());
+  }
+
+  
   // do actual BMC
   return do_bmc(bmc, goto_functions);
 }

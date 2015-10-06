@@ -14,6 +14,8 @@ Author: Daniel Kroening, kroening@kroening.com
 
 #include <cegis/synth/options/synth_program.h>
 
+class goto_tracet;
+
 namespace Synth {
 
 /**
@@ -95,7 +97,7 @@ public:
    * @param trace
    */
   void convert(counterexamplest &counterexamples,
-      const class goto_tracet &trace);
+      const goto_tracet &trace);
 };
 }
 #endif /* CEGIS_SYNTH_VERIFY_CONFIG_H_ */
