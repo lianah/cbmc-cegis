@@ -217,6 +217,8 @@ void Synth::create_synth_solution(synth_goto_solutiont &result,
   instruction_sett instr_set;
   extract_instruction_set(instr_set, prog.gf);
   synth_goto_solutiont::synth_programst &progs=result.synth_programs;
+  // 
   extract_programs(progs, prog, trace, names, instr_set, max_size);
+  // TODO REMOVE:
   synth_read_x0(result, prog, trace);
 }

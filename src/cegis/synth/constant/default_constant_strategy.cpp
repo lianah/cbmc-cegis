@@ -6,19 +6,29 @@
 #include <cegis/synth/constant/literals_constant_strategy.h>
 #include <cegis/synth/constant/default_constant_strategy.h>
 
+#include <iostream>
+#include <cegis/synth/options/synth_program.h>
+
 namespace
 {
 const char NONDET_PREFIX[]="SYNTH_CONSTANT_NONDET_";
 }
 
-size_t Synth::default_constant_strategy(Synth::synth_programt &program,
+void Synth::default_constant_strategy(Synth::synth_programt &program,
     const size_t max_length)
 {
   const typet type(synth_meta_type());
   const bv_spect spec(type);
+  // std::cout << "Before add constant " << std::endl;
+  // program.print();
+    
   add_synth_constant(program, from_integer(spec.max_value().to_ulong(), type));
   add_synth_constant(program, from_integer(0u, type));
-  return 2u + literals_constant_strategy(program, max_length);
+  // std::cout << "After add constant " << std::endl;
+  // program.print();
+  literals_constant_strategy(program, max_length);
+
+  // return 2u + literals_constant_strategy(program, max_length);
   /*for (size_t i=0; i < max_length; ++i)
   {
     const side_effect_expr_nondett value(type);

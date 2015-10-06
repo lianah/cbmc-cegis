@@ -128,6 +128,8 @@ struct synth_programt
    * @return
    */
   synth_programt &operator=(const synth_programt &other);
+
+  void print() const;
 };
 
 } 

@@ -35,13 +35,13 @@ int run_cegis(learnt &learn, oraclet &oracle, preproct &preproc, size_t max_size
   {
     preproc(max_solution_length);
     learn.learn(max_solution_length);
-    //int count = 0;
+    int count = 0;
     do
     {
-      /* std::cout << "candidate "<< std::endl; */
-      /* if (count == 1) */
-      /* 	learn.show_candidate(os); */
-      /* count++; */
+      std::cout << "candidate "<< std::endl;
+      if (count >= 1)
+      	learn.show_candidate(os);
+      count++;
       const typename learnt::candidatet &candidate=learn.next_candidate();
       oracle.verify(candidate);
     } while (oracle.has_counterexamples()

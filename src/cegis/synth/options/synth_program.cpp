@@ -2,7 +2,7 @@
 
 #include <cegis/util/program_helper.h>
 #include <cegis/synth/options/synth_program.h>
-
+#include <iostream>
 using namespace Synth;
 
 Synth::synth_programt::synth_programt()
@@ -121,4 +121,8 @@ synth_programt &Synth::synth_programt::operator =(const synth_programt &other)
 {
   set_goto_program(other.st, other.gf);
   return assign(*this, other);
+}
+
+void Synth::synth_programt::print() const {
+  gf.output(namespacet(st), std::cout);
 }

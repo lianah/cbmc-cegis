@@ -14,7 +14,9 @@ Author: Daniel Kroening, kroening@kroening.com
 
 namespace Synth {
 /**
- * @brief
+ * @brief Modifies program by adding new SYNTH_CONSTANT_x variables
+ * assigned to constant value x. Constants added are 0, MAX, and  c-1, c , c+1
+ * for all the constants c occuring in the input program.
  *
  * @details
  *
@@ -23,7 +25,7 @@ namespace Synth {
  *
  * @return
  */
-size_t default_constant_strategy(class synth_programt &program,
+void default_constant_strategy(class synth_programt &program,
     const size_t max_length);
 
 } 

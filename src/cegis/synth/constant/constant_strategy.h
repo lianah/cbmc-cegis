@@ -23,7 +23,7 @@ namespace Synth {
  *
  * @return
  */
-typedef size_t (*constant_strategyt)(class Synth::synth_programt &program,
+typedef void (*constant_strategyt)(class Synth::synth_programt &program,
     const size_t max_length);
 
 } 

@@ -7,6 +7,8 @@
 #include <cegis/synth/preprocess/add_invariants_and_temp_variables.h>
 #include <cegis/synth/preprocess/synth_preprocessing.h>
 
+#include <iostream>
+
 using namespace Synth;
 
 Synth::synth_preprocessingt::synth_preprocessingt(const symbol_tablet &st,
@@ -28,9 +30,10 @@ bool cmp(const synth_programt::loopt &lhs, const synth_programt::loopt &rhs)
 
 size_t Synth::synth_preprocessingt::get_min_solution_size() const
 {
-  const synth_programt::loopst &l=original_program.loops;
-  size_t sklm=std::max_element(l.begin(), l.end(), &cmp)->skolem_choices.size();
-  return std::max(sklm, size_t(1u));
+  return 1u;
+  // const synth_programt::loopst &l=original_program.loops; // should be number of functions to synthesize
+  // size_t sklm=std::max_element(l.begin(), l.end(), &cmp)->skolem_choices.size();
+  // return std::max(sklm, size_t(1u));
 }
 
 void Synth::synth_preprocessingt::operator ()()
@@ -38,9 +41,19 @@ void Synth::synth_preprocessingt::operator ()()
   const namespacet ns(original_program.st);
   null_message_handlert null_msg;
   goto_inline(original_program.gf, ns, null_msg);
+  // std::cout << "synth_preprocessingt post-inline " << std::endl;
+  // original_program.print();
   synth_remove_loops_and_assertion(original_program);
+
+  // std::cout << "synth_preprocessingt post-remove_loops_and_assertions " << std::endl;
+  // original_program.print();
+
   // no need for invariant
   store_skolem_choices(original_program);
+
+  std::cout << "synth_preprocessingt::operator() " << std::endl;
+  original_program.print();
+
   current_program=original_program;
   // TODO print (dump C, print goto)
   
