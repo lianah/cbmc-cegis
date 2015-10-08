@@ -56,22 +56,23 @@ public:
   {
     Synth::synth_programt::meta_vars_positionst result;
     result.Gx=fix(vars.Gx);
-    result.Dx=fix(vars.Dx);
+
+    result.Ix=fix(vars.Ix);
+    result.Ix_prime=fix(vars.Ix_prime);
+    
+    // copy ranking
     const goto_programt::targetst &old_r=vars.Rx;
     goto_programt::targetst &new_r=result.Rx;
     new_r.resize(old_r.size());
     std::transform(old_r.begin(), old_r.end(), new_r.begin(), fix);
-    const goto_programt::targetst &old_s=vars.Sx;
-    goto_programt::targetst &new_s=result.Sx;
-    new_s.resize(old_s.size());
-    std::transform(old_s.begin(), old_s.end(), new_s.begin(), fix);
-    result.Dx_prime=fix(vars.Dx_prime);
+    
     const goto_programt::targetst &old_rp=vars.Rx_prime;
     goto_programt::targetst &new_rp=result.Rx_prime;
     new_rp.resize(old_rp.size());
     std::transform(old_rp.begin(), old_rp.end(), new_rp.begin(), fix);
     return result;
   }
+  
   Synth::synth_programt::program_ranget operator()(
       const Synth::synth_programt::program_ranget &range) const
   {
@@ -80,14 +81,17 @@ public:
     result.end=fix(range.end);
     return result;
   }
+  
   Synth::synth_programt::loopt operator()(const Synth::synth_programt::loopt &loop) const
   {
     Synth::synth_programt::loopt result;
     result.body=fix(loop.body);
     result.guard=loop.guard;
-    goto_programt::targetst &new_s=result.skolem_choices;
-    const goto_programt::targetst &old_s=loop.skolem_choices;
-    std::transform(old_s.begin(), old_s.end(), std::back_inserter(new_s), fix);
+
+    // goto_programt::targetst &new_s=result.skolem_choices;
+    // const goto_programt::targetst &old_s=loop.skolem_choices;
+    // std::transform(old_s.begin(), old_s.end(), std::back_inserter(new_s), fix);
+
     result.meta_variables=fix(loop.meta_variables);
     return result;
   }
@@ -104,7 +108,9 @@ synth_programt &assign(synth_programt &lhs, const synth_programt &rhs)
   std::transform(old_x0.begin(), old_x0.end(), lhs.x0_choices.begin(), fix);
   lhs.synth_range=fix(rhs.synth_range);
   lhs.assertion=rhs.assertion;
-  lhs.Dx0=fix(rhs.Dx0);
+
+  // lhs.Dx0=fix(rhs.Dx0);
+
   lhs.Ax=fix(rhs.Ax);
   return lhs;
 }

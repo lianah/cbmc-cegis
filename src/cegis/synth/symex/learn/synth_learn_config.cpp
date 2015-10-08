@@ -27,9 +27,13 @@ void Synth::synth_learn_configt::process(const counterexamplest &counterexamples
   const size_t num_consts=get_synth_variable_ids(program.st, var_ids);
   const size_t num_vars=var_ids.size();
   null_message_handlert msg;
+  // import library with interpreter
   add_synth_library(program, msg, num_vars, num_consts, max_solution_size);
+  // setup RESULT_OPS and OPS references
   synth_add_variable_refs(program, var_ids, max_solution_size);
+  // introduce calls to execute post linked variables 
   synth_add_programs_to_learn(program, max_solution_size);
+  // introduce counterexample vector
   synth_add_learned_counterexamples(program, counterexamples);
 }
 

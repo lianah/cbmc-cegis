@@ -159,32 +159,32 @@ public:
   }
 };
 
-void link_skolem(synth_programt &prog, const size_t num_user_vars,
-    const size_t user_vars, const size_t max_solution_size,
-    const synth_programt::loopt &loop)
-{
-  const goto_programt::targetst &sklm=loop.meta_variables.Sx;
-  if (sklm.empty()) return;
-  const symbol_tablet &st=prog.st;
-  goto_programt &body=get_synth_body(prog.gf);
-  goto_programt::targett pos=sklm.front();
-  const size_t num_skolem=sklm.size();
-  const size_t num_tmp=max_solution_size - num_skolem;
-  link_temps(st, body, --pos, num_tmp, user_vars);
-  goto_programt::targetst::const_iterator it=sklm.begin();
-  for (size_t i=0; i < num_skolem - 1; ++i, ++it)
-  {
-    pos=*it;
-    const goto_programt::instructiont &instr=*pos;
-    const size_t id=num_tmp + i;
-    const irep_idt &variable=get_affected_variable(instr);
-    pos=set_rops_reference(st, body, pos, variable, id);
-    pos=set_ops_reference(st, body, pos, variable, id + num_user_vars);
-  }
-  pos=sklm.back();
-  const size_t final_id=max_solution_size - 1;
-  set_rops_reference(st, body, pos, get_affected_variable(*pos), final_id);
-}
+// void link_skolem(synth_programt &prog, const size_t num_user_vars,
+//     const size_t user_vars, const size_t max_solution_size,
+//     const synth_programt::loopt &loop)
+// {
+//   const goto_programt::targetst &sklm=loop.meta_variables.Sx;
+//   if (sklm.empty()) return;
+//   const symbol_tablet &st=prog.st;
+//   goto_programt &body=get_synth_body(prog.gf);
+//   goto_programt::targett pos=sklm.front();
+//   const size_t num_skolem=sklm.size();
+//   const size_t num_tmp=max_solution_size - num_skolem;
+//   link_temps(st, body, --pos, num_tmp, user_vars);
+//   goto_programt::targetst::const_iterator it=sklm.begin();
+//   for (size_t i=0; i < num_skolem - 1; ++i, ++it)
+//   {
+//     pos=*it;
+//     const goto_programt::instructiont &instr=*pos;
+//     const size_t id=num_tmp + i;
+//     const irep_idt &variable=get_affected_variable(instr);
+//     pos=set_rops_reference(st, body, pos, variable, id);
+//     pos=set_ops_reference(st, body, pos, variable, id + num_user_vars);
+//   }
+//   pos=sklm.back();
+//   const size_t final_id=max_solution_size - 1;
+//   set_rops_reference(st, body, pos, get_affected_variable(*pos), final_id);
+// }
 
 class link_meta_variablest
 {
@@ -202,12 +202,12 @@ public:
   {
     const synth_programt::meta_vars_positionst &meta=loop.meta_variables;
     const link_single_resultt inv(prog.st, prog.gf, user_vars, max_size);
-    inv(meta.Dx);
-    inv(meta.Dx_prime);
+    inv(meta.Ix);
+    inv(meta.Ix_prime);
     const link_single_resultt &link_ranking=inv; // XXX: Lexicographical ranking?
     std::for_each(meta.Rx.begin(), meta.Rx.end(), link_ranking);
     std::for_each(meta.Rx_prime.begin(), meta.Rx_prime.end(), link_ranking);
-    link_skolem(prog, user_vars, user_vars, max_size, loop);
+    //link_skolem(prog, user_vars, user_vars, max_size, loop);
   }
 };
 
@@ -217,7 +217,7 @@ void link_meta_variables(synth_programt &prog, const size_t user_vars,
   const symbol_tablet &st=prog.st;
   goto_functionst &gf=prog.gf;
   const link_single_resultt single(st, gf, user_vars, max_solution_size);
-  single(prog.Dx0);
+  single(prog.Ix0);
   const synth_programt::loopst &loops=prog.loops;
   const link_meta_variablest link(prog, user_vars, max_solution_size);
   std::for_each(loops.begin(), loops.end(), link);

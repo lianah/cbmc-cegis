@@ -14,6 +14,8 @@ Synth::synth_verify_configt::~synth_verify_configt()
 {
 }
 
+// this constructs the goto program to be verified by introducing the meta-variables
+// at the proper locations
 void Synth::synth_verify_configt::process(const candidatet &candidate)
 {
   program=original_program;

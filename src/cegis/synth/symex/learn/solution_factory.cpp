@@ -19,6 +19,8 @@
 
 using namespace Synth;
 
+// LSH FIXME: does the order of the values matter?
+
 namespace
 {
 const size_t get_const_value(const exprt &expr)
@@ -43,7 +45,7 @@ size_t create_temps(synth_variable_namest &rnames, const size_t num_tmp)
 
 typedef enum
 {
-  INV, RNK, SKO
+  INV, RNK /*, SKO*/
 } prog_typet;
 
 goto_programt::instructionst &get_prog(
@@ -55,11 +57,12 @@ goto_programt::instructionst &get_prog(
   case INV:
     if (!instr_idx) progs.push_back(synth_goto_solutiont::synth_programt());
     return progs.back().invariant;
-  case SKO:
-    return progs.back().skolem;
+  // case SKO:
+  //   return progs.back().skolem;
   case RNK:
     return progs.back().ranking;
   default:
+    assert(false);
     return progs.back().invariant;
   }
 }
@@ -92,27 +95,33 @@ class read_instrt
     }
     case RNK:
     {
-      const synth_programt::loopt &loop=synth_prog.loops[loop_index];
-      const size_t num_skolem=loop.skolem_choices.size();
-      const size_t num_temps=create_temps(rnames, max_size - num_skolem);
-      for (size_t i=num_temps; i < max_size; ++i)
-      {
-        const size_t sk=i - num_temps;
-        const std::string name(get_synth_meta_name(get_Sx(loop_index, sk)));
-        rnames.insert(std::make_pair(i, name));
-      }
-      prog_type=SKO;
-      ++loop_index;
-      break;
-    }
-    case SKO:
-    {
       const size_t idx=create_temps(rnames, max_size - 1);
       const std::string result_name(get_synth_meta_name(get_Dx(loop_index)));
       rnames.insert(std::make_pair(idx, result_name));
       prog_type=INV;
       break;
+
+      // const synth_programt::loopt &loop=synth_prog.loops[loop_index];
+      // const size_t num_skolem=loop.skolem_choices.size();
+      // const size_t num_temps=create_temps(rnames, max_size - num_skolem);
+      // for (size_t i=num_temps; i < max_size; ++i)
+      // {
+      //   const size_t sk=i - num_temps;
+      //   const std::string name(get_synth_meta_name(get_Sx(loop_index, sk)));
+      //   rnames.insert(std::make_pair(i, name));
+      // }
+      // prog_type=SKO;
+      // ++loop_index;
+      // break;
     }
+    // case SKO:
+    // {
+    //   const size_t idx=create_temps(rnames, max_size - 1);
+    //   const std::string result_name(get_synth_meta_name(get_Dx(loop_index)));
+    //   rnames.insert(std::make_pair(idx, result_name));
+    //   prog_type=INV;
+    //   break;
+    // }
     }
   }
 public:
@@ -120,7 +129,8 @@ public:
       const synth_programt &synth_prog, const synth_variable_namest &names,
       const instruction_sett &instrset, const size_t max_size) :
       progs(progs), synth_prog(synth_prog), names(names), instrset(instrset), max_size(
-          max_size), loop_index(0u), insidx(0u), prog_type(SKO)
+          max_size), loop_index(0u), insidx(0u), prog_type(INV)
+      /*LSH FIXME: initial prog_type in trace should not be SKO */
   {
     switch_prog();
   }
@@ -129,8 +139,10 @@ public:
   {
     const struct_exprt &instr_rep=to_struct_expr(prog_arary_member);
     const size_t opcode=get_const_value(instr_rep.op0());
+    
     const instruction_sett::const_iterator instr_entry=instrset.find(opcode);
     assert(instrset.end() != instr_entry);
+
     goto_programt::instructionst &prog=get_prog(progs, prog_type, insidx);
     const goto_programt::instructionst &instr=instr_entry->second;
     goto_programt::targett first=prog.end();
@@ -189,8 +201,12 @@ public:
     if (ID_array != value.id()) return;
     const typet &type=value.type().subtype();
     if (ID_struct != type.id()) return;
+
+    // only look at declarations of arrays with struct subtype
+    
     const std::string &tname=id2string(to_struct_type(type).get_tag());
     const char * const synth_tag=&SYNTH_INSTRUCTION_TYPE_NAME[4];
+    
     if (std::string::npos == tname.find(synth_tag)) return;
     const exprt::operandst &instructions=value.operands();
     read_instrt_reft read_instr(this->read_instr);
@@ -219,6 +235,6 @@ void Synth::create_synth_solution(synth_goto_solutiont &result,
   synth_goto_solutiont::synth_programst &progs=result.synth_programs;
   // 
   extract_programs(progs, prog, trace, names, instr_set, max_size);
-  // TODO REMOVE:
-  synth_read_x0(result, prog, trace);
+  // LSH TODO REMOVE:
+  // synth_read_x0(result, prog, trace);
 }

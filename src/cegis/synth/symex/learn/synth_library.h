@@ -16,7 +16,7 @@ class message_handlert;
 
 namespace Synth {
 /**
- * @brief
+ * @brief Load the interpreter into the program. 
  *
  * @details
  *

@@ -10,6 +10,8 @@
 
 using namespace Synth;
 
+// LSH FIXME: this is what will need fixing when we change the instruction set
+
 namespace
 {
 const char FIRST_PREFIX[]="__CPROVER_synth_opcode_first_";

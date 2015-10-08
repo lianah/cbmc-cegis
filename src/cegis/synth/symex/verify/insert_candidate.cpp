@@ -135,10 +135,10 @@ public:
   {
     const synth_programt::loopt &loop=loops.at(loop_id);
     const synth_programt::meta_vars_positionst &vars=loop.meta_variables;
-    insert_program(body, vars.Dx, solution.invariant);
-    const irep_idt &Dx=get_affected_variable(*vars.Dx);
-    const irep_idt &Dx_prime=get_affected_variable(*vars.Dx_prime);
-    insert_program(body, vars.Dx_prime, solution.invariant, Dx, Dx_prime);
+    insert_program(body, vars.Ix, solution.invariant);
+    const irep_idt &Ix=get_affected_variable(*vars.Ix);
+    const irep_idt &Ix_prime=get_affected_variable(*vars.Ix_prime);
+    insert_program(body, vars.Ix_prime, solution.invariant, Ix, Ix_prime);
     if (!vars.Rx.empty() && !vars.Rx_prime.empty())
     {
       const goto_programt::targett Rx=*vars.Rx.rbegin();
@@ -148,8 +148,9 @@ public:
       const irep_idt &Rx_pn=get_affected_variable(*Rx_prime);
       insert_program(body, Rx_prime, solution.ranking, Rx_n, Rx_pn); // XXX: Lexicographical ranking?
     }
-    if (!vars.Sx.empty())
-      insert_program(body, *vars.Sx.rbegin(), solution.skolem);
+    
+    // if (!vars.Sx.empty())
+    //   insert_program(body, *vars.Sx.rbegin(), solution.skolem);
   }
 };
 
@@ -159,9 +160,9 @@ void insert_programs(synth_programt &prog, const candidatet &candidate)
   if (progs.empty()) return;
   goto_programt &body=get_synth_body(prog.gf);
   const goto_programt::instructionst &first_inv=progs.begin()->invariant;
-  const std::string D0x(get_synth_meta_name(get_Dx(0)));
-  const std::string Dx0(get_synth_meta_name(get_Dx0()));
-  insert_program(body, prog.Dx0, first_inv, D0x, Dx0);
+  const std::string I0x(get_synth_meta_name(get_Ix(0)));
+  const std::string Ix0(get_synth_meta_name(get_Ix0()));
+  insert_program(body, prog.Ix0, first_inv, I0x, Ix0);
   const insert_synth_programt insert(prog, body);
   std::for_each(progs.begin(), progs.end(), insert);
 }

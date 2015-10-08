@@ -38,11 +38,12 @@ struct synth_programt
    */
   struct meta_vars_positionst
   {
-    goto_programt::targett Dx;
-    goto_programt::targett Gx;
-    goto_programt::targetst Rx;
-    goto_programt::targetst Sx;
-    goto_programt::targett Dx_prime;
+    goto_programt::targett Ix; // invariant
+    goto_programt::targett Ix_prime;
+    
+    goto_programt::targett Gx; // loop guard
+
+    goto_programt::targetst Rx;// ranking 
     goto_programt::targetst Rx_prime;
   };
 
@@ -55,7 +56,7 @@ struct synth_programt
   {
     exprt guard;
     program_ranget body;
-    goto_programt::targetst skolem_choices;
+    // goto_programt::targetst skolem_choices;
     meta_vars_positionst meta_variables;
   };
   typedef std::vector<loopt> loopst;
@@ -63,7 +64,7 @@ struct synth_programt
   symbol_tablet st;
   goto_functionst gf;
   loopst loops;
-  goto_programt::targetst x0_choices;
+  goto_programt::targetst x0_choices; // do we need this?
   /**
    * @brief The range in the program relevant for synth analysis.
    *
@@ -72,7 +73,7 @@ struct synth_programt
    */
   program_ranget synth_range;
   exprt assertion;
-  goto_programt::targett Dx0;
+  goto_programt::targett Ix0; 
   goto_programt::targett Ax;
 
   /**

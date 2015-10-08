@@ -85,6 +85,7 @@ goto_programt::targett add_ce_loop(synth_programt &prog, const size_t ces_size)
   pos->code=inc;
   pos=body.insert_after(pos);
   pos->type=goto_program_instruction_typet::GOTO;
+  // LSH FIXME: this seems to be undefined. Check if broke something from danger
   pos->source_location=default_synth_source_location();
   pos->targets.push_back(loop_head);
   pos->loop_number=0u;

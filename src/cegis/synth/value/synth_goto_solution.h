@@ -29,11 +29,13 @@ struct synth_goto_solutiont
   {
     goto_programt::instructionst invariant;
     goto_programt::instructionst ranking;
-    goto_programt::instructionst skolem;
+    //goto_programt::instructionst skolem;
   };
   typedef std::vector<synth_programt> synth_programst;
   synth_programst synth_programs;
 
+  // what are the non-det choices again? just so you can reverse engineer the solution
+  // and know what was universally quantified
   typedef std::vector<exprt> nondet_choicest;
   nondet_choicest x0_choices;
 };
