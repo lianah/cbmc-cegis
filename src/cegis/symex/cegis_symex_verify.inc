@@ -43,6 +43,8 @@ void cegis_symex_verifyt<verify_configurationt>::verify(
   case safety_checkert::ERROR:
     return;
   default:
+    std::cerr << "cegis_symex_verifyt<verify_configurationt>::verify TRACE" << std::endl;
+    show_goto_trace(std::cerr, namespacet(st), trace); 
     config.convert(current_counterexamples, trace);
   }
 }
