@@ -34,10 +34,10 @@ void Synth::force_assertion_satisfaction(goto_functionst &gf, const size_t num_l
   exprt::operandst op;
   for (size_t i=0; i < num_loops; ++i)
   {
-    const notequal_exprt Dx=synth_component_as_bool(get_Dx(i));
+    const notequal_exprt Ix=synth_component_as_bool(get_Ix(i));
     const notequal_exprt Gx=synth_component_as_bool(get_Gx(i));
     const equal_exprt not_Gx(Gx.lhs(), Gx.rhs());
-    op.push_back(Dx);
+    op.push_back(Ix);
     op.push_back(not_Gx);
   }
   pos->guard=conjunction(op);

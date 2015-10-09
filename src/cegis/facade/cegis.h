@@ -38,7 +38,6 @@ int run_cegis(learnt &learn, oraclet &oracle, preproct &preproc, size_t max_size
     int count = 0;
     do
     {
-      std::cout << "candidate "<< std::endl;
       if (count >= 1)
       	learn.show_candidate(os);
       count++;

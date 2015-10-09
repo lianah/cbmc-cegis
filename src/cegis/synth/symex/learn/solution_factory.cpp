@@ -52,6 +52,7 @@ goto_programt::instructionst &get_prog(
     synth_goto_solutiont::synth_programst &progs, const prog_typet type,
     const size_t instr_idx)
 {
+  //  assert (progs.size());
   switch (type)
   {
   case INV:
@@ -96,7 +97,7 @@ class read_instrt
     case RNK:
     {
       const size_t idx=create_temps(rnames, max_size - 1);
-      const std::string result_name(get_synth_meta_name(get_Dx(loop_index)));
+      const std::string result_name(get_synth_meta_name(get_Ix(loop_index)));
       rnames.insert(std::make_pair(idx, result_name));
       prog_type=INV;
       break;
@@ -129,7 +130,7 @@ public:
       const synth_programt &synth_prog, const synth_variable_namest &names,
       const instruction_sett &instrset, const size_t max_size) :
       progs(progs), synth_prog(synth_prog), names(names), instrset(instrset), max_size(
-          max_size), loop_index(0u), insidx(0u), prog_type(INV)
+          max_size), loop_index(0u), insidx(0u), prog_type(RNK)
       /*LSH FIXME: initial prog_type in trace should not be SKO */
   {
     switch_prog();

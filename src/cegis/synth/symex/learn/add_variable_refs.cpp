@@ -228,6 +228,7 @@ void Synth::synth_add_variable_refs(synth_programt &prog,
     const synth_variable_idst &ids, const size_t max_solution_size)
 {
   link_user_program_variables(prog, ids);
+  prog.print();
   link_meta_variables(prog, ids.size(), max_solution_size);
 }
 

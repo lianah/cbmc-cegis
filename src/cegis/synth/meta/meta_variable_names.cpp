@@ -12,12 +12,12 @@ std::string Synth::get_Ax()
 
 namespace
 {
-const char INVARIANT_PREFIX[]=SYNTH_PREFIX"D";
+const char INVARIANT_PREFIX[]=SYNTH_PREFIX"I";
 const char SEP='_';
-const char INITIAL_STATE[]="x0";
+const char INITIAL_STATE[]="init";
 }
 
-std::string Synth::get_Dx0()
+std::string Synth::get_Ix0()
 {
   std::string result(INVARIANT_PREFIX);
   result+=SEP;
@@ -38,7 +38,7 @@ std::string build_var_name(const char * const prefix, const size_t loop_id,
 const char STATE_BEFORE_LOOP[]="x";
 }
 
-std::string Synth::get_Dx(const size_t loop_id)
+std::string Synth::get_Ix(const size_t loop_id)
 {
   return build_var_name(INVARIANT_PREFIX, loop_id, STATE_BEFORE_LOOP);
 }
@@ -58,7 +58,7 @@ namespace
 const char STATE_AFTER_LOOP[]="x"PRIME_SUFFIX;
 }
 
-std::string Synth::get_Dx_prime(const size_t loop_id)
+std::string Synth::get_Ix_prime(const size_t loop_id)
 {
   return build_var_name(INVARIANT_PREFIX, loop_id, STATE_AFTER_LOOP);
 }
@@ -89,15 +89,15 @@ std::string Synth::get_Rx_prime(const size_t loop_id, const size_t result_id)
   return build_var_name(RANKING_PREFIX, loop_id, STATE_AFTER_LOOP, result_id);
 }
 
-namespace
-{
-const char SKOLEM_PREFIX[]=SYNTH_PREFIX"S";
-}
+// namespace
+// {
+// const char SKOLEM_PREFIX[]=SYNTH_PREFIX"S";
+// }
 
-std::string Synth::get_Sx(const size_t loop_id, const size_t result_id)
-{
-  return build_var_name(SKOLEM_PREFIX, loop_id, STATE_BEFORE_LOOP, result_id);
-}
+// std::string Synth::get_Sx(const size_t loop_id, const size_t result_id)
+// {
+//   return build_var_name(SKOLEM_PREFIX, loop_id, STATE_BEFORE_LOOP, result_id);
+// }
 
 std::string Synth::get_tmp(const size_t id)
 {

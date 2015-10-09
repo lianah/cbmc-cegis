@@ -60,7 +60,7 @@ exprt Synth::create_synth_constraint(const size_t number_of_loops)
     const notequal_exprt A_x(as_bool(get_Ax()));
     exprt second_conseq;
     const bool is_last_component=(i == (number_of_loops - 1));
-    if (is_last_component) second_conseq=not_exprt(A_x);
+    if (is_last_component) second_conseq=A_x;
     else second_conseq=D1_x;
     const or_exprt second_implication(not_I0_x_and_not_G0_x, second_conseq);
     root.copy_to_operands(second_implication);

@@ -51,6 +51,7 @@ void Synth::synth_learn_configt::synth_learn_configt::convert(candidatet &candid
     const class goto_tracet &trace, const size_t max_solution_size)
 {
   candidate.synth_programs.clear();
+  // LSH FIXME: remove x0 choices because these were part of the counterexample before
   candidate.x0_choices.clear();
   create_synth_solution(candidate, program, trace, var_ids, max_solution_size);
 }
@@ -82,8 +83,8 @@ public:
     print(prog.invariant);
     os << "Ranking " << func_count << ": " << messaget::endl;
     print(prog.ranking);
-    os << "Skolem " << func_count++ << ": " << messaget::endl;
-    print(prog.skolem);
+    // os << "Skolem " << func_count++ << ": " << messaget::endl;
+    // print(prog.skolem);
   }
 };
 

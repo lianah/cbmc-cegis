@@ -21,12 +21,12 @@ Synth::synth_preprocessingt::~synth_preprocessingt()
 {
 }
 
-namespace {
-bool cmp(const synth_programt::loopt &lhs, const synth_programt::loopt &rhs)
-{
-  return lhs.skolem_choices.size() < rhs.skolem_choices.size();
-}
-}
+// namespace {
+// bool cmp(const synth_programt::loopt &lhs, const synth_programt::loopt &rhs)
+// {
+//   return lhs.skolem_choices.size() < rhs.skolem_choices.size();
+// }
+// }
 
 size_t Synth::synth_preprocessingt::get_min_solution_size() const
 {
@@ -41,17 +41,17 @@ void Synth::synth_preprocessingt::operator ()()
   const namespacet ns(original_program.st);
   null_message_handlert null_msg;
   goto_inline(original_program.gf, ns, null_msg);
-  // std::cout << "synth_preprocessingt post-inline " << std::endl;
+  // std::cerr << "synth_preprocessingt post-inline " << std::endl;
   // original_program.print();
   synth_remove_loops_and_assertion(original_program);
 
-  // std::cout << "synth_preprocessingt post-remove_loops_and_assertions " << std::endl;
+  // std::cerr << "synth_preprocessingt post-remove_loops_and_assertions " << std::endl;
   // original_program.print();
 
   // no need for invariant
-  store_skolem_choices(original_program);
+  // store_skolem_choices(original_program);
 
-  std::cout << "synth_preprocessingt::operator() " << std::endl;
+  std::cerr << "synth_preprocessingt::operator() " << std::endl;
   original_program.print();
 
   current_program=original_program;

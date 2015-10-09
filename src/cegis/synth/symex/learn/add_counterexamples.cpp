@@ -106,7 +106,7 @@ public:
   {
     const synth_programt::loopst &loops=prog.loops;
     assert(!loops.empty());
-    pos=loops.begin()->meta_variables.Dx;
+    pos=loops.begin()->meta_variables.Ix;
     ++pos;
   }
 

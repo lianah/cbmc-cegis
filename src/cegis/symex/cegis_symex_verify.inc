@@ -31,8 +31,8 @@ void cegis_symex_verifyt<verify_configurationt>::verify(
   cbmc_solverst solvers(options, st, msg);
   const std::unique_ptr<cbmc_solverst::solvert> solver=solvers.get_solver();
   bmct bmc(options, st, msg, solver->prop_conv());
-  std::cout << "cegis_symex_verifyt<verify_configurationt>::verify BMC on program " << std::endl;
-  gf.output(namespacet(st), std::cout);
+  std::cerr << "cegis_symex_verifyt<verify_configurationt>::verify BMC on program " << std::endl;
+  gf.output(namespacet(st), std::cerr);
   
   const safety_checkert::resultt result=bmc(gf);
   const goto_tracet &trace=bmc.safety_checkert::error_trace;

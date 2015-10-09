@@ -30,7 +30,7 @@ std::string get_Ax();
  *
  * @return
  */
-std::string get_Dx0();
+std::string get_Ix0();
 
 /**
  * @brief
@@ -41,7 +41,7 @@ std::string get_Dx0();
  *
  * @return
  */
-std::string get_Dx(const size_t loop_id);
+std::string get_Ix(const size_t loop_id);
 
 /**
  * @brief
@@ -52,7 +52,7 @@ std::string get_Dx(const size_t loop_id);
  *
  * @return
  */
-std::string get_Dx_prime(const size_t loop_id);
+std::string get_Ix_prime(const size_t loop_id);
 
 /**
  * @brief
@@ -89,17 +89,6 @@ std::string get_Rx(const size_t loop_id, const size_t result_id);
  */
 std::string get_Rx_prime(const size_t loop_id, const size_t result_id);
 
-/**
- * @brief
- *
- * @details
- *
- * @param loop_id
- * @param result_id
- *
- * @return
- */
-std::string get_Sx(const size_t loop_id, const size_t result_id);
 
 /**
  * @brief

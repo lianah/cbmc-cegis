@@ -47,14 +47,16 @@ bool cegis_symex_learnt<learn_configurationt>::learn(itert first,
   const std::unique_ptr<cbmc_solverst::solvert> solver=solvers.get_solver();
   bmct bmc(learn_options, st, msg, solver->prop_conv());
 
-  std::cout << "**************************** " << std::endl;
-  std::cout << "The program to learn over is " << std::endl;
-  config.get_goto_functions().output(namespacet(st), std::cout);
-  std::cout << "**************************** " << std::endl;
+  std::cerr << "**************************** " << std::endl;
+  std::cerr << "The program to learn over is " << std::endl;
+  config.get_goto_functions().output(namespacet(st), std::cerr);
+  std::cerr << "**************************** " << std::endl;
   
   const safety_checkert::resultt bmc_result=bmc(config.get_goto_functions());
   if (safety_checkert::UNSAFE != bmc_result) return false;
   const goto_tracet &trace=bmc.safety_checkert::error_trace;
+  std::cerr << "cegis_symex_learnt<learn_configurationt>::learn TRACE: " << std::endl;
+  show_goto_trace(std::cerr, namespacet(st), trace); 
   config.convert(current_candidate, trace, max_solution_size);
   return true;
 }

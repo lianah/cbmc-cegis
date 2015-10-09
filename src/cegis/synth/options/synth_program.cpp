@@ -109,7 +109,7 @@ synth_programt &assign(synth_programt &lhs, const synth_programt &rhs)
   lhs.synth_range=fix(rhs.synth_range);
   lhs.assertion=rhs.assertion;
 
-  // lhs.Dx0=fix(rhs.Dx0);
+  lhs.Ix0=fix(rhs.Ix0);
 
   lhs.Ax=fix(rhs.Ax);
   return lhs;
@@ -130,5 +130,5 @@ synth_programt &Synth::synth_programt::operator =(const synth_programt &other)
 }
 
 void Synth::synth_programt::print() const {
-  gf.output(namespacet(st), std::cout);
+  gf.output(namespacet(st), std::cerr);
 }

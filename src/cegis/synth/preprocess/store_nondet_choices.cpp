@@ -6,21 +6,21 @@
 
 using namespace Synth;
 
-namespace
-{
-void store_skolem_choices_for_loop(synth_programt::loopt &loop)
-{
-  const synth_programt::program_ranget &range=loop.body;
-  for (goto_programt::targett it=range.begin; it != range.end; ++it)
-    if (is_nondet(it)) loop.skolem_choices.push_back(it);
-}
-}
+// namespace
+// {
+// void store_skolem_choices_for_loop(synth_programt::loopt &loop)
+// {
+//   const synth_programt::program_ranget &range=loop.body;
+//   for (goto_programt::targett it=range.begin; it != range.end; ++it)
+//     if (is_nondet(it)) loop.skolem_choices.push_back(it);
+// }
+// }
 
-void Synth::store_skolem_choices(synth_programt &program)
-{
-  synth_programt::loopst &loops=program.loops;
-  std::for_each(loops.begin(), loops.end(), &store_skolem_choices_for_loop);
-}
+// void Synth::store_skolem_choices(synth_programt &program)
+// {
+//   synth_programt::loopst &loops=program.loops;
+//   std::for_each(loops.begin(), loops.end(), &store_skolem_choices_for_loop);
+// }
 
 namespace
 {
