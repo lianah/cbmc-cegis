@@ -1,0 +1,87 @@
+=====================================================
+
+LEARN PROGRAM
+
+// chosen constants
+OPS[0] = const
+...
+OPS[.] = const
+// input variables
+OPS[.] = &x1
+OPS[.] = &x2
+
+counterex[K] = {} \\ counterexamples from verifier
+
+instruct R[N] \\ instructions to synthesize (N size of program)
+instruct I[N]
+
+for i in 1 ... K:
+    x = counterex[i]
+    RES_OPS [-1] = &I_var
+    execute(I)
+    RES_OPS [-1] = &R_var
+    execute(R)
+
+    // loop BODY
+    x = x + 1
+
+    RES_OPS [-1] = &I_var_prime
+    execute(I)
+
+    RES_OPS [-1] = &R_var_prime
+    execute(R)
+
+    Assume ( inductivness)
+    Assert (false)
+
+=====================================================    
+
+VERIFY PROGRAM
+
+// loop preamble
+int x;
+x = 0;
+
+I_init = I(x)
+
+x = NONDET
+
+I_x = I(x)
+R_x = R(x)
+A_x = A(x)
+
+// loop body
+
+x = x + 1
+
+I_x_prime = I(x)
+R_x_prime = R(x)
+
+Assert (inductive property)
+
+
+
+=====================================================
+
+TODOs:
+
+* move counterexamples before init stage (right after declaration) in GOTO-learn
+* synth-learn-config: no x0 choices to be read from trace
+* FIXME: verifier CEX does not respect assume?
+
+
+=====================================================
+
+TEST CASE:
+
+int main(void)
+{
+  int x;
+  __CPROVER_assume(x > 0 && x <= 5);
+  // Invariant: x >= 0
+  while (x > 0) {
+    --x;
+  }
+  __CPROVER_assert(x == 0, "A");
+  return 0;
+}
