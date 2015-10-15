@@ -53,7 +53,7 @@ goto_programt::targett set_ops_reference(const symbol_tablet &st,
 
 null_pointer_exprt get_null()
 {
-  void_typet void_type;
+  const void_typet void_type;
   const pointer_typet void_pointer_type(void_type);
   return null_pointer_exprt(void_pointer_type);
 }

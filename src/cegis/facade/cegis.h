@@ -26,14 +26,15 @@ Author: Daniel Kroening, kroening@kroening.com
  * @tparam preproct
  * @tparam mstreamt
  */
-template<class learnt, class oraclet, class preproct, class mstreamt>
-int run_cegis(learnt &learn, oraclet &oracle, preproct &preproc, size_t max_size, mstreamt &os)
+template<class learnt, class oraclet, class preproct, class seedt, class mstreamt>
+int run_cegis(learnt &learn, oraclet &oracle, preproct &preproc, seedt &seed, size_t max_size, mstreamt &os)
 {
   preproc();
   const size_t min_size=preproc.get_min_solution_size();
   for (size_t max_solution_length=min_size; max_solution_length < max_size ; ++max_solution_length)
   {
     preproc(max_solution_length);
+    learn.seed(seed);
     learn.learn(max_solution_length);
     do
     {

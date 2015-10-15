@@ -73,7 +73,7 @@ public:
    *
    * @return
    */
-  const symbol_tablet &get_symbol_table();
+  const symbol_tablet &get_symbol_table() const;
 
   /**
    * @brief
@@ -82,7 +82,16 @@ public:
    *
    * @return
    */
-  const goto_functionst &get_goto_functions();
+  const goto_functionst &get_goto_functions() const;
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @return
+   */
+  goto_functionst &get_goto_functions();
 
   /**
    * @brief
@@ -94,6 +103,15 @@ public:
    */
   void convert(counterexamplest &counterexamples,
       const class goto_tracet &trace);
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @return
+   */
+  size_t get_number_of_loops() const;
 };
 
 #endif /* CEGIS_DANGER_VERIFY_CONFIG_H_ */

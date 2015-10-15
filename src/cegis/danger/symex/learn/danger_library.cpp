@@ -12,7 +12,6 @@
 
 namespace
 {
-#if 0
 const char PROGRAM_ARG_NAME[]="__CPROVER_danger_execute::program";
 const char PROGRAM_ARG_BASE_NAME[]="program";
 const char SIZE_ARG_NAME[]="__CPROVER_danger_execute::size";
@@ -84,14 +83,12 @@ void set_init_values(danger_programt &prog)
   pos=init_array(st, body, DANGER_OPS, --pos);
   pos=init_array(st, body, DANGER_RESULT_OPS, pos);
 }
-#endif
 }
 
 void add_danger_library(danger_programt &prog, message_handlert &msg,
     const size_t num_vars, const size_t num_consts,
     const size_t max_solution_size)
 {
-  #if 0
   symbol_tablet &symbol_table=prog.st;
   goto_functionst &goto_functions=prog.gf;
   add_placeholder(symbol_table);
@@ -110,5 +107,4 @@ void add_danger_library(danger_programt &prog, message_handlert &msg,
   goto_convert(DANGER_EXECUTE, symbol_table, goto_functions, msg);
   set_loop_id(goto_functions);
   set_init_values(prog);
-  #endif
 }

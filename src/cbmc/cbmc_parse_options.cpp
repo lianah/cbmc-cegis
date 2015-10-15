@@ -42,7 +42,11 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <cegis/danger/constant/default_constant_strategy.h>
 #include <cegis/danger/preprocess/danger_preprocessing.h>
 #include <cegis/danger/symex/verify/danger_verify_config.h>
+#include <cegis/danger/symex/verify/parallel_danger_verifier.h>
 #include <cegis/danger/symex/learn/danger_learn_config.h>
+#include <cegis/statistics/cegis_statistics_wrapper.h>
+#include <cegis/seed/null_seed.h>
+#include <cegis/seed/literals_seed.h>
 #include <cegis/facade/cegis.h>
 
 #include <goto-instrument/full_slicer.h>
@@ -547,10 +551,15 @@ int cbmc_parse_optionst::doit()
     danger_preprocessingt preproc(symbol_table, goto_functions, strategy);
     const danger_programt &prog=preproc.get_danger_program();
     danger_verify_configt verify_config(prog);
-    cegis_symex_verifyt<danger_verify_configt> verify(options, verify_config);
+    //cegis_symex_verifyt<danger_verify_configt> verify(options, verify_config);
+    parallel_danger_verifiert verify(options, verify_config);
     danger_learn_configt learn_config(prog);
     cegis_symex_learnt<danger_learn_configt> learn(options, learn_config);
-    return run_cegis(learn, verify, preproc, max_prog_size, result());
+    cegis_statistics_wrappert<cegis_symex_learnt<danger_learn_configt>, parallel_danger_verifiert, mstreamt> stat(learn, verify, result());
+    //cegis_statistics_wrappert<cegis_symex_learnt<danger_learn_configt>, cegis_symex_verifyt<danger_verify_configt>, mstreamt> stat(learn, verify, result());
+    //danger_literals_seedt seed(prog);
+    null_seedt seed;
+    return run_cegis(stat, stat, preproc, seed, max_prog_size, result());
   }
 
   // do actual BMC

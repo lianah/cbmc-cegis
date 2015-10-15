@@ -1,5 +1,3 @@
-#include <iterator>
-
 #include <goto-programs/safety_checker.h>
 
 #include <cbmc/cbmc_solvers.h>
@@ -15,6 +13,13 @@ cegis_symex_learnt<learn_configurationt>::cegis_symex_learnt(
 template<class learn_configurationt>
 cegis_symex_learnt<learn_configurationt>::~cegis_symex_learnt()
 {
+}
+
+template<class learn_configurationt>
+template<class seedt>
+void cegis_symex_learnt<learn_configurationt>::seed(seedt &seed)
+{
+  seed(counterexamples);
 }
 
 template<class learn_configurationt>

@@ -51,10 +51,12 @@ const irep_idt &get_affected_variable(const goto_programt::instructiont &instr);
  * @details
  *
  * @param target
+ * @param end
  *
  * @return
  */
-bool is_nondet(const goto_programt::targett &target);
+bool is_nondet(const goto_programt::targett &target,
+    const goto_programt::targett &end);
 
 /**
  * @brief

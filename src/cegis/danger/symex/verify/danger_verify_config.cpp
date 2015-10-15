@@ -21,12 +21,17 @@ void danger_verify_configt::process(const candidatet &candidate)
   program.gf.update();
 }
 
-const symbol_tablet &danger_verify_configt::get_symbol_table()
+const symbol_tablet &danger_verify_configt::get_symbol_table() const
 {
   return program.st;
 }
 
-const goto_functionst &danger_verify_configt::get_goto_functions()
+const goto_functionst &danger_verify_configt::get_goto_functions() const
+{
+  return program.gf;
+}
+
+goto_functionst &danger_verify_configt::get_goto_functions()
 {
   return program.gf;
 }
@@ -36,4 +41,9 @@ void danger_verify_configt::convert(counterexamplest &counterexamples,
 {
   counterexamples.push_back(counterexamplet());
   danger_extract_counterexample(counterexamples.back(), trace, quantifiers);
+}
+
+size_t danger_verify_configt::get_number_of_loops() const
+{
+  return original_program.loops.size();
 }

@@ -30,7 +30,7 @@ void __CPROVER_danger_execute(struct __CPROVER_danger_instructiont *program,
         && (op0_id >= __CPROVER_danger_number_of_consts || op1_id >= __CPROVER_danger_number_of_consts  || op2_id >= __CPROVER_danger_number_of_consts)
         && (opcode > 5u || op0_id <= op1_id) && (opcode < 21u || !op1_id)
         && (opcode == 9u || opcode >= 15u && opcode <= 18 || !op2_id)
-        && (opcode != 9u || op0_id != op2_id || op1_id < op2_id));
+        && (opcode != 9u || op0_id != op2_id || op1_id <= op2_id));
     const unsigned int * const op0_ptr=__CPROVER_danger_OPS[op0_id];
     const unsigned int * const op1_ptr=__CPROVER_danger_OPS[op1_id];
     const unsigned int * const op2_ptr=__CPROVER_danger_OPS[op2_id];
@@ -116,9 +116,11 @@ void __CPROVER_danger_execute(struct __CPROVER_danger_instructiont *program,
       else
     __CPROVER_danger_opcode_22: result=~op0;
     else if (opcode < 24)
+    //__CPROVER_danger_opcode_23: result=0u;
     __CPROVER_danger_opcode_23: result=sop0 == -1;
     else
-    __CPROVER_danger_opcode_24: result=sop0 != -1;
+      __CPROVER_danger_opcode_24: result=op0;
+    //__CPROVER_danger_opcode_24: result=sop0 != -1;
 
     *(unsigned int *)__CPROVER_danger_RESULT_OPS[i]=result;
   }

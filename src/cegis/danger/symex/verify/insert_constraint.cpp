@@ -1,4 +1,3 @@
-#include <iterator>
 #include <algorithm>
 
 #include <util/cprover_prefix.h>

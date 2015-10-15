@@ -49,8 +49,9 @@ public:
     const bv_arithmetict bv(constant);
     const mp_integer::ullong_t value=bv.to_integer().to_ulong();
     constants.insert(from_integer(value, type));
-    constants.insert(from_integer(value + 1, type));
-    constants.insert(from_integer(value - 1, type));
+    // XXX: Add constant +/- 1?
+    //constants.insert(from_integer(value + 1, type));
+    //constants.insert(from_integer(value - 1, type));
   }
 
   void operator()(const goto_programt::instructiont &instr)

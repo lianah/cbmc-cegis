@@ -1,0 +1,70 @@
+/*******************************************************************
+
+Module: Counterexample-Guided Inductive Synthesis
+
+Author: Daniel Kroening, kroening@kroening.com
+        Pascal Kesseli, pascal.kesseil@cs.ox.ac.uk
+
+\*******************************************************************/
+
+#ifndef CEGIS_GENETIC_INDIVIDUAL_H_
+#define CEGIS_GENETIC_INDIVIDUAL_H_
+
+#include <cstddef>
+#include <vector>
+
+/**
+ * @brief
+ *
+ * @details
+ */
+class program_individualt
+{
+public:
+  /**
+   * @brief
+   *
+   * @details
+   */
+  class instructiont
+  {
+  public:
+    typedef unsigned char opcodet;
+    typedef unsigned char opt;
+    typedef std::vector<opt> opst;
+
+    opcodet opcode;
+    opst ops;
+
+    /**
+     * @brief
+     *
+     * @details
+     *
+     * @param n
+     *
+     * @return
+     */
+    opst::value_type &operator[](opst::size_type n);
+
+    /**
+     * @brief
+     *
+     * @details
+     *
+     * @param n
+     *
+     * @return
+     */
+    const opst::value_type &operator[](opst::size_type n) const;
+  };
+
+  typedef std::vector<instructiont> programt;
+  typedef std::vector<programt> programst;
+  typedef size_t fitnesst;
+
+  programst programs;
+  fitnesst fitness;
+};
+
+#endif /* CEGIS_GENETIC_INDIVIDUAL_H_ */

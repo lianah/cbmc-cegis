@@ -47,6 +47,16 @@ public:
   ~cegis_symex_learnt();
 
   /**
+   * @brief
+   *
+   * @details
+   *
+   * @param seed
+   */
+  template<class seedt>
+  void seed(seedt &seed);
+
+  /**
    * @brief Provides the next candidate.
    *
    * @details Provides the last candidate generated using learn.

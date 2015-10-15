@@ -42,7 +42,8 @@ const irep_idt &get_affected_variable(const goto_programt::instructiont &instr)
   }
 }
 
-bool is_nondet(const goto_programt::targett &target)
+bool is_nondet(const goto_programt::targett &target,
+    const goto_programt::targett &end)
 {
   const goto_programt::instructiont &instr=*target;
   switch (instr.type)
@@ -50,7 +51,8 @@ bool is_nondet(const goto_programt::targett &target)
   case goto_program_instruction_typet::DECL:
   {
     goto_programt::targett next=target;
-    const goto_programt::instructiont next_instr=*++next;
+    if (++next == end) return true;
+    const goto_programt::instructiont next_instr=*next;
     if (goto_program_instruction_typet::ASSIGN != next_instr.type) return true;
     return get_affected_variable(instr) != get_affected_variable(next_instr);
   }

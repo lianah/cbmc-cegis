@@ -5,6 +5,7 @@
 #include <cegis/danger/symex/learn/danger_library.h>
 #include <cegis/danger/symex/learn/add_programs_to_learn.h>
 #include <cegis/danger/symex/learn/add_counterexamples.h>
+#include <cegis/danger/symex/learn/add_x0_placeholders.h>
 #include <cegis/danger/symex/learn/solution_factory.h>
 #include <cegis/danger/symex/learn/danger_learn_config.h>
 
@@ -28,7 +29,9 @@ void danger_learn_configt::process(const counterexamplest &counterexamples,
   add_danger_library(program, msg, num_vars, num_consts, max_solution_size);
   danger_add_variable_refs(program, var_ids, max_solution_size);
   danger_add_programs_to_learn(program, max_solution_size);
+  danger_add_x0_placeholders(program);
   danger_add_learned_counterexamples(program, counterexamples);
+  program.gf.update();
 }
 
 const symbol_tablet &danger_learn_configt::get_symbol_table() const
@@ -41,7 +44,7 @@ const goto_functionst &danger_learn_configt::get_goto_functions() const
   return program.gf;
 }
 
-void danger_learn_configt::convert(candidatet &candidate,
+void danger_learn_configt::danger_learn_configt::convert(candidatet &candidate,
     const class goto_tracet &trace, const size_t max_solution_size)
 {
   candidate.danger_programs.clear();
@@ -103,12 +106,13 @@ public:
 void danger_learn_configt::show_candidate(messaget::mstreamt &os,
     const candidatet &candidate)
 {
-  os << "x0:" << messaget::endl;
   const candidatet::nondet_choicest &x0=candidate.x0_choices;
+  const candidatet::danger_programst &progs=candidate.danger_programs;
+  if (x0.empty() && progs.empty()) return;
+  os << "x0:" << messaget::endl;
   const expr_printert x0_printer(program, os);
   std::for_each(x0.begin(), x0.end(), x0_printer);
   os << "Programs:" << messaget::endl;
-  const candidatet::danger_programst &progs=candidate.danger_programs;
   const danger_program_printert prog_printer(program, os);
   std::for_each(progs.begin(), progs.end(), prog_printer);
   os << messaget::eom;
