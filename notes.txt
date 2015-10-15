@@ -85,3 +85,14 @@ int main(void)
   __CPROVER_assert(x == 0, "A");
   return 0;
 }
+
+
+
+========================
+
+RANDOM
+
+* sometimes it can get the ranking right but not the invariant
+
+* figure out when one needs to adapt only one (I guess fault
+localization can help?) - however they are very tightly connected

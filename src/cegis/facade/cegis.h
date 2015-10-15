@@ -38,8 +38,10 @@ int run_cegis(learnt &learn, oraclet &oracle, preproct &preproc, size_t max_size
     int count = 0;
     do
     {
-      if (count >= 1)
+      if (count >= 1) {
+	os << "CEGIS Candidate \n";
       	learn.show_candidate(os);
+      }
       count++;
       const typename learnt::candidatet &candidate=learn.next_candidate();
       oracle.verify(candidate);
@@ -47,6 +49,7 @@ int run_cegis(learnt &learn, oraclet &oracle, preproct &preproc, size_t max_size
           && learn.learn(oracle.counterexamples_begin(), oracle.counterexamples_end()));
     if (oracle.success())
     {
+      os << "CEGIS SUCCESS: \n";
       learn.show_candidate(os);
       return 0;
     }

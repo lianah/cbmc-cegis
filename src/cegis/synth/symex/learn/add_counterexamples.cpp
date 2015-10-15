@@ -136,10 +136,30 @@ void create_constraints(synth_programt &prog)
   goto_programt::targett pos=prog.synth_range.end;
   std::advance(pos, -3);
   goto_programt &body=get_synth_body(prog.gf);
+  // init
   pos=body.insert_after(pos);
   pos->type=goto_program_instruction_typet::ASSUME;
   pos->source_location=default_synth_source_location();
-  pos->guard=create_synth_constraint(prog.loops.size());
+  pos->guard=create_synth_constraint_init(prog.loops.size());
+
+  // invariant
+  pos=body.insert_after(pos);
+  pos->type=goto_program_instruction_typet::ASSUME;
+  pos->source_location=default_synth_source_location();
+  pos->guard=create_synth_constraint_inductive(prog.loops.size());
+
+  // strong enough to entail assertion
+  pos=body.insert_after(pos);
+  pos->type=goto_program_instruction_typet::ASSUME;
+  pos->source_location=default_synth_source_location();
+  pos->guard=create_synth_constraint_strong(prog.loops.size());
+
+  // // ranking
+  pos=body.insert_after(pos);
+  pos->type=goto_program_instruction_typet::ASSUME;
+  pos->source_location=default_synth_source_location();
+  pos->guard=create_synth_constraint_rank(prog.loops.size());
+
 }
 
 void add_final_assertion(synth_programt &prog,

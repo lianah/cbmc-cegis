@@ -10,8 +10,10 @@
 
 using namespace Synth;
 
-Synth::synth_learn_configt::synth_learn_configt(const Synth::synth_programt &program) :
-    original_program(program)
+Synth::synth_learn_configt::synth_learn_configt(const Synth::synth_programt &program,
+						bool ranking) :
+  original_program(program),
+  synth_ranking(ranking)
 {
 }
 
@@ -52,6 +54,7 @@ void Synth::synth_learn_configt::synth_learn_configt::convert(candidatet &candid
 {
   candidate.synth_programs.clear();
   // LSH FIXME: remove x0 choices because these were part of the counterexample before
+  // are these x0 or just the non-det choices for the universal quantifier
   candidate.x0_choices.clear();
   create_synth_solution(candidate, program, trace, var_ids, max_solution_size);
 }
@@ -83,8 +86,7 @@ public:
     print(prog.invariant);
     os << "Ranking " << func_count << ": " << messaget::endl;
     print(prog.ranking);
-    // os << "Skolem " << func_count++ << ": " << messaget::endl;
-    // print(prog.skolem);
+
   }
 };
 

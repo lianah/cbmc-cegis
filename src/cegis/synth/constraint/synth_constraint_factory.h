@@ -23,7 +23,10 @@ namespace Synth {
  *
  * @return
  */
-exprt create_synth_constraint(const size_t number_of_loops);
+exprt create_synth_constraint_init(const size_t number_of_loops);
+exprt create_synth_constraint_inductive(const size_t number_of_loops);
+exprt create_synth_constraint_strong(const size_t number_of_loops);
+exprt create_synth_constraint_rank(const size_t number_of_loops);
 
 /**
  * @brief

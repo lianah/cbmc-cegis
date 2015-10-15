@@ -29,6 +29,7 @@ class synth_verify_configt
   Synth::synth_programt program;
   goto_programt::targetst quantifiers;
 public:
+  bool synth_ranking;
   /**
    * @brief Counterexample type for this CEGIS component.
    *
@@ -52,7 +53,7 @@ public:
    *
    * @param program
    */
-  synth_verify_configt(const synth_programt &program);
+  synth_verify_configt(const synth_programt &program, bool rank);
 
   /**
    * @brief

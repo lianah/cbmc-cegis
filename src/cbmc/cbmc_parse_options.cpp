@@ -570,10 +570,12 @@ int cbmc_parse_optionst::doit()
     const Synth::constant_strategyt strategy=Synth::default_constant_strategy;
     Synth::synth_preprocessingt preproc(symbol_table, goto_functions, strategy);
 
+    bool ranking = cmdline.isset("ranking");
+    
     const Synth::synth_programt &prog=preproc.get_synth_program();
-    Synth::synth_verify_configt verify_config(prog);
+    Synth::synth_verify_configt verify_config(prog, ranking);
     cegis_symex_verifyt<Synth::synth_verify_configt> verify(options, verify_config);
-    Synth::synth_learn_configt learn_config(prog);
+    Synth::synth_learn_configt learn_config(prog, ranking);
     cegis_symex_learnt<Synth::synth_learn_configt> learn(options, learn_config);
     return run_cegis(learn, verify, preproc, max_prog_size, result());
   }

@@ -118,18 +118,39 @@ void add_universal_quantifier(goto_programt::targetst &quantifiers,
   std::for_each(vars.begin(), vars.end(), quantify);
 }
 
-void add_final_assertion(synth_programt &program)
+  void add_final_assertion(synth_programt &program)
 {
   goto_programt::targett pos=program.synth_range.end;
   pos=get_synth_body(program.gf).insert_after(--pos);
+  // initiation
   pos->type=goto_program_instruction_typet::ASSERT;
   pos->source_location=default_synth_source_location();
-  pos->guard=create_synth_constraint(program.loops.size());
+  pos->guard=create_synth_constraint_init(program.loops.size());
+  
+  // inductive step
+  pos=get_synth_body(program.gf).insert_after(--pos);
+  pos->type=goto_program_instruction_typet::ASSERT;
+  pos->source_location=default_synth_source_location();
+  pos->guard=create_synth_constraint_inductive(program.loops.size());
+
+  // strong enough to enail assertion
+  pos=get_synth_body(program.gf).insert_after(--pos);
+  pos->type=goto_program_instruction_typet::ASSERT;
+  pos->source_location=default_synth_source_location();
+  pos->guard=create_synth_constraint_strong(program.loops.size());
+  
+  // ranking function
+
+  pos=get_synth_body(program.gf).insert_after(--pos);
+  pos->type=goto_program_instruction_typet::ASSERT;
+  pos->source_location=default_synth_source_location();
+  pos->guard=create_synth_constraint_rank(program.loops.size());
 }
 }
 
+
 void Synth::synth_insert_constraint(goto_programt::targetst &quantifiers,
-    synth_programt &program)
+				    				synth_programt &program)
 {
   add_universal_quantifier(quantifiers, program);
   add_final_assertion(program);
