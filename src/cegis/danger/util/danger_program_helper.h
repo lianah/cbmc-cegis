@@ -51,12 +51,10 @@ const irep_idt &get_affected_variable(const goto_programt::instructiont &instr);
  * @details
  *
  * @param target
- * @param end
  *
  * @return
  */
-bool is_nondet(const goto_programt::targett &target,
-    const goto_programt::targett &end);
+bool is_nondet(const goto_programt::targett &target);
 
 /**
  * @brief
@@ -95,59 +93,5 @@ goto_programt::targett fix_target_by_offset(
     const goto_programt::const_targett &original_offset,
     goto_programt::targett new_offset,
     const goto_programt::const_targett &target);
-
-/**
- * @brief
- *
- * @details
- *
- * @param body
- * @param target
- */
-void erase_target(goto_programt::instructionst &body,
-    const goto_programt::targett &target);
-
-/**
- * @brief
- *
- * @details
- *
- * @param body
- * @param target
- */
-void erase_target(goto_programt &body, const goto_programt::targett &target);
-
-/**
- * @brief
- *
- * @details
- *
- * @param prog
- * @param width_in_bits
- */
-void restrict_bv_size(class danger_programt &prog, size_t width_in_bits);
-
-/**
- * @brief
- *
- * @details
- *
- * @param body
- * @param target
- */
-goto_programt::targett insert_before_preserve_labels(goto_programt &body,
-    const goto_programt::targett &target);
-
-/**
- * @brief
- *
- * @details
- *
- * @param body
- * @param from
- * @param to
- */
-void move_labels(goto_programt &body, const goto_programt::targett &from,
-    const goto_programt::targett &to);
 
 #endif /* CEGIS_DANGER_PROGRAM_HELPER_H_ */

@@ -12,20 +12,6 @@ Author: Daniel Kroening, kroening@kroening.com
 
 #include <cstddef>
 
-#include <util/std_expr.h>
-
-/**
- * @brief
- *
- * @details
- *
- * @param program
- *
- * @return
- */
-std::vector<constant_exprt> collect_literal_constants(
-    const class danger_programt &program);
-
 /**
  * @brief
  *
@@ -36,7 +22,7 @@ std::vector<constant_exprt> collect_literal_constants(
  *
  * @return
  */
-size_t literals_constant_strategy(danger_programt &program,
+size_t literals_constant_strategy(class danger_programt &program,
     const size_t max_length);
 
 #endif /* CEGIS_DANGER_LITERALS_CONSTANT_STRATEGY_H_ */
