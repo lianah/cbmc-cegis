@@ -3,6 +3,7 @@
 #include <cegis/util/program_helper.h>
 #include <cegis/synth/options/synth_program.h>
 #include <cegis/synth/preprocess/remove_loops_and_assertion.h>
+#include <iostream>
 using namespace Synth;
 
 namespace
@@ -36,6 +37,9 @@ void handle_loop_removal(synth_programt &program,
   synth_programt::loopt loop;
   if (instr.guard.is_true())
   {
+    // LSH FIXME: it could be the case that the goto is pointing to a declaration actually
+    // e.g. while (nondet())
+    // problem is assignment in loop condition (may arise in for loops to?)
     exprt guard=goto_target->guard;
     if (ID_not == guard.id()) loop.guard=to_not_expr(guard).op();
     else loop.guard=simplify_expr(not_exprt(guard), ns);
