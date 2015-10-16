@@ -13,37 +13,37 @@ using namespace Synth;
 
 namespace
 {
-class assign_x0t
-{
-  const symbol_tablet &st;
-  goto_functionst &gf;
-  goto_programt::targetst::const_iterator current_choice;
-public:
-  assign_x0t(synth_programt &prog) :
-      st(prog.st), gf(prog.gf), current_choice(prog.x0_choices.begin())
-  {
-  }
+// class assign_x0t
+// {
+//   const symbol_tablet &st;
+//   goto_functionst &gf;
+//   goto_programt::targetst::const_iterator current_choice;
+// public:
+//   assign_x0t(synth_programt &prog) :
+//       st(prog.st), gf(prog.gf), current_choice(prog.x0_choices.begin())
+//   {
+//   }
 
-  ~assign_x0t()
-  {
-  }
+//   ~assign_x0t()
+//   {
+//   }
 
-  void operator()(const exprt &x0_value)
-  {
-    const goto_programt::targett pos=*current_choice++;
-    const irep_idt &var_name=get_affected_variable(*pos);
-    synth_assign_user_variable(st, gf, pos, var_name, x0_value);
-  }
-};
+//   void operator()(const exprt &x0_value)
+//   {
+//     const goto_programt::targett pos=*current_choice++;
+//     const irep_idt &var_name=get_affected_variable(*pos);
+//     synth_assign_user_variable(st, gf, pos, var_name, x0_value);
+//   }
+// };
 
-void assign_x0(synth_programt &prog, const candidatet &candidate)
-{
-  const candidatet::nondet_choicest &x0_values=candidate.x0_choices;
-  const goto_programt::targetst &x0_choices=prog.x0_choices;
-  assert(x0_values.size() <= x0_choices.size());
-  const assign_x0t assign(prog);
-  std::for_each(x0_values.begin(), x0_values.end(), assign);
-}
+// void assign_x0(synth_programt &prog, const candidatet &candidate)
+// {
+//   const candidatet::nondet_choicest &x0_values=candidate.x0_choices;
+//   const goto_programt::targetst &x0_choices=prog.x0_choices;
+//   assert(x0_values.size() <= x0_choices.size());
+//   const assign_x0t assign(prog);
+//   std::for_each(x0_values.begin(), x0_values.end(), assign);
+// }
 
 typedef std::map<const irep_idt, const irep_idt> replacementst;
 
@@ -125,9 +125,10 @@ class insert_synth_programt
   const synth_programt::loopst &loops;
   goto_programt &body;
   size_t loop_id;
+  bool rank;
 public:
   insert_synth_programt(synth_programt &prog, goto_programt &body) :
-      loops(prog.loops), body(body), loop_id(0u)
+    loops(prog.loops), body(body), loop_id(0u), rank(prog.synth_ranking)
   {
   }
 
@@ -139,7 +140,8 @@ public:
     const irep_idt &Ix=get_affected_variable(*vars.Ix);
     const irep_idt &Ix_prime=get_affected_variable(*vars.Ix_prime);
     insert_program(body, vars.Ix_prime, solution.invariant, Ix, Ix_prime);
-    if (!vars.Rx.empty() && !vars.Rx_prime.empty())
+    if (!vars.Rx.empty() && !vars.Rx_prime.empty() &&
+	rank)
     {
       const goto_programt::targett Rx=*vars.Rx.rbegin();
       insert_program(body, *vars.Rx.rbegin(), solution.ranking);
@@ -148,9 +150,6 @@ public:
       const irep_idt &Rx_pn=get_affected_variable(*Rx_prime);
       insert_program(body, Rx_prime, solution.ranking, Rx_n, Rx_pn); // XXX: Lexicographical ranking?
     }
-    
-    // if (!vars.Sx.empty())
-    //   insert_program(body, *vars.Sx.rbegin(), solution.skolem);
   }
 };
 
@@ -171,6 +170,6 @@ void insert_programs(synth_programt &prog, const candidatet &candidate)
 void Synth::synth_insert_candidate(synth_programt &program,
     const candidatet &candidate)
 {
-  assign_x0(program, candidate);
+  //assign_x0(program, candidate);
   insert_programs(program, candidate);
 }

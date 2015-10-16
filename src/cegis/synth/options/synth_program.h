@@ -76,6 +76,8 @@ struct synth_programt
   goto_programt::targett Ix0; 
   goto_programt::targett Ax;
 
+  bool synth_ranking;
+
   /**
    * @brief
    *
@@ -100,7 +102,9 @@ struct synth_programt
    * @param st
    * @param gf
    */
-  synth_programt(const symbol_tablet &st, const goto_functionst &gf);
+  synth_programt(const symbol_tablet &st,
+		 const goto_functionst &gf,
+		 bool ranking);
 
   /**
    * @brief

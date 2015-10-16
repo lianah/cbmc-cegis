@@ -37,7 +37,6 @@ class synth_learn_configt
   const Synth::synth_programt &original_program;
   synth_programt program;
   synth_variable_idst var_ids;
-  bool synth_ranking;
 public:
   /**
    * @brief Counterexample type for this CEGIS component.
@@ -62,8 +61,7 @@ public:
    *
    * @param program
    */
-  synth_learn_configt(const Synth::synth_programt &program,
-		      		  bool synth_ranking);
+  synth_learn_configt(const Synth::synth_programt &program);
 
   /**
    * @brief

@@ -45,7 +45,7 @@ size_t create_temps(synth_variable_namest &rnames, const size_t num_tmp)
 
 typedef enum
 {
-  INV, RNK /*, SKO*/
+  INV, RNK 
 } prog_typet;
 
 goto_programt::instructionst &get_prog(
@@ -58,8 +58,6 @@ goto_programt::instructionst &get_prog(
   case INV:
     if (!instr_idx) progs.push_back(synth_goto_solutiont::synth_programt());
     return progs.back().invariant;
-  // case SKO:
-  //   return progs.back().skolem;
   case RNK:
     return progs.back().ranking;
   default:
@@ -80,10 +78,21 @@ class read_instrt
   size_t insidx;
   prog_typet prog_type;
 
+  // prepare rnames for next type of meta-variable
   void switch_prog()
   {
     insidx=0;
     rnames.clear();
+
+    // LSH FIXME: hideous
+    if (!synth_prog.synth_ranking) {
+      const size_t idx=create_temps(rnames, max_size - 1);
+      const std::string result_name(get_synth_meta_name(get_Ix(loop_index)));
+      rnames.insert(std::make_pair(idx, result_name));
+      prog_type=INV;
+      return;
+    }
+    
     switch (prog_type)
     {
     case INV:

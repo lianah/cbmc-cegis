@@ -75,8 +75,6 @@ void collect_counterexample_variables(synth_symbol_set &vars,
   const counterexample_variable_collectort collector(vars);
   const symbol_tablet &st=program.st;
   std::for_each(st.symbols.begin(), st.symbols.end(), collector);
-  // LSH FIXME: why collect variables only for Dx and not Rx as well?
-  // actually collecting all?
   const goto_programt::targett Ix=program.loops.front().meta_variables.Ix;
   std::for_each(program.synth_range.begin, Ix, collector);
 }
@@ -118,7 +116,8 @@ void add_universal_quantifier(goto_programt::targetst &quantifiers,
   std::for_each(vars.begin(), vars.end(), quantify);
 }
 
-  void add_final_assertion(synth_programt &program)
+  void add_final_assertion(synth_programt &program,
+			   bool rank)
 {
   goto_programt::targett pos=program.synth_range.end;
   pos=get_synth_body(program.gf).insert_after(--pos);
@@ -140,20 +139,21 @@ void add_universal_quantifier(goto_programt::targetst &quantifiers,
   pos->guard=create_synth_constraint_strong(program.loops.size());
   
   // ranking function
-
-  pos=get_synth_body(program.gf).insert_after(--pos);
-  pos->type=goto_program_instruction_typet::ASSERT;
-  pos->source_location=default_synth_source_location();
-  pos->guard=create_synth_constraint_rank(program.loops.size());
+  if (program.synth_ranking) {
+    pos=get_synth_body(program.gf).insert_after(--pos);
+    pos->type=goto_program_instruction_typet::ASSERT;
+    pos->source_location=default_synth_source_location();
+    pos->guard=create_synth_constraint_rank(program.loops.size());
+  }
 }
 }
 
 
 void Synth::synth_insert_constraint(goto_programt::targetst &quantifiers,
-				    				synth_programt &program)
+				    synth_programt &program)
 {
   add_universal_quantifier(quantifiers, program);
-  add_final_assertion(program);
+  add_final_assertion(program, program.synth_ranking);
 }
 
 void Synth::get_synth_constraint_vars(constraint_varst &vars,

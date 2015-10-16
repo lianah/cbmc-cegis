@@ -12,8 +12,11 @@
 using namespace Synth;
 
 Synth::synth_preprocessingt::synth_preprocessingt(const symbol_tablet &st,
-    const goto_functionst &gf, constant_strategyt constant_strategy) :
-    original_program(st, gf), constant_strategy(constant_strategy)
+						  const goto_functionst &gf,
+						  constant_strategyt constant_strategy,
+						  bool ranking)
+  : original_program(st, gf, ranking)
+  , constant_strategy(constant_strategy)
 {
 }
 

@@ -10,8 +10,9 @@ Synth::synth_programt::synth_programt()
 }
 
 Synth::synth_programt::synth_programt(const symbol_tablet &st,
-    const goto_functionst &gf) :
-    st(st)
+				      const goto_functionst &gf, bool rank) :
+  st(st),
+  synth_ranking(rank)
 {
   this->gf.copy_from(gf);
 }
@@ -35,12 +36,19 @@ class copy_targett
   const copy_targett &fix;
   const goto_programt::instructionst &old_instrs;
   goto_programt::instructionst &new_instrs;
+  bool synth_ranking;
+
 public:
-  copy_targett(const goto_functionst &old_gf, goto_functionst &new_gf) :
-      fix(*this), old_instrs(get_synth_body(old_gf).instructions), new_instrs(
-          get_synth_body(new_gf).instructions)
+  copy_targett(const goto_functionst &old_gf,
+	       goto_functionst &new_gf,
+	       bool ranking)
+    : fix(*this)
+    , old_instrs(get_synth_body(old_gf).instructions)
+    , new_instrs(get_synth_body(new_gf).instructions)
+    , synth_ranking(ranking)
   {
   }
+  
   goto_programt::targett operator()(const goto_programt::targett &target) const
   {
     const goto_programt::targett empty;
@@ -51,6 +59,7 @@ public:
     std::advance(new_target, old_distance);
     return new_target;
   }
+  
   Synth::synth_programt::meta_vars_positionst operator()(
       const Synth::synth_programt::meta_vars_positionst &vars) const
   {
@@ -59,17 +68,19 @@ public:
 
     result.Ix=fix(vars.Ix);
     result.Ix_prime=fix(vars.Ix_prime);
+
+    if (synth_ranking) {
+      // copy ranking
+      const goto_programt::targetst &old_r=vars.Rx;
+      goto_programt::targetst &new_r=result.Rx;
+      new_r.resize(old_r.size());
+      std::transform(old_r.begin(), old_r.end(), new_r.begin(), fix);
     
-    // copy ranking
-    const goto_programt::targetst &old_r=vars.Rx;
-    goto_programt::targetst &new_r=result.Rx;
-    new_r.resize(old_r.size());
-    std::transform(old_r.begin(), old_r.end(), new_r.begin(), fix);
-    
-    const goto_programt::targetst &old_rp=vars.Rx_prime;
-    goto_programt::targetst &new_rp=result.Rx_prime;
-    new_rp.resize(old_rp.size());
-    std::transform(old_rp.begin(), old_rp.end(), new_rp.begin(), fix);
+      const goto_programt::targetst &old_rp=vars.Rx_prime;
+      goto_programt::targetst &new_rp=result.Rx_prime;
+      new_rp.resize(old_rp.size());
+      std::transform(old_rp.begin(), old_rp.end(), new_rp.begin(), fix);
+    }
     return result;
   }
   
@@ -88,9 +99,6 @@ public:
     result.body=fix(loop.body);
     result.guard=loop.guard;
 
-    // goto_programt::targetst &new_s=result.skolem_choices;
-    // const goto_programt::targetst &old_s=loop.skolem_choices;
-    // std::transform(old_s.begin(), old_s.end(), std::back_inserter(new_s), fix);
 
     result.meta_variables=fix(loop.meta_variables);
     return result;
@@ -99,10 +107,12 @@ public:
 
 synth_programt &assign(synth_programt &lhs, const synth_programt &rhs)
 {
-  const copy_targett fix(rhs.gf, lhs.gf);
+  const copy_targett fix(rhs.gf, lhs.gf, rhs.synth_ranking);
+
   const Synth::synth_programt::loopst &old_loops=rhs.loops;
   lhs.loops.resize(old_loops.size());
   std::transform(old_loops.begin(), old_loops.end(), lhs.loops.begin(), fix);
+
   const goto_programt::targetst &old_x0=rhs.x0_choices;
   lhs.x0_choices.resize(old_x0.size());
   std::transform(old_x0.begin(), old_x0.end(), lhs.x0_choices.begin(), fix);
@@ -112,6 +122,8 @@ synth_programt &assign(synth_programt &lhs, const synth_programt &rhs)
   lhs.Ix0=fix(rhs.Ix0);
 
   lhs.Ax=fix(rhs.Ax);
+
+  lhs.synth_ranking = rhs.synth_ranking;
   return lhs;
 }
 }

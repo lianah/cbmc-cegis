@@ -10,10 +10,8 @@
 
 using namespace Synth;
 
-Synth::synth_learn_configt::synth_learn_configt(const Synth::synth_programt &program,
-						bool ranking) :
-  original_program(program),
-  synth_ranking(ranking)
+Synth::synth_learn_configt::synth_learn_configt(const Synth::synth_programt &program) :
+  original_program(program)
 {
 }
 
@@ -55,7 +53,7 @@ void Synth::synth_learn_configt::synth_learn_configt::convert(candidatet &candid
   candidate.synth_programs.clear();
   // LSH FIXME: remove x0 choices because these were part of the counterexample before
   // are these x0 or just the non-det choices for the universal quantifier
-  candidate.x0_choices.clear();
+  // candidate.x0_choices.clear();
   create_synth_solution(candidate, program, trace, var_ids, max_solution_size);
 }
 
@@ -67,9 +65,10 @@ class synth_program_printert
   const goto_programt &body_printer;
   messaget::mstreamt &os;
   size_t func_count;
+  bool ranking;
 public:
   synth_program_printert(const synth_programt &prog, messaget::mstreamt &os) :
-      ns(prog.st), body_printer(get_synth_body(prog.gf)), os(os), func_count(0)
+    ns(prog.st), body_printer(get_synth_body(prog.gf)), os(os), func_count(0), ranking(prog.synth_ranking)
   {
   }
 
@@ -84,8 +83,10 @@ public:
     const synth_program_printert &print=*this;
     os << "Invariant " << func_count << ": " << messaget::endl;
     print(prog.invariant);
-    os << "Ranking " << func_count << ": " << messaget::endl;
-    print(prog.ranking);
+    if (ranking) {
+      os << "Ranking " << func_count << ": " << messaget::endl;
+      print(prog.ranking);
+    }
 
   }
 };
@@ -112,10 +113,11 @@ public:
 void Synth::synth_learn_configt::show_candidate(messaget::mstreamt &os,
     const candidatet &candidate)
 {
-  os << "x0:" << messaget::endl;
-  const candidatet::nondet_choicest &x0=candidate.x0_choices;
-  const expr_printert x0_printer(program, os);
-  std::for_each(x0.begin(), x0.end(), x0_printer);
+  // LSH FIXME: do not need x0
+  // os << "x0:" << messaget::endl;
+  // const candidatet::nondet_choicest &x0=candidate.x0_choices;
+  // const expr_printert x0_printer(program, os);
+  // std::for_each(x0.begin(), x0.end(), x0_printer);
   os << "Programs:" << messaget::endl;
   const candidatet::synth_programst &progs=candidate.synth_programs;
   const synth_program_printert prog_printer(program, os);

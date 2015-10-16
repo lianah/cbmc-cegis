@@ -25,6 +25,7 @@ class synth_preprocessingt
   Synth::synth_programt original_program;
   Synth::synth_programt current_program;
   Synth::constant_strategyt constant_strategy;
+  bool synth_ranking;
 public:
   /**
    * @brief
@@ -35,8 +36,10 @@ public:
    * @param gf
    * @param constant_strategy
    */
-  synth_preprocessingt(const symbol_tablet &st, const goto_functionst &gf,
-      constant_strategyt constant_strategy);
+  synth_preprocessingt(const symbol_tablet &st,
+		       const goto_functionst &gf,
+		       constant_strategyt constant_strategy,
+		       bool ranking);
 
   /**
    * @brief

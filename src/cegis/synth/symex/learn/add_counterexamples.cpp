@@ -154,12 +154,13 @@ void create_constraints(synth_programt &prog)
   pos->source_location=default_synth_source_location();
   pos->guard=create_synth_constraint_strong(prog.loops.size());
 
-  // // ranking
-  pos=body.insert_after(pos);
-  pos->type=goto_program_instruction_typet::ASSUME;
-  pos->source_location=default_synth_source_location();
-  pos->guard=create_synth_constraint_rank(prog.loops.size());
-
+  // ranking
+  if (prog.synth_ranking) {
+    pos=body.insert_after(pos);
+    pos->type=goto_program_instruction_typet::ASSUME;
+    pos->source_location=default_synth_source_location();
+    pos->guard=create_synth_constraint_rank(prog.loops.size());
+  }
 }
 
 void add_final_assertion(synth_programt &prog,

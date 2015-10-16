@@ -5,9 +5,8 @@
 
 using namespace Synth;
 
-Synth::synth_verify_configt::synth_verify_configt(const Synth::synth_programt &program, bool rank) :
-  original_program(program), 
-  synth_ranking(rank)
+Synth::synth_verify_configt::synth_verify_configt(const Synth::synth_programt &program) :
+  original_program(program)
 {
 }
 

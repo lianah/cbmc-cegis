@@ -57,7 +57,8 @@ public:
 }
 
 void Synth::synth_extract_counterexample(counterexamplet &result,
-    const goto_tracet &trace, const goto_programt::targetst &quantifiers)
+					 const goto_tracet &trace,
+					 const goto_programt::targetst &quantifiers)
 {
   result.clear();
   const goto_tracet::stepst &s=trace.steps;
