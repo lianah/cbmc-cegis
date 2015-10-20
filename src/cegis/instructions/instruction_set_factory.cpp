@@ -6,7 +6,7 @@
 #include <cegis/danger/meta/literals.h>
 #include <cegis/danger/util/copy_instructions.h>
 #include <cegis/danger/util/danger_program_helper.h>
-#include <cegis/danger/symex/learn/instruction_set_factory.h>
+#include <cegis/instructions/instruction_set_factory.h>
 
 namespace
 {
@@ -77,14 +77,10 @@ public:
 }
 
 void extract_instruction_set(instruction_sett &instruction_set,
-    const goto_functionst &gf)
+    const goto_programt &body)
 {
-  typedef goto_functionst::function_mapt function_mapt;
-  const function_mapt &function_map=gf.function_map;
-  const function_mapt::const_iterator it=function_map.find(DANGER_EXECUTE);
-  assert(function_map.end() != it);
-  const goto_programt::instructionst &body=it->second.body.instructions;
+  const goto_programt::instructionst &instrs=body.instructions;
   execute_instruction_handlert handler(instruction_set);
-  for (goto_programt::const_targett it=body.begin(); it != body.end(); ++it)
+  for (goto_programt::const_targett it=instrs.begin(); it != instrs.end(); ++it)
     handler(it);
 }

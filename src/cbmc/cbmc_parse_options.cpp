@@ -37,17 +37,7 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <goto-programs/loop_ids.h>
 #include <goto-programs/link_to_library.h>
 
-#include <cegis/symex/cegis_symex_verify.h>
-#include <cegis/symex/cegis_symex_learn.h>
-#include <cegis/danger/constant/default_constant_strategy.h>
-#include <cegis/danger/preprocess/danger_preprocessing.h>
-#include <cegis/danger/symex/verify/danger_verify_config.h>
-#include <cegis/danger/symex/verify/parallel_danger_verifier.h>
-#include <cegis/danger/symex/learn/danger_learn_config.h>
-#include <cegis/statistics/cegis_statistics_wrapper.h>
-#include <cegis/seed/null_seed.h>
-#include <cegis/seed/literals_seed.h>
-#include <cegis/facade/cegis.h>
+#include <cegis/danger/facade/danger_runner.h>
 
 #include <goto-instrument/full_slicer.h>
 
@@ -425,6 +415,28 @@ void cbmc_parse_optionst::get_command_line_options(optionst &options)
 
   if(cmdline.isset("graphml-cex"))
     options.set_option("graphml-cex", cmdline.get_value("graphml-cex"));
+
+  if(cmdline.isset("danger"))
+  {
+#define DANGER_DEFAULT_MAX_PROG_SIZE 100u
+#define DANGER_DEFAULT_GENETIC_ROUNDS 10u
+#define DANGER_MAX_SIZE "danger-max-size"
+#define DANGER_PARALLEL_VERIFY "danger-parallel-verify"
+#define DANGER_STATISTICS "danger-statistics"
+#define DANGER_GENETIC "danger-genetic"
+#define DANGER_GENETIC_ROUNDS "danger-genetic-rounds"
+    size_t max_prog_size=DANGER_DEFAULT_MAX_PROG_SIZE;
+    if (cmdline.isset(DANGER_MAX_SIZE))
+      max_prog_size=string2integer(cmdline.get_value("function")).to_ulong();
+    options.set_option(DANGER_MAX_SIZE, max_prog_size);
+    options.set_option(DANGER_PARALLEL_VERIFY, cmdline.isset(DANGER_PARALLEL_VERIFY));
+    options.set_option(DANGER_STATISTICS, cmdline.isset(DANGER_STATISTICS));
+    options.set_option(DANGER_GENETIC, cmdline.isset(DANGER_GENETIC));
+    size_t genetic_rounds=DANGER_DEFAULT_GENETIC_ROUNDS;
+    if (cmdline.isset(DANGER_GENETIC_ROUNDS))
+      genetic_rounds=string2integer(cmdline.get_value(DANGER_GENETIC_ROUNDS)).to_ulong();
+    options.set_option(DANGER_GENETIC_ROUNDS, genetic_rounds);
+  }
 }
 
 /*******************************************************************\
@@ -542,25 +554,7 @@ int cbmc_parse_optionst::doit()
     return 7;
 
   if(cmdline.isset("danger"))
-  {
-    size_t max_prog_size=100u;
-    if (cmdline.isset("danger-max-size"))
-      max_prog_size=string2integer(cmdline.get_value("function")).to_ulong();
-
-    const constant_strategyt strategy=default_constant_strategy;
-    danger_preprocessingt preproc(symbol_table, goto_functions, strategy);
-    const danger_programt &prog=preproc.get_danger_program();
-    danger_verify_configt verify_config(prog);
-    //cegis_symex_verifyt<danger_verify_configt> verify(options, verify_config);
-    parallel_danger_verifiert verify(options, verify_config);
-    danger_learn_configt learn_config(prog);
-    cegis_symex_learnt<danger_learn_configt> learn(options, learn_config);
-    cegis_statistics_wrappert<cegis_symex_learnt<danger_learn_configt>, parallel_danger_verifiert, mstreamt> stat(learn, verify, result());
-    //cegis_statistics_wrappert<cegis_symex_learnt<danger_learn_configt>, cegis_symex_verifyt<danger_verify_configt>, mstreamt> stat(learn, verify, result());
-    //danger_literals_seedt seed(prog);
-    null_seedt seed;
-    return run_cegis(stat, stat, preproc, seed, max_prog_size, result());
-  }
+    return run_danger(options, result(), symbol_table, goto_functions);
 
   // do actual BMC
   return do_bmc(bmc, goto_functions);

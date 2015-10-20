@@ -11,7 +11,8 @@ Author: Daniel Kroening, kroening@kroening.com
 #define CEGIS_GENETIC_INSTRUCTION_SET_INFO_FACTORY_H_
 
 #include <functional>
-#include <cegis/genetic/tournament_select.h>
+
+typedef std::map<size_t, size_t> instruction_set_infot;
 
 /**
  * @brief
@@ -21,7 +22,7 @@ Author: Daniel Kroening, kroening@kroening.com
 class instruction_set_info_factoryt
 {
   std::function<const class goto_programt &()> body_provider;
-  tournament_selectt::instruction_set_infot info;
+  instruction_set_infot info;
 public:
   /**
    * @brief
@@ -57,7 +58,7 @@ public:
    *
    * @return
    */
-  const tournament_selectt::instruction_set_infot &get_info() const;
+  const instruction_set_infot &get_info();
 };
 
 #include "instruction_set_info_factory.inc"

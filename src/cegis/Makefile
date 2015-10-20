@@ -1,6 +1,6 @@
 SRC = danger/util/danger_program_helper.cpp danger/util/copy_instructions.cpp \
       danger/meta/meta_variable_names.cpp danger/instrument/meta_variables.cpp \
-      danger/options/danger_program.cpp \
+      danger/facade/danger_runner.cpp danger/options/danger_program.cpp \
       danger/constraint/danger_constraint_factory.cpp \
       danger/constant/add_constant.cpp danger/constant/default_constant_strategy.cpp \
       danger/constant/literals_constant_strategy.cpp \
@@ -9,7 +9,7 @@ SRC = danger/util/danger_program_helper.cpp danger/util/copy_instructions.cpp \
       danger/symex/learn/danger_library.cpp danger/symex/learn/add_variable_refs.cpp \
       danger/symex/learn/add_counterexamples.cpp danger/symex/learn/add_programs_to_learn.cpp \
       danger/symex/learn/replace_operators.cpp danger/symex/learn/solution_factory.cpp \
-      danger/symex/learn/read_x0.cpp danger/symex/learn/instruction_set_factory.cpp \
+      danger/symex/learn/read_x0.cpp \
       danger/symex/learn/add_x0_placeholders.cpp danger/symex/learn/danger_learn_config.cpp \
       danger/symex/learn/danger_body_provider.cpp \
       danger/symex/verify/insert_candidate.cpp danger/symex/verify/insert_constraint.cpp \
@@ -17,7 +17,8 @@ SRC = danger/util/danger_program_helper.cpp danger/util/copy_instructions.cpp \
       danger/symex/verify/danger_verify_config.cpp danger/symex/verify/parallel_danger_verifier.cpp \
       danger/symex/verify/parallel_danger_verify_task.cpp danger/symex/verify/irep_pipe.cpp \
       seed/null_seed.cpp seed/literals_seed.cpp \
-      genetic/individual.cpp genetic/tournament_select.cpp genetic/instruction_set_info_factory.cpp
+      genetic/individual.cpp genetic/tournament_select.cpp genetic/instruction_set_info_factory.cpp \
+      instructions/instruction_set_factory.cpp
 
 INCLUDES= -I ..
 

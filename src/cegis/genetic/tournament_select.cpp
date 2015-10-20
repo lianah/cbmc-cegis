@@ -2,15 +2,19 @@
 #include <cstdlib>
 #include <cassert>
 
+#include <util/std_types.h>
+#include <util/bv_arithmetic.h>
+
 #include <cegis/genetic/tournament_select.h>
 
 #define DEFAULT_TOURNAMENT_ROUNDS 10u
 
 tournament_selectt::tournament_selectt(
-    const instruction_set_infot &instruction_set_info, size_t num_progs,
-    size_t max_prog_size, size_t num_vars) :
-    instruction_set_info(instruction_set_info), num_progs(num_progs), max_prog_size(
-        max_prog_size), num_vars(num_vars), rounds(DEFAULT_TOURNAMENT_ROUNDS)
+    const instruction_set_info_factoryt &instruction_set_info,
+    const size_t num_progs, const size_t max_prog_size,
+    const std::function<size_t(void)> &num_vars, const size_t rounds) :
+    info_factory(instruction_set_info), num_progs(num_progs), max_prog_size(
+        max_prog_size), num_vars(num_vars), rounds(rounds)
 {
 }
 
@@ -18,10 +22,38 @@ tournament_selectt::~tournament_selectt()
 {
 }
 
+namespace
+{
+unsigned int rand_x0(const size_t width)
+{
+  unsignedbv_typet type(width);
+  type.set(ID_C_c_type, ID_signed_int);
+  const unsigned int wordmask=bv_spect(type).max_value().to_ulong();
+  const unsigned int r=rand() % 6u;
+  switch (r)
+  {
+  case 0:
+    return 0;
+  case 1:
+    return 1;
+  case 2:
+    return wordmask;
+  case 3:
+    return 1 << (width - 1);
+  case 4:
+    return (1 << (width - 1)) - 1;
+  case 5:
+    return rand();
+  }
+}
+}
+
 void tournament_selectt::init(populationt &pop)
 {
   const size_t prog_size_limit=max_prog_size + 1;
-  const size_t opcode_limit=instruction_set_info.size() + 1;
+  const instruction_set_infot &info=info_factory.get_info();
+  const size_t opcode_limit=info.size() + 1;
+  const size_t num_vars=this->num_vars();
   for (program_individualt &ind : pop)
   {
     program_individualt::programst &progs=ind.programs;
@@ -34,14 +66,16 @@ void tournament_selectt::init(populationt &pop)
       {
         program_individualt::instructiont &instr=prog[i];
         instr.opcode=rand() % opcode_limit;
-        const instruction_set_infot::const_iterator num_ops=
-            instruction_set_info.find(instr.opcode);
-        assert(instruction_set_info.end() != num_ops);
+        const instruction_set_infot::const_iterator num_ops=info.find(
+            instr.opcode);
+        assert(info.end() != num_ops);
         instr.ops.resize(num_ops->second);
         for (program_individualt::instructiont::opt &op : instr.ops)
           op=rand() % (num_vars + i);
       }
     }
+    // TODO: Provide num_x0
+    //for (program_individualt::nondet_choices::value_type &x0 : ind.x0)
   }
 }
 

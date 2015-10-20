@@ -24,7 +24,6 @@ template<class learnt, class verifyt, class mstreamt>
 const typename cegis_statistics_wrappert<learnt, verifyt, mstreamt>::candidatet &cegis_statistics_wrappert<
     learnt, verifyt, mstreamt>::next_candidate() const
 {
-  show_candidate(os);
   return learner.next_candidate();
 }
 

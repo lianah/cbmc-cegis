@@ -61,9 +61,11 @@ public:
 
   typedef std::vector<instructiont> programt;
   typedef std::vector<programt> programst;
+  typedef std::vector<unsigned int> nondet_choices;
   typedef size_t fitnesst;
 
   programst programs;
+  nondet_choices x0;
   fitnesst fitness;
 };
 

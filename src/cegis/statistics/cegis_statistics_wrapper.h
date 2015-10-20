@@ -33,7 +33,6 @@ class cegis_statistics_wrappert
   std::chrono::high_resolution_clock::time_point start_time;
 public:
   typedef typename learnt::counterexamplet counterexamplet;
-  typedef typename learnt::counterexamplest counterexamplest;
   typedef typename learnt::candidatet candidatet;
   typedef typename verifyt::const_iterator const_iterator;
 

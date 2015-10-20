@@ -5,6 +5,7 @@
 #include <goto-programs/goto_trace.h>
 #include <goto-programs/goto_functions.h>
 
+#include <cegis/instructions/instruction_set_factory.h>
 #include <cegis/danger/meta/literals.h>
 #include <cegis/danger/meta/meta_variable_names.h>
 #include <cegis/danger/instrument/meta_variables.h>
@@ -12,7 +13,6 @@
 #include <cegis/danger/options/danger_program.h>
 #include <cegis/danger/util/copy_instructions.h>
 #include <cegis/danger/util/danger_program_helper.h>
-#include <cegis/danger/symex/learn/instruction_set_factory.h>
 #include <cegis/danger/symex/learn/replace_operators.h>
 #include <cegis/danger/symex/learn/solution_factory.h>
 #include <cegis/danger/symex/learn/read_x0.h>
@@ -203,6 +203,16 @@ void extract_programs(danger_goto_solutiont::danger_programst &progs,
 {
   const extract_programt extract(progs, prog, names, instrset, max_size);
   std::for_each(trace.steps.begin(), trace.steps.end(), extract);
+}
+
+void extract_instruction_set(instruction_sett &instr_set,
+    const goto_functionst &gf)
+{
+  typedef goto_functionst::function_mapt function_mapt;
+  const function_mapt &function_map=gf.function_map;
+  const function_mapt::const_iterator it=function_map.find(DANGER_EXECUTE);
+  assert(function_map.end() != it);
+  extract_instruction_set(instr_set, it->second.body);
 }
 }
 

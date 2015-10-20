@@ -3,9 +3,9 @@
  Module: Counterexample-Guided Inductive Synthesis
 
  Author: Daniel Kroening, kroening@kroening.com
-         Pascal Kesseli, pascal.kesseil@cs.ox.ac.uk
+ Pascal Kesseli, pascal.kesseil@cs.ox.ac.uk
 
-\*******************************************************************/
+ \*******************************************************************/
 
 #ifndef CEGIS_GENETIC_TOURNAMENT_SELECT_H_
 #define CEGIS_GENETIC_TOURNAMENT_SELECT_H_
@@ -15,6 +15,7 @@
 #include <map>
 
 #include <cegis/genetic/individual.h>
+#include <cegis/genetic/instruction_set_info_factory.h>
 
 #define CEGIS_TOURNAMENT_POPULATION_SIZE 2000
 
@@ -25,13 +26,11 @@
  */
 class tournament_selectt
 {
-public:
-  typedef std::map<program_individualt::instructiont::opcodet, size_t> instruction_set_infot;
 private:
-  const instruction_set_infot instruction_set_info;
+  instruction_set_info_factoryt info_factory;
   const size_t num_progs;
   const size_t max_prog_size;
-  const size_t num_vars;
+  std::function<size_t(void)> num_vars;
   const size_t rounds;
 public:
   typedef std::array<program_individualt, CEGIS_TOURNAMENT_POPULATION_SIZE> populationt;
@@ -46,9 +45,11 @@ public:
    * @param num_progs
    * @param max_prog_size
    * @param num_vars
+   * @param rounds
    */
-  tournament_selectt(const instruction_set_infot &instruction_set_info,
-      size_t num_progs, size_t max_prog_size, size_t num_vars);
+  tournament_selectt(const instruction_set_info_factoryt &instruction_set_info,
+      size_t num_progs, size_t max_prog_size,
+      const std::function<size_t(void)> &num_vars, size_t rounds);
 
   /**
    * @brief
