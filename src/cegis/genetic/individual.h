@@ -11,6 +11,7 @@ Author: Daniel Kroening, kroening@kroening.com
 #define CEGIS_GENETIC_INDIVIDUAL_H_
 
 #include <cstddef>
+#include <deque>
 #include <vector>
 
 /**
@@ -68,5 +69,7 @@ public:
   nondet_choices x0;
   fitnesst fitness;
 };
+
+typedef std::deque<program_individualt> program_populationt;
 
 #endif /* CEGIS_GENETIC_INDIVIDUAL_H_ */

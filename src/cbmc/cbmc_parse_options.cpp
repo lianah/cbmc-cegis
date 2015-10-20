@@ -418,13 +418,21 @@ void cbmc_parse_optionst::get_command_line_options(optionst &options)
 
   if(cmdline.isset("danger"))
   {
+#define CEGIS_DEFAULT_SEED 747864937u
+#define CEGIS_SEED "cegis-seed"
 #define DANGER_DEFAULT_MAX_PROG_SIZE 100u
 #define DANGER_DEFAULT_GENETIC_ROUNDS 10u
-#define DANGER_MAX_SIZE "danger-max-size"
-#define DANGER_PARALLEL_VERIFY "danger-parallel-verify"
-#define DANGER_STATISTICS "danger-statistics"
-#define DANGER_GENETIC "danger-genetic"
-#define DANGER_GENETIC_ROUNDS "danger-genetic-rounds"
+#define DANGER_DEFAULT_GENETIC_POP_SIZE 2000u
+#define DANGER_DEFAULT_GENETIC_MUTATION_RATE 1
+#define DANGER_DEFAULT_GENETIC_REPLACE_RATE 15
+#define DANGER_MAX_SIZE "cegis-max-size"
+#define DANGER_PARALLEL_VERIFY "cegis-parallel-verify"
+#define DANGER_STATISTICS "cegis-statistics"
+#define DANGER_GENETIC "cegis-genetic"
+#define DANGER_GENETIC_ROUNDS "cegis-genetic-rounds"
+#define DANGER_GENETIC_POPSIZE "cegis-genetic-popsize"
+#define DANGER_GENETIC_MUTATION_RATE "cegis-genetic-mutation-rate"
+#define DANGER_GENETIC_REPLACE_RATE "cegis-genetic-replace-rate"
     size_t max_prog_size=DANGER_DEFAULT_MAX_PROG_SIZE;
     if (cmdline.isset(DANGER_MAX_SIZE))
       max_prog_size=string2integer(cmdline.get_value("function")).to_ulong();
@@ -436,6 +444,22 @@ void cbmc_parse_optionst::get_command_line_options(optionst &options)
     if (cmdline.isset(DANGER_GENETIC_ROUNDS))
       genetic_rounds=string2integer(cmdline.get_value(DANGER_GENETIC_ROUNDS)).to_ulong();
     options.set_option(DANGER_GENETIC_ROUNDS, genetic_rounds);
+    unsigned int seed=CEGIS_DEFAULT_SEED;
+    if (cmdline.isset(CEGIS_SEED))
+      seed=string2integer(cmdline.get_value(CEGIS_SEED)).to_ulong();
+    options.set_option(CEGIS_SEED, seed);
+    unsigned int pop_size=DANGER_DEFAULT_GENETIC_POP_SIZE;
+    if (cmdline.isset(DANGER_GENETIC_POPSIZE))
+      pop_size=string2integer(cmdline.get_value(DANGER_GENETIC_POPSIZE)).to_ulong();
+    options.set_option(DANGER_GENETIC_POPSIZE, pop_size);
+    unsigned int mutation_rate=DANGER_DEFAULT_GENETIC_MUTATION_RATE;
+    if (cmdline.isset(DANGER_GENETIC_MUTATION_RATE))
+      mutation_rate=string2integer(cmdline.get_value(DANGER_GENETIC_MUTATION_RATE)).to_ulong();
+    options.set_option(DANGER_GENETIC_MUTATION_RATE, mutation_rate);
+    unsigned int replace_rate=DANGER_DEFAULT_GENETIC_REPLACE_RATE;
+    if (cmdline.isset(DANGER_GENETIC_REPLACE_RATE))
+      replace_rate=string2integer(cmdline.get_value(DANGER_GENETIC_REPLACE_RATE)).to_ulong();
+    options.set_option(DANGER_GENETIC_REPLACE_RATE, replace_rate);
   }
 }
 

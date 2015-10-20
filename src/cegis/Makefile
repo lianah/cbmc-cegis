@@ -18,6 +18,8 @@ SRC = danger/util/danger_program_helper.cpp danger/util/copy_instructions.cpp \
       danger/symex/verify/parallel_danger_verify_task.cpp danger/symex/verify/irep_pipe.cpp \
       seed/null_seed.cpp seed/literals_seed.cpp \
       genetic/individual.cpp genetic/tournament_select.cpp genetic/instruction_set_info_factory.cpp \
+      genetic/random_mutate.cpp genetic/random_cross.cpp genetic/program_individual_convert.cpp \
+      genetic/symex_fitness.cpp \
       instructions/instruction_set_factory.cpp
 
 INCLUDES= -I ..

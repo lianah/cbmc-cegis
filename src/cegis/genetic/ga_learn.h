@@ -26,12 +26,13 @@ public:
   typedef typename selectt::populationt populationt;
   typedef typename selectt::selectiont selectiont;
 private:
+  const class optionst &options;
   selectt &select;
   mutatet &mutate;
   crosst &cross;
   fitnesst &fitness;
   convertt &convert;
-  populationt population;
+  populationt pop;
   selectiont selection;
   candidatet current_candidate;
 public:
@@ -40,14 +41,15 @@ public:
    *
    * @details
    *
+   * @param options
    * @param select
    * @param mutate
    * @param cross
    * @param fitness
    * @param convert
    */
-  ga_learnt(selectt &select, mutatet &mutate, crosst &cross, fitnesst &fitness,
-      convertt &convert);
+  ga_learnt(const optionst &options, selectt &select, mutatet &mutate,
+      crosst &cross, fitnesst &fitness, convertt &convert);
 
   /**
    * @brief
