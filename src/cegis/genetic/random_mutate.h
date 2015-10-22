@@ -19,6 +19,8 @@
  */
 class random_mutatet
 {
+  class random_individualt &random;
+  const std::function<size_t(void)> num_consts;
 public:
   typedef program_individualt individualt;
 
@@ -26,8 +28,12 @@ public:
    * @brief
    *
    * @details
+   *
+   * @param random
+   * @param num_consts
    */
-  random_mutatet();
+  random_mutatet(random_individualt &random,
+      const std::function<size_t(void)> &num_consts);
 
   /**
    * @brief

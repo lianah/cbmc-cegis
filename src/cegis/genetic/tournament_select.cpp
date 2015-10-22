@@ -1,10 +1,7 @@
 #include <algorithm>
 #include <cstdlib>
-#include <cassert>
 
-#include <util/std_types.h>
-#include <util/bv_arithmetic.h>
-
+#include <cegis/genetic/random_individual.h>
 #include <cegis/genetic/tournament_select.h>
 
 #define MUTATION_OPS 2u
@@ -53,16 +50,9 @@ const tournament_selectt::couplest &tournament_selectt::selectiont::get_couples(
   return couples;
 }
 
-tournament_selectt::tournament_selectt(
-    const instruction_set_info_factoryt &instruction_set_info,
-    const size_t pop_size, const size_t num_progs,
-    const std::function<size_t(void)> &initial_max_prog_size,
-    const std::function<size_t(void)> &num_vars,
-    const std::function<size_t(void)> &num_x0, const size_t rounds,
-    const typet &type) :
-    info_factory(instruction_set_info), pop_size(pop_size), num_progs(
-        num_progs), initial_max_prog_size(initial_max_prog_size), num_vars(
-        num_vars), num_x0(num_x0), rounds(rounds), type(type)
+tournament_selectt::tournament_selectt(random_individualt &random,
+    size_t pop_size, size_t rounds) :
+    random(random), pop_size(pop_size), rounds(rounds)
 {
 }
 
@@ -70,66 +60,11 @@ tournament_selectt::~tournament_selectt()
 {
 }
 
-namespace
-{
-unsigned int rand_x0(const size_t width)
-{
-  unsignedbv_typet type(width);
-  type.set(ID_C_c_type, ID_signed_int);
-  const unsigned int wordmask=bv_spect(type).max_value().to_ulong();
-  const unsigned int r=rand() % 6u;
-  switch (r)
-  {
-  case 0:
-    return 0;
-  case 1:
-    return 1;
-  case 2:
-    return wordmask;
-  case 3:
-    return 1 << (width - 1);
-  case 4:
-    return (1 << (width - 1)) - 1;
-  default:
-    return rand();
-  }
-}
-}
-
 void tournament_selectt::init(populationt &pop)
 {
   pop.resize(pop_size);
-  const size_t max_prog_size=initial_max_prog_size();
-  const size_t prog_size_limit=max_prog_size + 1;
-  const instruction_set_infot &info=info_factory.get_info();
-  const size_t opcode_limit=info.size() + 1;
-  const size_t num_vars=this->num_vars();
-  const size_t num_x0=this->num_x0();
-  const size_t width=bv_spect(type).width;
   for (program_individualt &ind : pop)
-  {
-    program_individualt::programst &progs=ind.programs;
-    progs.resize(num_progs);
-    for (program_individualt::programt &prog : progs)
-    {
-      const size_t prog_size=rand() % prog_size_limit;
-      prog.resize(prog_size);
-      for (size_t i=0; i < prog.size(); ++i)
-      {
-        program_individualt::instructiont &instr=prog[i];
-        instr.opcode=rand() % opcode_limit;
-        const instruction_set_infot::const_iterator num_ops=info.find(
-            instr.opcode);
-        assert(info.end() != num_ops);
-        instr.ops.resize(num_ops->second);
-        for (program_individualt::instructiont::opt &op : instr.ops)
-          op=rand() % (num_vars + i);
-      }
-    }
-    ind.x0.resize(num_x0);
-    for (program_individualt::nondet_choices::value_type &x0 : ind.x0)
-      x0=rand_x0(width);
-  }
+    random.havoc(ind);
 }
 
 namespace

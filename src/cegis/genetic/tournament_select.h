@@ -3,9 +3,9 @@
  Module: Counterexample-Guided Inductive Synthesis
 
  Author: Daniel Kroening, kroening@kroening.com
- Pascal Kesseli, pascal.kesseil@cs.ox.ac.uk
+         Pascal Kesseli, pascal.kesseil@cs.ox.ac.uk
 
- \*******************************************************************/
+\*******************************************************************/
 
 #ifndef CEGIS_GENETIC_TOURNAMENT_SELECT_H_
 #define CEGIS_GENETIC_TOURNAMENT_SELECT_H_
@@ -23,14 +23,9 @@
 class tournament_selectt
 {
 private:
-  instruction_set_info_factoryt info_factory;
+  class random_individualt &random;
   const size_t pop_size;
-  const size_t num_progs;
-  const std::function<size_t(void)> initial_max_prog_size;
-  const std::function<size_t(void)> num_vars;
-  const std::function<size_t(void)> num_x0;
   const size_t rounds;
-  const typet type;
 public:
   typedef program_populationt populationt;
   typedef populationt::value_type individualt;
@@ -54,20 +49,12 @@ public:
    *
    * @details
    *
-   * @param instruction_set_info
+   * @param random
    * @param pop_size
-   * @param num_progs
-   * @param initial_max_prog_size
-   * @param num_vars
-   * @param num_x0
    * @param rounds
    */
-  tournament_selectt(const instruction_set_info_factoryt &instruction_set_info,
-      size_t pop_size, size_t num_progs,
-      const std::function<size_t(void)> &initial_max_prog_size,
-      const std::function<size_t(void)> &num_vars,
-      const std::function<size_t(void)> &num_x0, size_t rounds,
-      const typet &type);
+  tournament_selectt(random_individualt &random, size_t pop_size,
+      size_t rounds);
 
   /**
    * @brief

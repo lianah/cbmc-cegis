@@ -10,6 +10,7 @@ Author: Daniel Kroening, kroening@kroening.com
 #ifndef CEGIS_GENETIC_INSTRUCTION_SET_INFO_FACTORY_H_
 #define CEGIS_GENETIC_INSTRUCTION_SET_INFO_FACTORY_H_
 
+#include <map>
 #include <functional>
 
 typedef std::map<size_t, size_t> instruction_set_infot;

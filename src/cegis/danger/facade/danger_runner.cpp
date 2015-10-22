@@ -5,6 +5,7 @@
 
 #include <cegis/facade/cegis.h>
 #include <cegis/genetic/ga_learn.h>
+#include <cegis/genetic/random_individual.h>
 #include <cegis/genetic/tournament_select.h>
 #include <cegis/genetic/instruction_set_info_factory.h>
 #include <cegis/genetic/random_mutate.h>
@@ -64,31 +65,53 @@ int run_parallel(mstreamt &os, const optionst &options,
   return run_statistics(os, options, learn, verify, preproc);
 }
 
-#define DANGER_GENETIC "cegis-genetic"
-
-class fitnesst
+namespace
 {
-public:
-  typedef std::map<const irep_idt, exprt> counterexamplet;
+class variable_counter_helper
+{
+  const danger_programt &prog;
+  bool counted;
+  size_t num_vars;
+  size_t num_consts;
 
-  template<class seedt>
-  void seed(seedt &seed)
+  const size_t &count(size_t &value)
+  {
+    if (!counted)
+    {
+      danger_variable_idst ids;
+      num_consts=get_danger_variable_ids(prog.st, ids);
+      num_vars=ids.size();
+    }
+    return value;
+  }
+public:
+  variable_counter_helper(const danger_programt &prog) :
+      prog(prog), counted(false), num_vars(0), num_consts(0)
   {
   }
 
-  void add_test_case(const counterexamplet &ce)
+  size_t get_num_vars()
   {
+    return count(num_vars);
+  }
+
+  size_t get_num_consts()
+  {
+    return count(num_consts);
   }
 };
+}
 
 template<class preproct>
 int run_genetic(mstreamt &os, const optionst &opt, const danger_programt &prog,
     preproct &preproc)
 {
-  if (opt.get_bool_option(DANGER_GENETIC))
+  if (opt.get_bool_option("cegis-genetic"))
   {
+    // Danger program properties and GA settings
+    const unsigned int seed=opt.get_unsigned_int_option("cegis-seed");
     const danger_body_providert body(prog);
-    instruction_set_info_factoryt info_factory(body);
+    instruction_set_info_factoryt info_fac(body);
     const size_t pop_size=opt.get_unsigned_int_option("cegis-genetic-popsize");
     const size_t num_progs=prog.loops.size() * 3u;
     const std::function<size_t(void)> initial_prog_size=[&preproc]()
@@ -97,20 +120,19 @@ int run_genetic(mstreamt &os, const optionst &opt, const danger_programt &prog,
     };
     opt.get_unsigned_int_option(DANGER_MAX_SIZE);
     const size_t rounds=opt.get_unsigned_int_option("cegis-genetic-rounds");
-    const std::function<size_t(void)> num_vars=[&prog]()
-    {
-      danger_variable_idst ids;
-      get_danger_variable_ids(prog.st, ids);
-      return ids.size();
-    };
+    variable_counter_helper counter(prog);
+    const std::function<size_t(void)> num_vars=[&counter]()
+    { return counter.get_num_vars();};
+    const std::function<size_t(void)> num_consts=[&counter]()
+    { return counter.get_num_consts();};
     const std::function<size_t(void)> num_x0=[&prog]()
-    {
-      return prog.x0_choices.size();
-    };
+    { return prog.x0_choices.size();};
+
+    // Set-up genetic algorithm
     const typet type=danger_meta_type(); // XXX: Currently single user data type.
-    tournament_selectt select(info_factory, pop_size, num_progs,
-        initial_prog_size, num_vars, num_x0, rounds, type);
-    random_mutatet mutate;
+    random_individualt rnd(seed, type, info_fac, num_progs, num_vars, num_x0);
+    tournament_selectt select(rnd, pop_size, rounds);
+    random_mutatet mutate(rnd, num_consts);
     random_crosst cross;
     symex_fitnesst fitness;
     program_individual_convertt convert;

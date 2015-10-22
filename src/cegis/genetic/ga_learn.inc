@@ -72,7 +72,7 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
   for (; first != last; ++first)
     fitness.add_test_case(*first);
   const typename fitnesst::populationt::const_iterator it=fitness.init(pop);
-  if (pop.end() != it) current_candidate; // TODO: Convert using convertt
+  if (pop.end() != it) convert.convert(current_candidate, *it);
 
   typedef typename selectt::individualt::fitnesst target_fitnesst;
   const target_fitnesst target_fitness=fitness.get_target_fitness();
@@ -88,8 +88,7 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
     } else if (should_replace(options))
     {
       // TODO: Get random solution from selectt
-    }
-    else
+    } else
     {
       if (!selection.can_cross()) return false;
       const typename selectt::couplest &couples=selection.get_couples();

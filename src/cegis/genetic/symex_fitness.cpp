@@ -28,7 +28,7 @@ symex_fitnesst::populationt::const_iterator symex_fitnesst::init(
 
 void symex_fitnesst::set_fitness(individualt &individual) const
 {
-// TODO: Set fitness
+  // TODO: execute each test case. fitness=sum of successful runs
 }
 
 symex_fitnesst::individualt::fitnesst symex_fitnesst::get_target_fitness() const
