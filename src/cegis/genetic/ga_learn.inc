@@ -87,7 +87,7 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
       mutate(selection.mutation_lhs(), selection.mutation_rhs());
     } else if (should_replace(options))
     {
-      // TODO: Get random solution from selectt
+      mutate.havoc(*selection.children.back());
     } else
     {
       if (!selection.can_cross()) return false;

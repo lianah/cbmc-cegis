@@ -60,6 +60,15 @@ public:
    * @param rhs
    */
   void operator()(individualt &lhs, const individualt &rhs) const;
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @param lhs
+   */
+  void havoc(individualt &ind) const;
 };
 
 #endif /* CEGIS_GENETIC_RANDOM_MUTATE_H_ */

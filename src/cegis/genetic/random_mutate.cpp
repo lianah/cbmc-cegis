@@ -70,3 +70,8 @@ void random_mutatet::operator()(individualt &lhs, const individualt &rhs) const
     }
   }
 }
+
+void random_mutatet::havoc(individualt &ind) const
+{
+  random.havoc(ind);
+}
