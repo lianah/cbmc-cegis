@@ -81,6 +81,7 @@ class variable_counter_helper
       danger_variable_idst ids;
       num_consts=get_danger_variable_ids(prog.st, ids);
       num_vars=ids.size();
+      counted=true;
     }
     return value;
   }
