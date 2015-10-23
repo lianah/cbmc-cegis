@@ -13,15 +13,16 @@ random_mutatet::~random_mutatet()
 
 void random_mutatet::set_max_solution_size(const size_t size)
 {
+  random.set_max_prog_size(size);
 }
 
 namespace
 {
 void mutate_opcode(random_mutatet::individualt::instructiont &instr,
-    random_individualt &rand)
+    random_individualt &rand, const size_t index)
 {
   const random_mutatet::individualt::instructiont::opst old_ops=instr.ops;
-  rand.havoc(instr);
+  rand.havoc(instr, index);
   random_mutatet::individualt::instructiont::opst &new_ops=instr.ops;
   const size_t size=std::min(old_ops.size(), new_ops.size());
   for (size_t i=0; i < size; ++i)
@@ -54,14 +55,15 @@ void random_mutatet::operator()(individualt &lhs, const individualt &rhs) const
   mutation_target-=num_x0;
   for (individualt::programt &prog : lhs.programs)
   {
-    for (individualt::instructiont &instr : prog)
+    for (size_t i=0; i < prog.size(); ++i)
     {
-      if (!mutation_target) return mutate_opcode(instr, random);
+      individualt::instructiont &instr=prog[i];
+      if (!mutation_target) return mutate_opcode(instr, random, i);
       --mutation_target;
       const size_t length=instr.ops.size();
       if (num_x0 < length)
       {
-        instr.ops[mutation_target]=random.op();
+        instr.ops[mutation_target]=random.op(i);
         return;
       }
       mutation_target-=length;

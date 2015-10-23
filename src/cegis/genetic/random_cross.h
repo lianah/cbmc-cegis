@@ -19,16 +19,21 @@
  */
 class random_crosst
 {
+  class random_individualt &random;
+  size_t max_prog_sz;
 public:
   typedef program_populationt populationt;
   typedef std::deque<populationt::iterator> individualst;
+  typedef populationt::value_type::programt programt;
 
   /**
    * @brief
    *
    * @details
+   *
+   * @param random
    */
-  random_crosst();
+  random_crosst(random_individualt &random);
 
   /**
    * @brief
@@ -51,9 +56,10 @@ public:
    *
    * @details
    *
-   * @param couple
+   * @param parents
+   * @param children
    */
-  void operator()(const individualst &couple);
+  void operator()(const individualst &parents, const individualst &children);
 };
 
 #endif /* CEGIS_GENETIC_RANDOM_CROSS_H_ */

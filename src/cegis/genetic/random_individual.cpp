@@ -40,12 +40,14 @@ program_individualt::instructiont::opcodet random_individualt::opcode() const
 }
 
 // XXX: Symmetry breaking?
-program_individualt::instructiont::opt random_individualt::op() const
+program_individualt::instructiont::opt random_individualt::op(
+    const size_t instr_index) const
 {
-  return rand() % vars_limit;
+  return rand() % (vars_limit + instr_index);
 }
 
-void random_individualt::havoc(program_individualt::instructiont &instr)
+void random_individualt::havoc(program_individualt::instructiont &instr,
+    const size_t index)
 {
   instr.opcode=opcode();
   const instruction_set_infot &info=info_factory.get_info();
@@ -53,15 +55,15 @@ void random_individualt::havoc(program_individualt::instructiont &instr)
   assert(info.end() != num_ops);
   instr.ops.resize(num_ops->second);
   for (program_individualt::instructiont::opt &o : instr.ops)
-    o=op();
+    o=op(index);
 }
 
 void random_individualt::havoc(program_individualt::programt &prog)
 {
   const size_t prog_size=rand() % prog_size_limit;
   prog.resize(prog_size);
-  for (program_individualt::instructiont &instr : prog)
-    havoc(instr);
+  for (size_t i=0; i < prog.size(); ++i)
+    havoc(prog[i], i);
 }
 
 program_individualt::nondet_choices::value_type random_individualt::x0() const
@@ -106,4 +108,9 @@ void random_individualt::havoc(program_individualt &ind)
 unsigned int random_individualt::rand() const
 {
   return rand();
+}
+
+size_t random_individualt::get_num_vars() const
+{
+  return vars_limit - 1;
 }

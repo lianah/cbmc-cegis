@@ -91,9 +91,7 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
     } else
     {
       if (!selection.can_cross()) return false;
-      const typename selectt::couplest &couples=selection.get_couples();
-      for (const typename selectt::couplet &couple : couples)
-        cross(couple);
+      cross(selection.get_parents(), selection.get_children());
     }
 
     // TODO: Recheck fitness of selection.

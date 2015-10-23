@@ -115,9 +115,7 @@ int run_genetic(mstreamt &os, const optionst &opt, const danger_programt &prog,
     const size_t pop_size=opt.get_unsigned_int_option("cegis-genetic-popsize");
     const size_t num_progs=prog.loops.size() * 3u;
     const std::function<size_t(void)> initial_prog_size=[&preproc]()
-    {
-      return preproc.get_min_solution_size();
-    };
+    { return preproc.get_min_solution_size();};
     opt.get_unsigned_int_option(DANGER_MAX_SIZE);
     const size_t rounds=opt.get_unsigned_int_option("cegis-genetic-rounds");
     variable_counter_helper counter(prog);
@@ -133,7 +131,7 @@ int run_genetic(mstreamt &os, const optionst &opt, const danger_programt &prog,
     random_individualt rnd(seed, type, info_fac, num_progs, num_vars, num_x0);
     tournament_selectt select(rnd, pop_size, rounds);
     random_mutatet mutate(rnd, num_consts);
-    random_crosst cross;
+    random_crosst cross(rnd);
     symex_fitnesst fitness;
     program_individual_convertt convert;
     ga_learnt<tournament_selectt, random_mutatet, random_crosst, symex_fitnesst,

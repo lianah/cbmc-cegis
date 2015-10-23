@@ -8,46 +8,35 @@
 
 bool tournament_selectt::selectiont::can_mutate() const
 {
-  if (couples.empty()) return false;
-  return couples.front().size() >= MUTATION_OPS;
+  return parents.size() >= MUTATION_OPS;
 }
 
 #define NUM_PARENTS 2u
+#define NUM_CHILDREN 2u
 
 bool tournament_selectt::selectiont::can_cross() const
 {
-  if (couples.empty()) return false;
-  for (const couplet &couple : couples)
-    if (NUM_PARENTS > couple.size()) return false;
-  return true;
+  return parents.size() >= NUM_PARENTS && children.size() >= NUM_CHILDREN;
 }
 
 tournament_selectt::individualt &tournament_selectt::selectiont::mutation_lhs()
 {
-  return *couples.front().front();
+  return *parents[1];
 }
 
 const tournament_selectt::individualt &tournament_selectt::selectiont::mutation_rhs() const
 {
-  return *couples.front()[1u];
+  return *parents.front();
 }
 
-void tournament_selectt::selectiont::push_back(
-    const tournament_selectt::populationt::iterator &individual)
+const tournament_selectt::individualst &tournament_selectt::selectiont::get_parents() const
 {
-  for (couplet &couple : couples)
-    if (NUM_PARENTS > couple.size())
-    {
-      couple.push_back(individual);
-      return;
-    }
-  const couplet new_couple(1u, individual);
-  couples.push_back(new_couple);
+  return parents;
 }
 
-const tournament_selectt::couplest &tournament_selectt::selectiont::get_couples() const
+const tournament_selectt::individualst &tournament_selectt::selectiont::get_children() const
 {
-  return couples;
+  return children;
 }
 
 tournament_selectt::tournament_selectt(random_individualt &random,
@@ -157,14 +146,22 @@ public:
     return true;
   }
 
+  tournament_selectt::individualst &get_container(
+      tournament_selectt::selectiont &selection)
+  {
+    const size_t count=fight_count % 4;
+    if (count == 0 || count == 1) return selection.parents;
+    return selection.children;
+  }
+
   void select(tournament_selectt::selectiont &selection)
   {
     fight_count=0;
     for (matcht &match : matches)
     {
-      selection.push_back(get_first(match));
+      get_container(selection).push_back(get_first(match));
       ++fight_count;
-      selection.push_back(get_second(match));
+      get_container(selection).push_back(get_second(match));
       ++fight_count;
     }
   }

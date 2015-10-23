@@ -29,19 +29,19 @@ private:
 public:
   typedef program_populationt populationt;
   typedef populationt::value_type individualt;
-  typedef std::deque<populationt::iterator> couplet;
-  typedef std::deque<couplet> couplest;
+  typedef std::deque<populationt::iterator> individualst;
   class selectiont
   {
   public:
-    couplest couples;
+    individualst parents;
+    individualst children;
 
     bool can_mutate() const;
     bool can_cross() const;
     populationt::value_type &mutation_lhs();
     const populationt::value_type &mutation_rhs() const;
-    const couplest &get_couples() const;
-    void push_back(const populationt::iterator &individual);
+    const individualst &get_parents() const;
+    const individualst &get_children() const;
   };
 
   /**

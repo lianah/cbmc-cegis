@@ -88,9 +88,11 @@ public:
    *
    * @details
    *
+   * @param instr_index
+   *
    * @return
    */
-  program_individualt::instructiont::opt op() const;
+  program_individualt::instructiont::opt op(size_t instr_index) const;
 
   /**
    * @brief
@@ -98,8 +100,9 @@ public:
    * @details
    *
    * @param instr
+   * @param index
    */
-  void havoc(program_individualt::instructiont &instr);
+  void havoc(program_individualt::instructiont &instr, size_t index);
 
   /**
    * @brief
@@ -145,6 +148,15 @@ public:
    * @return
    */
   unsigned int rand() const;
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @return
+   */
+  size_t get_num_vars() const;
 };
 
 #endif /* CEGIS_GENETIC_RANDOM_INDIVIDUAL_H_ */
