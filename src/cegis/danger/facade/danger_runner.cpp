@@ -12,6 +12,7 @@
 #include <cegis/genetic/random_cross.h>
 #include <cegis/genetic/program_individual_convert.h>
 #include <cegis/genetic/symex_fitness.h>
+#include <cegis/genetic/genetic_constant_strategy.h>
 #include <cegis/seed/null_seed.h>
 #include <cegis/seed/literals_seed.h>
 #include <cegis/symex/cegis_symex_learn.h>
@@ -101,13 +102,18 @@ public:
     return count(num_consts);
   }
 };
+
+bool is_genetic(const optionst &opt)
+{
+  return opt.get_bool_option("cegis-genetic");
+}
 }
 
 template<class preproct>
 int run_genetic(mstreamt &os, const optionst &opt, const danger_programt &prog,
     preproct &preproc)
 {
-  if (opt.get_bool_option("cegis-genetic"))
+  if (is_genetic(opt))
   {
     // Danger program properties and GA settings
     const unsigned int seed=opt.get_unsigned_int_option("cegis-seed");
@@ -150,9 +156,10 @@ int run_danger(const optionst &options, mstreamt &result,
     const symbol_tablet &st, const goto_functionst &gf)
 {
   srand(options.get_unsigned_int_option("cegis-seed"));
-  // TODO: If genetic: only nondet constants! (part of x0)
-  const constant_strategyt strategy=default_constant_strategy;
-  danger_preprocessingt preproc(st, gf, strategy);
+  const bool is_gen=is_genetic(options);
+  const constant_strategyt str=
+      is_gen ? genetic_constant_strategy : default_constant_strategy;
+  danger_preprocessingt preproc(st, gf, str);
   const danger_programt &prog=preproc.get_danger_program();
   return run_genetic(result, options, prog, preproc);
 }

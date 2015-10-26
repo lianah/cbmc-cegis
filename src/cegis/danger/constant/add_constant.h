@@ -10,6 +10,8 @@ Author: Daniel Kroening, kroening@kroening.com
 #ifndef CEGIS_DANGER_ADD_CONSTANT_H_
 #define CEGIS_DANGER_ADD_CONSTANT_H_
 
+#include <string>
+
 /**
  * @brief
  *
@@ -27,10 +29,29 @@ void add_danger_constant(class danger_programt &program,
  * @details
  *
  * @param program
+ */
+void add_danger_constant(class danger_programt &program);
+
+/**
+ * @brief
+ *
+ * @details
+ *
+ * @param program
  * @param name
  * @param value
  */
 void add_danger_constant(danger_programt &program, const std::string &name,
     const exprt &value);
+
+/**
+ * @brief
+ *
+ * @details
+ *
+ * @param program
+ * @param name
+ */
+void add_danger_constant(danger_programt &program, const std::string &name);
 
 #endif /* CEGIS_DANGER_ADD_CONSTANT_H_ */

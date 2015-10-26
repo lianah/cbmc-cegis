@@ -8,7 +8,7 @@
 #include <cegis/danger/preprocess/danger_preprocessing.h>
 
 danger_preprocessingt::danger_preprocessingt(const symbol_tablet &st,
-    const goto_functionst &gf, constant_strategyt constant_strategy) :
+    const goto_functionst &gf, const constant_strategyt &constant_strategy) :
     original_program(st, gf), constant_strategy(constant_strategy)
 {
 }
@@ -17,7 +17,8 @@ danger_preprocessingt::~danger_preprocessingt()
 {
 }
 
-namespace {
+namespace
+{
 bool cmp(const danger_programt::loopt &lhs, const danger_programt::loopt &rhs)
 {
   return lhs.skolem_choices.size() < rhs.skolem_choices.size();

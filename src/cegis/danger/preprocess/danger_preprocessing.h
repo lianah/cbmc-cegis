@@ -22,7 +22,7 @@ class danger_preprocessingt
 {
   danger_programt original_program;
   danger_programt current_program;
-  constant_strategyt constant_strategy;
+  const constant_strategyt constant_strategy;
 public:
   /**
    * @brief
@@ -34,7 +34,7 @@ public:
    * @param constant_strategy
    */
   danger_preprocessingt(const symbol_tablet &st, const goto_functionst &gf,
-      constant_strategyt constant_strategy);
+      const constant_strategyt &constant_strategy);
 
   /**
    * @brief
