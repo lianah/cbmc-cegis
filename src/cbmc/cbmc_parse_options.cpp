@@ -418,48 +418,37 @@ void cbmc_parse_optionst::get_command_line_options(optionst &options)
 
   if(cmdline.isset("danger"))
   {
-#define CEGIS_DEFAULT_SEED 747864937u
-#define CEGIS_SEED "cegis-seed"
-#define DANGER_DEFAULT_MAX_PROG_SIZE 100u
-#define DANGER_DEFAULT_GENETIC_ROUNDS 10u
-#define DANGER_DEFAULT_GENETIC_POP_SIZE 2000u
-#define DANGER_DEFAULT_GENETIC_MUTATION_RATE 1
-#define DANGER_DEFAULT_GENETIC_REPLACE_RATE 15
-#define DANGER_MAX_SIZE "cegis-max-size"
-#define DANGER_PARALLEL_VERIFY "cegis-parallel-verify"
-#define DANGER_STATISTICS "cegis-statistics"
-#define DANGER_GENETIC "cegis-genetic"
-#define DANGER_GENETIC_ROUNDS "cegis-genetic-rounds"
-#define DANGER_GENETIC_POPSIZE "cegis-genetic-popsize"
-#define DANGER_GENETIC_MUTATION_RATE "cegis-genetic-mutation-rate"
-#define DANGER_GENETIC_REPLACE_RATE "cegis-genetic-replace-rate"
-    size_t max_prog_size=DANGER_DEFAULT_MAX_PROG_SIZE;
-    if (cmdline.isset(DANGER_MAX_SIZE))
-      max_prog_size=string2integer(cmdline.get_value("function")).to_ulong();
-    options.set_option(DANGER_MAX_SIZE, max_prog_size);
-    options.set_option(DANGER_PARALLEL_VERIFY, cmdline.isset(DANGER_PARALLEL_VERIFY));
-    options.set_option(DANGER_STATISTICS, cmdline.isset(DANGER_STATISTICS));
-    options.set_option(DANGER_GENETIC, cmdline.isset(DANGER_GENETIC));
-    size_t genetic_rounds=DANGER_DEFAULT_GENETIC_ROUNDS;
-    if (cmdline.isset(DANGER_GENETIC_ROUNDS))
-      genetic_rounds=string2integer(cmdline.get_value(DANGER_GENETIC_ROUNDS)).to_ulong();
-    options.set_option(DANGER_GENETIC_ROUNDS, genetic_rounds);
-    unsigned int seed=CEGIS_DEFAULT_SEED;
-    if (cmdline.isset(CEGIS_SEED))
-      seed=string2integer(cmdline.get_value(CEGIS_SEED)).to_ulong();
-    options.set_option(CEGIS_SEED, seed);
-    unsigned int pop_size=DANGER_DEFAULT_GENETIC_POP_SIZE;
-    if (cmdline.isset(DANGER_GENETIC_POPSIZE))
-      pop_size=string2integer(cmdline.get_value(DANGER_GENETIC_POPSIZE)).to_ulong();
-    options.set_option(DANGER_GENETIC_POPSIZE, pop_size);
-    unsigned int mutation_rate=DANGER_DEFAULT_GENETIC_MUTATION_RATE;
-    if (cmdline.isset(DANGER_GENETIC_MUTATION_RATE))
-      mutation_rate=string2integer(cmdline.get_value(DANGER_GENETIC_MUTATION_RATE)).to_ulong();
-    options.set_option(DANGER_GENETIC_MUTATION_RATE, mutation_rate);
-    unsigned int replace_rate=DANGER_DEFAULT_GENETIC_REPLACE_RATE;
-    if (cmdline.isset(DANGER_GENETIC_REPLACE_RATE))
-      replace_rate=string2integer(cmdline.get_value(DANGER_GENETIC_REPLACE_RATE)).to_ulong();
-    options.set_option(DANGER_GENETIC_REPLACE_RATE, replace_rate);
+    size_t min_prog_size=0u;
+    if (cmdline.isset("cegis-min-size"))
+      min_prog_size=string2integer(cmdline.get_value("cegis-min-size")).to_ulong();
+    options.set_option("cegis-min-size", min_prog_size);
+    size_t max_prog_size=5u;
+    if (cmdline.isset("cegis-max-size"))
+      max_prog_size=string2integer(cmdline.get_value("cegis-max-size")).to_ulong();
+    options.set_option("cegis-max-size", max_prog_size);
+    options.set_option("cegis-parallel-verify", cmdline.isset("cegis-parallel-verify"));
+    options.set_option("cegis-statistics", cmdline.isset("cegis-statistics"));
+    options.set_option("cegis-genetic", cmdline.isset("cegis-genetic"));
+    size_t genetic_rounds=10u;
+    if (cmdline.isset("cegis-genetic-rounds"))
+      genetic_rounds=string2integer(cmdline.get_value("cegis-genetic-rounds")).to_ulong();
+    options.set_option("cegis-genetic-rounds", genetic_rounds);
+    unsigned int seed=747864937u;
+    if (cmdline.isset("cegis-seed"))
+      seed=string2integer(cmdline.get_value("cegis-seed")).to_ulong();
+    options.set_option("cegis-seed", seed);
+    unsigned int pop_size=2000u;
+    if (cmdline.isset("cegis-genetic-popsize"))
+      pop_size=string2integer(cmdline.get_value("cegis-genetic-popsize")).to_ulong();
+    options.set_option("cegis-genetic-popsize", pop_size);
+    unsigned int mutation_rate=1u;
+    if (cmdline.isset("cegis-genetic-mutation-rate"))
+      mutation_rate=string2integer(cmdline.get_value("cegis-genetic-mutation-rate")).to_ulong();
+    options.set_option("cegis-genetic-mutation-rate", mutation_rate);
+    unsigned int replace_rate=15u;
+    if (cmdline.isset("cegis-genetic-replace-rate"))
+      replace_rate=string2integer(cmdline.get_value("cegis-genetic-replace-rate")).to_ulong();
+    options.set_option("cegis-genetic-replace-rate", replace_rate);
   }
 }
 

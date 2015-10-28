@@ -1,4 +1,4 @@
-#include <cegis/genetic/individual.h>
+#include <cegis/value/program_individual.h>
 
 program_individualt::instructiont::opst::value_type &program_individualt::instructiont::operator [](
     const opst::size_type n)

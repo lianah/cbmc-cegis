@@ -35,6 +35,9 @@ private:
   populationt pop;
   selectiont selection;
   candidatet current_candidate;
+  bool is_population_initialised;
+
+  bool set_fitness(typename selectt::individualt &ind);
 public:
   /**
    * @brief

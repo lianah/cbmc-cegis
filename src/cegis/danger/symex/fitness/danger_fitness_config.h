@@ -19,12 +19,14 @@
  */
 class danger_fitness_configt
 {
+  class instruction_set_info_factoryt &info_fac;
   const danger_programt &original_program;
   danger_programt program_with_constraint;
   danger_programt program;
   goto_programt::targetst quantifiers;
   bool constraint_inserted;
   bool program_contains_ce;
+  size_t max_solution_size;
 public:
   typedef class danger_goto_solutiont candidatet;
   typedef std::map<const irep_idt, exprt> counterexamplet;
@@ -35,9 +37,11 @@ public:
    *
    * @details
    *
+   * @param info_fac
    * @param prog
    */
-  danger_fitness_configt(const danger_programt &prog);
+  danger_fitness_configt(instruction_set_info_factoryt &info_fac,
+      const danger_programt &prog);
 
   /**
    * @brief
@@ -72,7 +76,7 @@ public:
    * @param current_candidate
    * @param ind
    */
-  void convert(candidatet &current_candidate, const individualt &ind) const;
+  void convert(candidatet &current_candidate, const individualt &ind);
 
   /**
    * @brief
@@ -91,6 +95,15 @@ public:
    * @return
    */
   const class goto_functionst &get_goto_functions() const;
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @param size
+   */
+  void set_max_solution_size(size_t size);
 };
 
 #endif /* CEGIS_DANGER_FITNESS_CONFIG_H_ */

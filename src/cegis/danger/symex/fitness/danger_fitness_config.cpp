@@ -2,14 +2,18 @@
 #include <cegis/danger/instrument/meta_variables.h>
 #include <cegis/danger/util/danger_program_helper.h>
 #include <cegis/danger/value/danger_goto_solution.h>
+#include <cegis/danger/symex/learn/add_variable_refs.h>
+#include <cegis/danger/symex/learn/solution_factory.h>
 #include <cegis/danger/symex/verify/insert_constraint.h>
 #include <cegis/danger/symex/verify/insert_candidate.h>
-#include <cegis/genetic/individual.h>
+#include <cegis/value/program_individual.h>
+#include <cegis/genetic/instruction_set_info_factory.h>
 #include <cegis/danger/symex/fitness/danger_fitness_config.h>
 
-danger_fitness_configt::danger_fitness_configt(const danger_programt &prog) :
-    original_program(prog), constraint_inserted(false), program_contains_ce(
-        false)
+danger_fitness_configt::danger_fitness_configt(
+    instruction_set_info_factoryt &info_fac, const danger_programt &prog) :
+    info_fac(info_fac), original_program(prog), constraint_inserted(false), program_contains_ce(
+        false), max_solution_size(0u)
 {
 }
 
@@ -18,14 +22,13 @@ danger_fitness_configt::~danger_fitness_configt()
 }
 
 void danger_fitness_configt::convert(candidatet &current_candidate,
-    const individualt &ind) const
+    const individualt &ind)
 {
-  // TODO: Convert programs to goto_programs.
-  candidatet::nondet_choicest &nondet=current_candidate.x0_choices;
-  nondet.clear();
-  const typet type=danger_meta_type(); // XXX: Currently single data type.
-  for (const individualt::nondet_choices::value_type &x0 : ind.x0)
-    nondet.push_back(from_integer(x0, type));
+  danger_variable_idst ids;
+  get_danger_variable_ids(original_program.st, ids);
+  const instruction_sett &instr_set=info_fac.get_instructions();
+  create_danger_solution(current_candidate, original_program, ind, instr_set,
+      ids, max_solution_size);
 }
 
 void danger_fitness_configt::set_candidate(const candidatet &candidate)
@@ -33,7 +36,7 @@ void danger_fitness_configt::set_candidate(const candidatet &candidate)
   if (!constraint_inserted)
   {
     program_with_constraint=original_program;
-    danger_insert_constraint(quantifiers, program);
+    danger_insert_constraint(quantifiers, program_with_constraint);
     constraint_inserted=true;
   }
   program=program_with_constraint;
@@ -70,4 +73,9 @@ const symbol_tablet &danger_fitness_configt::get_symbol_table() const
 const goto_functionst &danger_fitness_configt::get_goto_functions() const
 {
   return program.gf;
+}
+
+void danger_fitness_configt::set_max_solution_size(const size_t size)
+{
+  max_solution_size=size;
 }

@@ -51,11 +51,6 @@ bool is_empty(const exprt &expr)
 }
 }
 
-void add_danger_constant(danger_programt &program)
-{
-  add_danger_constant(program, exprt());
-}
-
 void add_danger_constant(danger_programt &program, const exprt &value)
 {
   symbol_tablet &st=program.st;
@@ -66,21 +61,30 @@ void add_danger_constant(danger_programt &program, const exprt &value)
   add_danger_constant(program, name, value);
 }
 
-void add_danger_constant(danger_programt &prog, const std::string &name)
+namespace
 {
-  add_danger_constant(prog, name, exprt());
-}
-
 void add_danger_constant(danger_programt &prog, const std::string &name,
-    const exprt &value)
+    const exprt &value, typet type)
 {
   goto_programt::targett pos=prog.danger_range.begin;
   while (is_builtin(pos))
     ++pos;
-  typet type(value.type());
   type.set(ID_C_constant, true);
   symbol_tablet &st=prog.st;
   create_danger_symbol(st, name, type).value=value;
   if (!is_empty(value))
     pos=danger_assign_user_variable(st, prog.gf, pos, name, value);
+}
+}
+
+void add_danger_constant(danger_programt &prog, const std::string &name,
+    const typet &type)
+{
+  add_danger_constant(prog, name, exprt(), type);
+}
+
+void add_danger_constant(danger_programt &prog, const std::string &name,
+    const exprt &value)
+{
+  add_danger_constant(prog, name, value, value.type());
 }

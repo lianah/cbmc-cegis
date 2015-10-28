@@ -72,15 +72,26 @@ public:
     return std::make_pair(instr.first, count);
   }
 };
+
+void initialise(instruction_set_infot &info, instruction_sett &ins,
+    const std::function<const goto_programt&(void)> &body_provider)
+{
+  if (!info.empty()) return;
+  const goto_programt &body=body_provider();
+  extract_instruction_set(ins, body);
+  const transform_to_info op;
+  std::transform(ins.begin(), ins.end(), std::inserter(info, info.end()), op);
+}
+}
+
+const instruction_sett &instruction_set_info_factoryt::get_instructions()
+{
+  initialise(info, instructions, body_provider);
+  return instructions;
 }
 
 const instruction_set_infot &instruction_set_info_factoryt::get_info()
 {
-  if (!info.empty()) return info;
-  const goto_programt &body=body_provider();
-  instruction_sett ins;
-  extract_instruction_set(ins, body);
-  const transform_to_info op;
-  std::transform(ins.begin(), ins.end(), std::inserter(info, info.end()), op);
+  initialise(info, instructions, body_provider);
   return info;
 }

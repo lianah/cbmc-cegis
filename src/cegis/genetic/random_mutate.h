@@ -10,7 +10,7 @@
 #ifndef CEGIS_GENETIC_RANDOM_MUTATE_H_
 #define CEGIS_GENETIC_RANDOM_MUTATE_H_
 
-#include <cegis/genetic/individual.h>
+#include <cegis/value/program_individual.h>
 
 /**
  * @brief
@@ -41,15 +41,6 @@ public:
    * @details
    */
   ~random_mutatet();
-
-  /**
-   * @brief
-   *
-   * @details
-   *
-   * @param size
-   */
-  void set_max_solution_size(size_t size);
 
   /**
    * @brief

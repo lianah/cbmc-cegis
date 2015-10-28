@@ -10,6 +10,8 @@ Author: Daniel Kroening, kroening@kroening.com
 #ifndef CEGIS_DANGER_BODY_PROVIDER_H_
 #define CEGIS_DANGER_BODY_PROVIDER_H_
 
+#include <cegis/danger/options/danger_program.h>
+
 /**
  * @brief
  *
@@ -17,7 +19,9 @@ Author: Daniel Kroening, kroening@kroening.com
  */
 class danger_body_providert
 {
-  const class danger_programt &prog;
+  const danger_programt &original_prog;
+  danger_programt prog;
+  bool initialised;
 public:
   /**
    * @brief
@@ -42,7 +46,7 @@ public:
    *
    * @return
    */
-  const class goto_programt &operator()() const;
+  const class goto_programt &operator()();
 };
 
 #endif /* CEGIS_DANGER_BODY_PROVIDER_H_ */

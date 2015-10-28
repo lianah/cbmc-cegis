@@ -10,9 +10,11 @@ Author: Daniel Kroening, kroening@kroening.com
 #ifndef CEGIS_GENETIC_INSTRUCTION_SET_INFO_FACTORY_H_
 #define CEGIS_GENETIC_INSTRUCTION_SET_INFO_FACTORY_H_
 
-#include <map>
 #include <functional>
 
+#include <goto-programs/goto_program.h>
+
+typedef std::map<size_t, goto_programt::instructionst> instruction_sett;
 typedef std::map<size_t, size_t> instruction_set_infot;
 
 /**
@@ -23,6 +25,7 @@ typedef std::map<size_t, size_t> instruction_set_infot;
 class instruction_set_info_factoryt
 {
   std::function<const class goto_programt &()> body_provider;
+  instruction_sett instructions;
   instruction_set_infot info;
 public:
   /**
@@ -51,6 +54,15 @@ public:
    * @details
    */
   ~instruction_set_info_factoryt();
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @return
+   */
+  const instruction_sett &get_instructions();
 
   /**
    * @brief

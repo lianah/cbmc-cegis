@@ -6,9 +6,8 @@ ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::ga_learnt(
     const optionst &options, selectt &select, mutatet &mutate, crosst &cross,
     fitnesst &fitness, convertt &convert) :
     options(options), select(select), mutate(mutate), cross(cross), fitness(
-        fitness), convert(convert)
+        fitness), convert(convert), is_population_initialised(false)
 {
-  select.init(pop);
 }
 
 template<class selectt, class mutatet, class crosst, class fitnesst,
@@ -39,8 +38,11 @@ template<class selectt, class mutatet, class crosst, class fitnesst,
 bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(
     const size_t max_solution_size)
 {
-  mutate.set_max_solution_size(max_solution_size);
-  cross.set_max_solution_size(max_solution_size);
+  if (!is_population_initialised)
+  {
+    select.init(pop);
+    is_population_initialised=true;
+  }
   std::vector<counterexamplet> empty;
   return learn(empty.end(), empty.end());
 }
@@ -65,6 +67,19 @@ bool should_replace(const optionst &opt)
 
 template<class selectt, class mutatet, class crosst, class fitnesst,
     class convertt>
+bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::set_fitness(
+    typename selectt::individualt &ind)
+{
+  fitness.set_fitness(ind);
+  typedef typename selectt::individualt::fitnesst target_fitnesst;
+  const target_fitnesst target_fitness=fitness.get_target_fitness();
+  const bool have_solution=(target_fitness == ind.fitness);
+  if (have_solution) convert.convert(current_candidate, ind);
+  return have_solution;
+}
+
+template<class selectt, class mutatet, class crosst, class fitnesst,
+    class convertt>
 template<class itert>
 bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
     const itert &last)
@@ -72,10 +87,12 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
   for (; first != last; ++first)
     fitness.add_test_case(*first);
   const typename fitnesst::populationt::const_iterator it=fitness.init(pop);
-  if (pop.end() != it) convert.convert(current_candidate, *it);
+  if (pop.end() != it)
+  {
+    convert.convert(current_candidate, *it);
+    return true;
+  }
 
-  typedef typename selectt::individualt::fitnesst target_fitnesst;
-  const target_fitnesst target_fitness=fitness.get_target_fitness();
   typename selectt::selectiont selection;
   bool evolving=true;
   while (evolving)
@@ -84,17 +101,21 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
     if (should_mutate(options))
     {
       if (!selection.can_mutate()) return false;
-      mutate(selection.mutation_lhs(), selection.mutation_rhs());
+      typename selectt::individualt &lhs=selection.mutation_lhs();
+      mutate(lhs, selection.mutation_rhs());
+      if (set_fitness(lhs)) return true;
     } else if (should_replace(options))
     {
-      mutate.havoc(*selection.children.back());
+      typename selectt::individualt &ind=*selection.children.back();
+      mutate.havoc(ind);
+      if (set_fitness(ind)) return true;
     } else
     {
       if (!selection.can_cross()) return false;
       cross(selection.get_parents(), selection.get_children());
+      for (const typename populationt::iterator &child : selection.get_children())
+        if (set_fitness(*child)) return true;
     }
-
-    // TODO: Recheck fitness of selection.
   }
   return false;
 }

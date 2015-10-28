@@ -1,5 +1,6 @@
 #include <algorithm>
 
+#include <util/arith_tools.h>
 #include <util/bv_arithmetic.h>
 
 #include <goto-programs/goto_trace.h>
@@ -19,10 +20,10 @@
 
 namespace
 {
-const size_t get_const_value(const exprt &expr)
+const unsigned char get_const_value(const exprt &expr)
 {
   const bv_arithmetict bv(expr);
-  return bv.to_integer().to_ulong();
+  return static_cast<unsigned char>(bv.to_integer().to_ulong());
 }
 
 typedef std::map<size_t, const irep_idt> danger_variable_namest;
@@ -69,7 +70,7 @@ class read_instrt
   const danger_variable_namest &names;
   danger_variable_namest rnames;
   const instruction_sett &instrset;
-  const size_t max_size;
+  size_t prog_size;
   size_t loop_index;
   size_t insidx;
   prog_typet prog_type;
@@ -82,7 +83,7 @@ class read_instrt
     {
     case INV:
     {
-      const size_t idx=create_temps(rnames, max_size - 1);
+      const size_t idx=create_temps(rnames, prog_size - 1);
       const std::string result(get_danger_meta_name(get_Rx(loop_index, 0))); // XXX: Lexicographical ranking?
       rnames.insert(std::make_pair(idx, result));
       prog_type=RNK;
@@ -92,8 +93,8 @@ class read_instrt
     {
       const danger_programt::loopt &loop=danger_prog.loops[loop_index];
       const size_t num_skolem=loop.skolem_choices.size();
-      const size_t num_temps=create_temps(rnames, max_size - num_skolem);
-      for (size_t i=num_temps; i < max_size; ++i)
+      const size_t num_temps=create_temps(rnames, prog_size - num_skolem);
+      for (size_t i=num_temps; i < prog_size; ++i)
       {
         const size_t sk=i - num_temps;
         const std::string name(get_danger_meta_name(get_Sx(loop_index, sk)));
@@ -105,7 +106,7 @@ class read_instrt
     }
     case SKO:
     {
-      const size_t idx=create_temps(rnames, max_size - 1);
+      const size_t idx=create_temps(rnames, prog_size - 1);
       const std::string result_name(get_danger_meta_name(get_Dx(loop_index)));
       rnames.insert(std::make_pair(idx, result_name));
       prog_type=INV;
@@ -116,17 +117,16 @@ class read_instrt
 public:
   read_instrt(danger_goto_solutiont::danger_programst &progs,
       const danger_programt &danger_prog, const danger_variable_namest &names,
-      const instruction_sett &instrset, const size_t max_size) :
-      progs(progs), danger_prog(danger_prog), names(names), instrset(instrset), max_size(
-          max_size), loop_index(0u), insidx(0u), prog_type(SKO)
+      const instruction_sett &instrset, const size_t prog_size) :
+      progs(progs), danger_prog(danger_prog), names(names), instrset(instrset), prog_size(
+          prog_size), loop_index(0u), insidx(0u), prog_type(SKO)
   {
     switch_prog();
   }
 
-  void operator()(const exprt &prog_arary_member)
+  void operator()(const unsigned char opcode,
+      const std::vector<unsigned char> &ops)
   {
-    const struct_exprt &instr_rep=to_struct_expr(prog_arary_member);
-    const size_t opcode=get_const_value(instr_rep.op0());
     const instruction_sett::const_iterator instr_entry=instrset.find(opcode);
     assert(instrset.end() != instr_entry);
     goto_programt::instructionst &prog=get_prog(progs, prog_type, insidx);
@@ -142,30 +142,33 @@ public:
     }
     copy_instr.finalize();
     std::advance(first, -instr.size());
-    const size_t op0=get_const_value(instr_rep.op1());
-    const size_t op1=get_const_value(instr_rep.op2());
-    const size_t op2=get_const_value(instr_rep.op3());
+    const size_t empty_op=0u;
+    const size_t op0=!ops.empty() ? ops.front() : empty_op;
+    const size_t op1=ops.size() >= 2 ? ops.at(1) : empty_op;
+    const size_t op2=ops.size() >= 3 ? ops.at(2) : empty_op;
     const symbol_tablet &st=danger_prog.st;
     replace_ops_in_instr(st, first, last, names, rnames, op0, op1, op2, insidx);
-    if (++insidx % max_size == 0)
+    if (++insidx % prog_size == 0)
     {
       danger_make_presentable(prog);
       switch_prog();
     }
   }
-};
 
-class read_instrt_reft
-{
-  read_instrt &ref;
-public:
-  read_instrt_reft(read_instrt &ref) :
-      ref(ref)
-  {
-  }
   void operator()(const exprt &prog_arary_member)
   {
-    ref(prog_arary_member);
+    const struct_exprt &instr_rep=to_struct_expr(prog_arary_member);
+    const unsigned char opcode=get_const_value(instr_rep.op0());
+    const unsigned char op0=get_const_value(instr_rep.op1());
+    const unsigned char op1=get_const_value(instr_rep.op2());
+    const unsigned char op2=get_const_value(instr_rep.op3());
+    const std::vector<unsigned char> ops= { op0, op1, op2 };
+    operator()(opcode, ops);
+  }
+
+  void set_prog_size(const size_t prog_size)
+  {
+    this->prog_size=prog_size;
   }
 };
 
@@ -190,9 +193,8 @@ public:
     const std::string &tname=id2string(to_struct_type(type).get_tag());
     const char * const danger_tag=&DANGER_INSTRUCTION_TYPE_NAME[4];
     if (std::string::npos == tname.find(danger_tag)) return;
-    const exprt::operandst &instructions=value.operands();
-    read_instrt_reft read_instr(this->read_instr);
-    std::for_each(instructions.begin(), instructions.end(), read_instr);
+    for (const exprt &prog_array_member : value.operands())
+      read_instr(prog_array_member);
   }
 };
 
@@ -227,4 +229,33 @@ void create_danger_solution(danger_goto_solutiont &result,
   danger_goto_solutiont::danger_programst &progs=result.danger_programs;
   extract_programs(progs, prog, trace, names, instr_set, max_size);
   danger_read_x0(result, prog, trace);
+}
+
+void create_danger_solution(danger_goto_solutiont &result,
+    const danger_programt &prog, const program_individualt &ind,
+    const instruction_sett &instr_set, const danger_variable_idst &ids,
+    const size_t max_solution_size)
+{
+  danger_variable_namest names;
+  reverse(names, ids);
+  danger_goto_solutiont::danger_programst &progs=result.danger_programs;
+  progs.clear();
+  typedef program_individualt individualt;
+  const individualt::programst &ind_progs=ind.programs;
+  if (!ind_progs.empty())
+  {
+    const size_t first_prog_size=ind_progs.front().size();
+    read_instrt extract(progs, prog, names, instr_set, first_prog_size);
+    for (const individualt::programt &program : ind_progs)
+    {
+      extract.set_prog_size(program.size());
+      for (const individualt::instructiont &instr : program)
+        extract(instr.opcode, instr.ops);
+    }
+  }
+  danger_goto_solutiont::nondet_choicest &nondet=result.x0_choices;
+  nondet.clear();
+  const typet type=danger_meta_type(); // XXX: Currently single data type.
+  for (const individualt::nondet_choices::value_type &x0 : ind.x0)
+    nondet.push_back(from_integer(x0, type));
 }

@@ -10,9 +10,9 @@
 #include <cegis/genetic/instruction_set_info_factory.h>
 #include <cegis/genetic/random_mutate.h>
 #include <cegis/genetic/random_cross.h>
-#include <cegis/genetic/program_individual_convert.h>
 #include <cegis/genetic/symex_fitness.h>
 #include <cegis/genetic/genetic_constant_strategy.h>
+#include <cegis/genetic/genetic_preprocessing.h>
 #include <cegis/seed/null_seed.h>
 #include <cegis/seed/literals_seed.h>
 #include <cegis/symex/cegis_symex_learn.h>
@@ -28,6 +28,7 @@
 #include <cegis/danger/symex/learn/danger_body_provider.h>
 #include <cegis/danger/symex/verify/danger_verify_config.h>
 #include <cegis/danger/symex/verify/parallel_danger_verifier.h>
+#include <cegis/danger/symex/fitness/danger_fitness_config.h>
 #include <cegis/danger/facade/danger_runner.h>
 
 namespace
@@ -107,6 +108,69 @@ bool is_genetic(const optionst &opt)
 {
   return opt.get_bool_option("cegis-genetic");
 }
+
+class lazy_sizet
+{
+  const std::function<size_t(void)> func;
+  size_t size;
+  bool initialised;
+public:
+  lazy_sizet(const std::function<size_t(void)> &func) :
+      func(func), size(0), initialised(false)
+  {
+  }
+
+  size_t operator()()
+  {
+    if (initialised) return size;
+    initialised=true;
+    return size=func();
+  }
+};
+
+#define SKOLEM_PROG_INDEX 1u
+
+class min_danger_prog_sizet
+{
+  lazy_sizet &preproc_min_prog_size;
+  const size_t user_min_prog_size;
+public:
+  min_danger_prog_sizet(lazy_sizet &preproc_min_prog_size, const optionst &opt) :
+      preproc_min_prog_size(preproc_min_prog_size), user_min_prog_size(
+          opt.get_unsigned_int_option("cegis-min-size"))
+  {
+  }
+
+  size_t operator()(const size_t prog_index) const
+  {
+    if (SKOLEM_PROG_INDEX == prog_index)
+      return std::max(user_min_prog_size, preproc_min_prog_size());
+    return user_min_prog_size;
+  }
+};
+
+class max_danger_prog_sizet
+{
+  lazy_sizet &num_x0;
+  const size_t user_max_prog_size;
+public:
+  max_danger_prog_sizet(lazy_sizet &num_x0, const optionst &opt) :
+      num_x0(num_x0), user_max_prog_size(
+          opt.get_unsigned_int_option("cegis-max-size"))
+  {
+  }
+
+  size_t operator()(const size_t prog_index) const
+  {
+    if (SKOLEM_PROG_INDEX == prog_index)
+    {
+      const size_t number_of_x0_vars=num_x0();
+      if (number_of_x0_vars == 0u) return 0u;
+      return std::max(number_of_x0_vars, user_max_prog_size);
+    }
+    return user_max_prog_size;
+  }
+};
 }
 
 template<class preproct>
@@ -117,33 +181,37 @@ int run_genetic(mstreamt &os, const optionst &opt, const danger_programt &prog,
   {
     // Danger program properties and GA settings
     const unsigned int seed=opt.get_unsigned_int_option("cegis-seed");
-    const danger_body_providert body(prog);
-    instruction_set_info_factoryt info_fac(body);
+    danger_body_providert body(prog);
+    instruction_set_info_factoryt info_fac(std::ref(body));
     const size_t pop_size=opt.get_unsigned_int_option("cegis-genetic-popsize");
-    const size_t num_progs=prog.loops.size() * 3u;
-    const std::function<size_t(void)> initial_prog_size=[&preproc]()
-    { return preproc.get_min_solution_size();};
-    opt.get_unsigned_int_option(DANGER_MAX_SIZE);
+    const lazy_sizet num_progs([&prog]()
+    { return prog.loops.size() * 3u;});
+    lazy_sizet num_x0([&prog]()
+    { return prog.x0_choices.size();});
+    lazy_sizet preproc_min_size([&preproc]()
+    { return preproc.get_min_solution_size();});
+    const min_danger_prog_sizet min_prog_sz(preproc_min_size, opt);
+    const max_danger_prog_sizet max_prog_sz(num_x0, opt);
     const size_t rounds=opt.get_unsigned_int_option("cegis-genetic-rounds");
     variable_counter_helper counter(prog);
-    const std::function<size_t(void)> num_vars=[&counter]()
-    { return counter.get_num_vars();};
-    const std::function<size_t(void)> num_consts=[&counter]()
-    { return counter.get_num_consts();};
-    const std::function<size_t(void)> num_x0=[&prog]()
-    { return prog.x0_choices.size();};
+    const lazy_sizet num_vars([&counter]()
+    { return counter.get_num_vars();});
+    const lazy_sizet num_consts([&counter]()
+    { return counter.get_num_consts();});
 
     // Set-up genetic algorithm
     const typet type=danger_meta_type(); // XXX: Currently single user data type.
-    random_individualt rnd(seed, type, info_fac, num_progs, num_vars, num_x0);
+    random_individualt rnd(seed, type, info_fac, min_prog_sz, max_prog_sz,
+        num_progs, num_vars, num_x0);
     tournament_selectt select(rnd, pop_size, rounds);
     random_mutatet mutate(rnd, num_consts);
     random_crosst cross(rnd);
-    symex_fitnesst fitness;
-    program_individual_convertt convert;
-    ga_learnt<tournament_selectt, random_mutatet, random_crosst, symex_fitnesst,
-        program_individual_convertt> learn(opt, select, mutate, cross, fitness,
-        convert);
+    danger_fitness_configt config(info_fac, prog);
+    typedef symex_fitnesst<danger_fitness_configt> fitnesst;
+    fitnesst fitness(opt, config);
+    ga_learnt<tournament_selectt, random_mutatet, random_crosst, fitnesst,
+        danger_fitness_configt> learn(opt, select, mutate, cross, fitness,
+        config);
     return run_parallel(os, opt, prog, learn, preproc);
   }
   danger_learn_configt learn_config(prog);
@@ -161,5 +229,6 @@ int run_danger(const optionst &options, mstreamt &result,
       is_gen ? genetic_constant_strategy : default_constant_strategy;
   danger_preprocessingt preproc(st, gf, str);
   const danger_programt &prog=preproc.get_danger_program();
-  return run_genetic(result, options, prog, preproc);
+  genetic_preprocessingt<danger_preprocessingt> gen_preproc(options, preproc);
+  return run_genetic(result, options, prog, gen_preproc);
 }

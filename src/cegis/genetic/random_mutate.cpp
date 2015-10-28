@@ -11,11 +11,6 @@ random_mutatet::~random_mutatet()
 {
 }
 
-void random_mutatet::set_max_solution_size(const size_t size)
-{
-  random.set_max_prog_size(size);
-}
-
 namespace
 {
 void mutate_opcode(random_mutatet::individualt::instructiont &instr,

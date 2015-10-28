@@ -12,7 +12,7 @@
 
 #include <map>
 
-#include <cegis/genetic/individual.h>
+#include <cegis/value/program_individual.h>
 #include <cegis/genetic/instruction_set_info_factory.h>
 
 /**

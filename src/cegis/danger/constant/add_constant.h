@@ -29,15 +29,6 @@ void add_danger_constant(class danger_programt &program,
  * @details
  *
  * @param program
- */
-void add_danger_constant(class danger_programt &program);
-
-/**
- * @brief
- *
- * @details
- *
- * @param program
  * @param name
  * @param value
  */
@@ -51,7 +42,9 @@ void add_danger_constant(danger_programt &program, const std::string &name,
  *
  * @param program
  * @param name
+ * @param type
  */
-void add_danger_constant(danger_programt &program, const std::string &name);
+void add_danger_constant(danger_programt &program, const std::string &name,
+    const class typet &type);
 
 #endif /* CEGIS_DANGER_ADD_CONSTANT_H_ */
