@@ -1,6 +1,6 @@
 CORE
 main.c
---gcc --danger
+--gcc --danger --cegis-statistics --cegis-genetic
 ^EXIT=0$
 ^SIGNAL=0$
 ^.*__CPROVER_danger_tmp_0 *= *[(]unsigned *int[)][(][(]unsigned *int[)]x *<= *DANGER_CONSTANT_2u *&& *DANGER_CONSTANT_2u *<= *[(]unsigned *int[)]x[)];$

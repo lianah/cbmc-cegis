@@ -418,18 +418,18 @@ void cbmc_parse_optionst::get_command_line_options(optionst &options)
 
   if(cmdline.isset("danger"))
   {
-    size_t min_prog_size=1u;
+    unsigned int min_prog_size=1u;
     if (cmdline.isset("cegis-min-size"))
       min_prog_size=string2integer(cmdline.get_value("cegis-min-size")).to_ulong();
     options.set_option("cegis-min-size", min_prog_size);
-    size_t max_prog_size=5u;
+    unsigned int max_prog_size=5u;
     if (cmdline.isset("cegis-max-size"))
       max_prog_size=string2integer(cmdline.get_value("cegis-max-size")).to_ulong();
     options.set_option("cegis-max-size", max_prog_size);
     options.set_option("cegis-parallel-verify", cmdline.isset("cegis-parallel-verify"));
     options.set_option("cegis-statistics", cmdline.isset("cegis-statistics"));
     options.set_option("cegis-genetic", cmdline.isset("cegis-genetic"));
-    size_t genetic_rounds=10u;
+    unsigned int genetic_rounds=10u;
     if (cmdline.isset("cegis-genetic-rounds"))
       genetic_rounds=string2integer(cmdline.get_value("cegis-genetic-rounds")).to_ulong();
     options.set_option("cegis-genetic-rounds", genetic_rounds);
