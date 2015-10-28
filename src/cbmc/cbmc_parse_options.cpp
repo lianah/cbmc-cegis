@@ -418,7 +418,7 @@ void cbmc_parse_optionst::get_command_line_options(optionst &options)
 
   if(cmdline.isset("danger"))
   {
-    size_t min_prog_size=0u;
+    size_t min_prog_size=1u;
     if (cmdline.isset("cegis-min-size"))
       min_prog_size=string2integer(cmdline.get_value("cegis-min-size")).to_ulong();
     options.set_option("cegis-min-size", min_prog_size);

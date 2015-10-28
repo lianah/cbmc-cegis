@@ -105,6 +105,16 @@ public:
    * @param size
    */
   void set_max_solution_size(size_t size);
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @param candidate
+   * @param os
+   */
+  void show(messaget::mstreamt &os, const candidatet &candidate) const;
 };
 
 #endif /* CEGIS_DANGER_FITNESS_CONFIG_H_ */

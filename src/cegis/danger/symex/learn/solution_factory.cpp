@@ -18,9 +18,6 @@
 #include <cegis/danger/symex/learn/solution_factory.h>
 #include <cegis/danger/symex/learn/read_x0.h>
 
-// XXX: Debug
-#include <iostream>
-
 namespace
 {
 const unsigned char get_const_value(const exprt &expr)
@@ -158,20 +155,6 @@ public:
     const size_t op1=ops.size() >= 2 ? ops.at(1) : empty_op;
     const size_t op2=ops.size() >= 3 ? ops.at(2) : empty_op;
     const symbol_tablet &st=danger_prog.st;
-    // XXX: Debug
-    switch (prog_type)
-    {
-    case INV:
-      std::cout << "<inv />" << std::endl;
-      break;
-    case RNK:
-      std::cout << "<rnk />" << std::endl;
-      break;
-    case SKO:
-      std::cout << "<sko />" << std::endl;
-      break;
-    }
-    // XXX: Debug
     replace_ops_in_instr(st, first, last, names, rnames, op0, op1, op2, insidx);
     if (++insidx % prog_size == 0) danger_make_presentable(prog);
   }

@@ -125,5 +125,5 @@ template<class selectt, class mutatet, class crosst, class fitnesst,
 void ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::show_candidate(
     messaget::mstreamt &os) const
 {
-  // TODO: Move goto solution printing to helper class.
+  convert.show(os, current_candidate);
 }

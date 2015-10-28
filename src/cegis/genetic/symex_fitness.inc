@@ -66,15 +66,7 @@ void symex_fitnesst<configt>::set_fitness(individualt &individual) const
     const goto_functionst &gf=config.get_goto_functions();
     const std::unique_ptr<cbmc_solverst::solvert> solver=solvers.get_solver();
     bmct bmc(options, st, msg, solver->prop_conv());
-    // XXX: Debug
-    const namespacet ns(st);
-    std::cout << "<fitness_prog>" << std::endl;
-    gf.output(ns, std::cout);
-    std::cout << "</fitness_prog>" << std::endl;
-    std::cout << "<fitness_msg>" << std::endl;
-    // XXX: Debug
     if (safety_checkert::SAFE == bmc(gf)) ++fitness;
-    std::cout << "</fitness_msg>" << std::endl; // XXX: Debug
   }
   std::cout << "<fitness>" << fitness << "</fitness>" << std::endl;
 }

@@ -2,6 +2,7 @@
 #include <cegis/danger/instrument/meta_variables.h>
 #include <cegis/danger/util/danger_program_helper.h>
 #include <cegis/danger/value/danger_goto_solution.h>
+#include <cegis/danger/options/danger_program_printer.h>
 #include <cegis/danger/symex/learn/add_variable_refs.h>
 #include <cegis/danger/symex/learn/solution_factory.h>
 #include <cegis/danger/symex/verify/insert_constraint.h>
@@ -127,4 +128,10 @@ const goto_functionst &danger_fitness_configt::get_goto_functions() const
 void danger_fitness_configt::set_max_solution_size(const size_t size)
 {
   max_solution_size=size;
+}
+
+void danger_fitness_configt::show(messaget::mstreamt &os,
+    const candidatet &candidate) const
+{
+  print_danger_program(os, original_program, candidate);
 }
