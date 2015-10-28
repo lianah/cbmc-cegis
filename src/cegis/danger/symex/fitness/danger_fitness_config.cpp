@@ -11,9 +11,6 @@
 #include <cegis/genetic/instruction_set_info_factory.h>
 #include <cegis/danger/symex/fitness/danger_fitness_config.h>
 
-// XXX: Debug
-#include <iostream>
-
 danger_fitness_configt::danger_fitness_configt(
     instruction_set_info_factoryt &info_fac, const danger_programt &prog) :
     info_fac(info_fac), original_program(prog), constraint_inserted(false), program_contains_ce(
@@ -28,31 +25,6 @@ danger_fitness_configt::~danger_fitness_configt()
 void danger_fitness_configt::convert(candidatet &current_candidate,
     const individualt &ind)
 {
-  // XXX: Debug
-  std::cout << "<individual>" << std::endl;
-  std::cout << "  <x0>" << std::endl;
-  for (const individualt::nondet_choices::value_type &x0 : ind.x0)
-    std::cout << "    <value>" << x0 << "</value>" << std::endl;
-  std::cout << "  </x0>" << std::endl;
-  std::cout << "  <progs>" << std::endl;
-  for (const individualt::programt &prog : ind.programs)
-  {
-    std::cout << "    <prog>" << std::endl;
-    for (const individualt::instructiont &instr : prog)
-    {
-      std::cout << "      <instr>" << std::endl;
-      std::cout << "        <opcode>" << static_cast<unsigned int>(instr.opcode)
-          << "</opcode>" << std::endl;
-      for (const individualt::instructiont::opt &op : instr.ops)
-        std::cout << "        <op>" << static_cast<unsigned int>(op) << "</op>"
-            << std::endl;
-      std::cout << "      </instr>" << std::endl;
-    }
-    std::cout << "    </prog>" << std::endl;
-  }
-  std::cout << "  </progs>" << std::endl;
-  std::cout << "</individual>" << std::endl;
-  // XXX: Debug
   danger_variable_idst ids;
   get_danger_variable_ids(original_program.st, ids);
   const instruction_sett &instr_set=info_fac.get_instructions();

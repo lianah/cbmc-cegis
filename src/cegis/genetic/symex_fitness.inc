@@ -40,24 +40,16 @@ typename symex_fitnesst<configt>::populationt::const_iterator symex_fitnesst<
   return pop.end();
 }
 
-#include <iostream> // XXX: Debug
-
 template<class configt>
 void symex_fitnesst<configt>::set_fitness(individualt &individual) const
 {
   individualt::fitnesst &fitness=individual.fitness;
   fitness=0u;
-  //if (counterexamples.empty()) return;
-  if (counterexamples.empty())
-  {
-    std::cout << "<fitness>" << fitness << "</fitness>" << std::endl;
-    return;
-  }
+  if (counterexamples.empty()) return;
   danger_goto_solutiont converted;
   config.convert(converted, individual);
   config.set_candidate(converted);
-  //null_message_handlert msg;
-  ui_message_handlert msg(ui_message_handlert::PLAIN, "");
+  null_message_handlert msg;
   for (const counterexamplet &ce : counterexamples)
   {
     config.set_test_case(ce);
@@ -68,7 +60,6 @@ void symex_fitnesst<configt>::set_fitness(individualt &individual) const
     bmct bmc(options, st, msg, solver->prop_conv());
     if (safety_checkert::SAFE == bmc(gf)) ++fitness;
   }
-  std::cout << "<fitness>" << fitness << "</fitness>" << std::endl;
 }
 
 template<class configt>
