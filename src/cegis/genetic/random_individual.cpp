@@ -25,7 +25,12 @@ random_individualt::~random_individualt()
 
 size_t random_individualt::prog_size(const size_t index) const
 {
-  return std::max(min_prog_sz(index), rand() % max_prog_sz(index) + 1);
+  const size_t max=max_prog_sz(index);
+  if (max == 0u) return 0u;
+  const size_t min=min_prog_sz(index);
+  if (min >= max) return min;
+  const size_t diff=max - min;
+  return min + rand() % (diff + 1);
 }
 
 program_individualt::instructiont::opcodet random_individualt::opcode()

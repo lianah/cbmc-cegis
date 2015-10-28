@@ -18,6 +18,9 @@
 #include <cegis/danger/symex/learn/solution_factory.h>
 #include <cegis/danger/symex/learn/read_x0.h>
 
+// XXX: Debug
+#include <iostream>
+
 namespace
 {
 const unsigned char get_const_value(const exprt &expr)
@@ -124,6 +127,14 @@ public:
     switch_prog();
   }
 
+  read_instrt(danger_goto_solutiont::danger_programst &progs,
+      const danger_programt &danger_prog, const danger_variable_namest &names,
+      const instruction_sett &instrset) :
+      progs(progs), danger_prog(danger_prog), names(names), instrset(instrset), prog_size(
+          0u), loop_index(0u), insidx(0u), prog_type(SKO)
+  {
+  }
+
   void operator()(const unsigned char opcode,
       const std::vector<unsigned char> &ops)
   {
@@ -147,12 +158,22 @@ public:
     const size_t op1=ops.size() >= 2 ? ops.at(1) : empty_op;
     const size_t op2=ops.size() >= 3 ? ops.at(2) : empty_op;
     const symbol_tablet &st=danger_prog.st;
-    replace_ops_in_instr(st, first, last, names, rnames, op0, op1, op2, insidx);
-    if (++insidx % prog_size == 0)
+    // XXX: Debug
+    switch (prog_type)
     {
-      danger_make_presentable(prog);
-      switch_prog();
+    case INV:
+      std::cout << "<inv />" << std::endl;
+      break;
+    case RNK:
+      std::cout << "<rnk />" << std::endl;
+      break;
+    case SKO:
+      std::cout << "<sko />" << std::endl;
+      break;
     }
+    // XXX: Debug
+    replace_ops_in_instr(st, first, last, names, rnames, op0, op1, op2, insidx);
+    if (++insidx % prog_size == 0) danger_make_presentable(prog);
   }
 
   void operator()(const exprt &prog_arary_member)
@@ -164,11 +185,13 @@ public:
     const unsigned char op2=get_const_value(instr_rep.op3());
     const std::vector<unsigned char> ops= { op0, op1, op2 };
     operator()(opcode, ops);
+    if (insidx % prog_size == 0) switch_prog();
   }
 
   void set_prog_size(const size_t prog_size)
   {
     this->prog_size=prog_size;
+    switch_prog();
   }
 };
 
@@ -233,8 +256,7 @@ void create_danger_solution(danger_goto_solutiont &result,
 
 void create_danger_solution(danger_goto_solutiont &result,
     const danger_programt &prog, const program_individualt &ind,
-    const instruction_sett &instr_set, const danger_variable_idst &ids,
-    const size_t max_solution_size)
+    const instruction_sett &instr_set, const danger_variable_idst &ids)
 {
   danger_variable_namest names;
   reverse(names, ids);
@@ -242,16 +264,12 @@ void create_danger_solution(danger_goto_solutiont &result,
   progs.clear();
   typedef program_individualt individualt;
   const individualt::programst &ind_progs=ind.programs;
-  if (!ind_progs.empty())
+  read_instrt extract(progs, prog, names, instr_set);
+  for (const individualt::programt &program : ind_progs)
   {
-    const size_t first_prog_size=ind_progs.front().size();
-    read_instrt extract(progs, prog, names, instr_set, first_prog_size);
-    for (const individualt::programt &program : ind_progs)
-    {
-      extract.set_prog_size(program.size());
-      for (const individualt::instructiont &instr : program)
-        extract(instr.opcode, instr.ops);
-    }
+    extract.set_prog_size(program.size());
+    for (const individualt::instructiont &instr : program)
+      extract(instr.opcode, instr.ops);
   }
   danger_goto_solutiont::nondet_choicest &nondet=result.x0_choices;
   nondet.clear();

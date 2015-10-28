@@ -1,3 +1,4 @@
+#include <cstring>
 #include <algorithm>
 
 #include <cegis/instructions/instruction_set_factory.h>
@@ -39,7 +40,8 @@ public:
     if (std::string::npos != id.find(OPCODE_SIGNIFIER)) return;
     const std::string::size_type op_id_pos=id.find(OP_SIGNIFIER);
     if (std::string::npos == op_id_pos) return;
-    const size_t op_id=string2integer(id.substr(op_id_pos)).to_ulong();
+    const std::string::size_type value_pos=op_id_pos + strlen(OP_SIGNIFIER);
+    const size_t op_id=string2integer(id.substr(value_pos)).to_ulong();
     count=std::max(count, op_id + 1);
   }
 

@@ -42,11 +42,9 @@ void create_danger_solution(class danger_goto_solutiont &result,
  * @param ind
  * @param instr
  * @param ids
- * @param max_solution_size
  */
 void create_danger_solution(danger_goto_solutiont &result,
     const danger_programt &prog, const program_individualt &ind,
-    const instruction_sett &instr, const danger_variable_idst &ids,
-    const size_t max_solution_size);
+    const instruction_sett &instr, const danger_variable_idst &ids);
 
 #endif /* CEGIS_DANGER_SOLUTION_FACTORY_H_ */

@@ -22,6 +22,7 @@ class danger_fitness_configt
   class instruction_set_info_factoryt &info_fac;
   const danger_programt &original_program;
   danger_programt program_with_constraint;
+  goto_programt::targetst original_quantifiers;
   danger_programt program;
   goto_programt::targetst quantifiers;
   bool constraint_inserted;

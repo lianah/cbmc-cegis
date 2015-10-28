@@ -10,6 +10,9 @@
 #include <cegis/genetic/instruction_set_info_factory.h>
 #include <cegis/danger/symex/fitness/danger_fitness_config.h>
 
+// XXX: Debug
+#include <iostream>
+
 danger_fitness_configt::danger_fitness_configt(
     instruction_set_info_factoryt &info_fac, const danger_programt &prog) :
     info_fac(info_fac), original_program(prog), constraint_inserted(false), program_contains_ce(
@@ -24,11 +27,55 @@ danger_fitness_configt::~danger_fitness_configt()
 void danger_fitness_configt::convert(candidatet &current_candidate,
     const individualt &ind)
 {
+  // XXX: Debug
+  std::cout << "<individual>" << std::endl;
+  std::cout << "  <x0>" << std::endl;
+  for (const individualt::nondet_choices::value_type &x0 : ind.x0)
+    std::cout << "    <value>" << x0 << "</value>" << std::endl;
+  std::cout << "  </x0>" << std::endl;
+  std::cout << "  <progs>" << std::endl;
+  for (const individualt::programt &prog : ind.programs)
+  {
+    std::cout << "    <prog>" << std::endl;
+    for (const individualt::instructiont &instr : prog)
+    {
+      std::cout << "      <instr>" << std::endl;
+      std::cout << "        <opcode>" << static_cast<unsigned int>(instr.opcode)
+          << "</opcode>" << std::endl;
+      for (const individualt::instructiont::opt &op : instr.ops)
+        std::cout << "        <op>" << static_cast<unsigned int>(op) << "</op>"
+            << std::endl;
+      std::cout << "      </instr>" << std::endl;
+    }
+    std::cout << "    </prog>" << std::endl;
+  }
+  std::cout << "  </progs>" << std::endl;
+  std::cout << "</individual>" << std::endl;
+  // XXX: Debug
   danger_variable_idst ids;
   get_danger_variable_ids(original_program.st, ids);
   const instruction_sett &instr_set=info_fac.get_instructions();
   create_danger_solution(current_candidate, original_program, ind, instr_set,
-      ids, max_solution_size);
+      ids);
+}
+
+namespace
+{
+void fix_quantifiers(const danger_programt &org_prog, danger_programt &new_prog,
+    goto_programt::targetst &quantifiers)
+{
+  goto_programt::const_targett org_off=org_prog.loops.front().meta_variables.Dx;
+  --org_off;
+  goto_programt::targett new_off=new_prog.loops.front().meta_variables.Dx;
+  --new_off;
+  typename goto_programt::targett::difference_type diff;
+  for (goto_programt::targett &q : quantifiers)
+  {
+    diff=std::distance(org_off, static_cast<goto_programt::const_targett>(q));
+    q=new_off;
+    std::advance(q, diff);
+  }
+}
 }
 
 void danger_fitness_configt::set_candidate(const candidatet &candidate)
@@ -36,10 +83,12 @@ void danger_fitness_configt::set_candidate(const candidatet &candidate)
   if (!constraint_inserted)
   {
     program_with_constraint=original_program;
-    danger_insert_constraint(quantifiers, program_with_constraint);
+    danger_insert_constraint(original_quantifiers, program_with_constraint);
     constraint_inserted=true;
   }
   program=program_with_constraint;
+  quantifiers=original_quantifiers;
+  fix_quantifiers(program_with_constraint, program, quantifiers);
   program_contains_ce=false;
   danger_insert_candidate(program, candidate);
 }

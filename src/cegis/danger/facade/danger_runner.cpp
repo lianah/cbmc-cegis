@@ -128,7 +128,7 @@ public:
   }
 };
 
-#define SKOLEM_PROG_INDEX 1u
+#define SKOLEM_PROG_INDEX 2u
 
 class min_danger_prog_sizet
 {
@@ -149,24 +149,27 @@ public:
   }
 };
 
+const size_t PROGS_PER_LOOP=3u;
+
 class max_danger_prog_sizet
 {
-  lazy_sizet &num_x0;
+  const danger_programt &prog;
   const size_t user_max_prog_size;
 public:
-  max_danger_prog_sizet(lazy_sizet &num_x0, const optionst &opt) :
-      num_x0(num_x0), user_max_prog_size(
+  max_danger_prog_sizet(const danger_programt &prog, const optionst &opt) :
+      prog(prog), user_max_prog_size(
           opt.get_unsigned_int_option("cegis-max-size"))
   {
   }
 
   size_t operator()(const size_t prog_index) const
   {
-    if (SKOLEM_PROG_INDEX == prog_index)
+    if (SKOLEM_PROG_INDEX == prog_index % PROGS_PER_LOOP)
     {
-      const size_t number_of_x0_vars=num_x0();
-      if (number_of_x0_vars == 0u) return 0u;
-      return std::max(number_of_x0_vars, user_max_prog_size);
+      const size_t loop_index=prog_index / PROGS_PER_LOOP;
+      const size_t num_skolem=prog.loops[loop_index].skolem_choices.size();
+      if (num_skolem == 0u) return 0u;
+      return std::max(num_skolem, user_max_prog_size);
     }
     return user_max_prog_size;
   }
@@ -191,7 +194,7 @@ int run_genetic(mstreamt &os, const optionst &opt, const danger_programt &prog,
     lazy_sizet preproc_min_size([&preproc]()
     { return preproc.get_min_solution_size();});
     const min_danger_prog_sizet min_prog_sz(preproc_min_size, opt);
-    const max_danger_prog_sizet max_prog_sz(num_x0, opt);
+    const max_danger_prog_sizet max_prog_sz(prog, opt);
     const size_t rounds=opt.get_unsigned_int_option("cegis-genetic-rounds");
     variable_counter_helper counter(prog);
     const lazy_sizet num_vars([&counter]()

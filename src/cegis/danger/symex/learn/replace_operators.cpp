@@ -4,6 +4,9 @@
 #include <cegis/danger/instrument/meta_variables.h>
 #include <cegis/danger/symex/learn/replace_operators.h>
 
+// XXX: Debug
+#include <iostream>
+
 namespace
 {
 const char ROP[]="__CPROVER_danger_execute::1::1::result";
@@ -51,10 +54,20 @@ public:
     const size_t op=is_res ? instr_idx : is_op0 ? op0 : is_op1 ? op1 : op2;
     const danger_variable_namest::const_iterator name=names.find(op);
     if (names.end() == name) return;
+    // XXX: Debug
+    std::cout << "<names>" << std::endl;;
+    for (const danger_variable_namest::value_type &p : names)
+      std::cout << "  <first>" << p.first << "</first><second>" << p.second << "</second>" << std::endl;
+    std::cout << "</names>" << std::endl;
+    std::cout << "<name><first>" << name->first << "</first><second>" << name->second << "</second></name>" << std::endl;
+    try{
+    // XXX: Debug
     const symbol_exprt symbol(st.lookup(name->second).symbol_expr());
     const typet danger_type(danger_meta_type());
     if (type_eq(danger_type, symbol.type(), ns)) expr=symbol;
     else expr=typecast_exprt(symbol, danger_type); // XXX: Change if operations for other types are added.
+    //XXX: Debug
+    }catch(const std::string &ex){ std::cout << "<ex>" << ex << "</ex>" << std::endl; throw; }
   }
 };
 }
