@@ -37,7 +37,7 @@ void random_crosst::operator ()(const individualst &parents,
     const individualst &children)
 {
   assert(parents.size() >= 2 && children.size() >= 2);
-  const size_t prog_limit=parents.front()->programs.size() + 1;
+  const size_t prog_limit=parents.front()->programs.size();
   const size_t target_prog_index=rand() % prog_limit;
 
   programt &father=parents.front()->programs[target_prog_index];

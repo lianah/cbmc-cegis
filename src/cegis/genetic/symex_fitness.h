@@ -10,8 +10,7 @@
 #ifndef CEGIS_GENETIC_SYMEX_FITNESS_H_
 #define CEGIS_GENETIC_SYMEX_FITNESS_H_
 
-#include <cegis/value/program_individual.h>
-#include <util/expr.h>
+#include <cegis/genetic/symex_test_runner.h>
 
 /**
  * @brief
@@ -24,12 +23,15 @@ class symex_fitnesst
 public:
   typedef std::map<const irep_idt, exprt> counterexamplet;
   typedef std::deque<counterexamplet> counterexamplest;
+  typedef program_individualt individualt;
 private:
   const class optionst &options;
   configt &config;
+  symex_test_runnert<configt> test_runner;
   counterexamplest counterexamples;
+
+  void run_test(individualt &ind, const counterexamplet &ce);
 public:
-  typedef program_individualt individualt;
   typedef program_populationt populationt;
 
   /**
@@ -67,16 +69,7 @@ public:
    *
    * @param ce
    */
-  void add_test_case(const counterexamplet &ce);
-
-  /**
-   * @brief
-   *
-   * @details
-   *
-   * @param pop
-   */
-  populationt::const_iterator init(populationt &pop) const;
+  void add_test_case(populationt &pop, const counterexamplet &ce);
 
   /**
    * @brief

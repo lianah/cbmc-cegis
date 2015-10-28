@@ -85,13 +85,7 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
     const itert &last)
 {
   for (; first != last; ++first)
-    fitness.add_test_case(*first);
-  const typename fitnesst::populationt::const_iterator it=fitness.init(pop);
-  if (pop.end() != it)
-  {
-    convert.convert(current_candidate, *it);
-    return true;
-  }
+    fitness.add_test_case(pop, *first);
 
   typename selectt::selectiont selection;
   bool evolving=true;
