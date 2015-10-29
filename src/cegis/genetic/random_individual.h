@@ -28,6 +28,7 @@ class random_individualt
   const std::function<size_t(size_t)> max_prog_sz;
   const std::function<size_t(void)> num_progs;
   const std::function<size_t(void)> num_vars;
+  const std::function<size_t(void)> num_consts;
   const std::function<size_t(void)> num_x0;
 public:
   /**
@@ -42,6 +43,7 @@ public:
    * @param max_prog_sz
    * @param num_progs
    * @param num_vars
+   * @param num_consts
    * @param num_x0
    */
   random_individualt(unsigned int seed, const typet &type,
@@ -50,6 +52,7 @@ public:
       const std::function<size_t(size_t)> &max_prog_sz,
       const std::function<size_t(void)> &get_num_progs,
       const std::function<size_t(void)> &num_vars,
+      const std::function<size_t(void)> &num_consts,
       const std::function<size_t(void)> &num_x0);
 
   /**

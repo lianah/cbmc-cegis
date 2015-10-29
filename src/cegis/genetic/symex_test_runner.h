@@ -71,6 +71,13 @@ public:
    * @details
    */
   void join();
+
+  /**
+   * @brief
+   *
+   * @details
+   */
+  void abandon();
 };
 
 #include "symex_test_runner.inc"

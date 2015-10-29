@@ -23,6 +23,7 @@ class symex_fitnesst
 public:
   typedef std::map<const irep_idt, exprt> counterexamplet;
   typedef std::deque<counterexamplet> counterexamplest;
+  typedef program_populationt populationt;
   typedef program_individualt individualt;
 private:
   const class optionst &options;
@@ -31,10 +32,8 @@ private:
   counterexamplest counterexamples;
   std::map<individualt *, size_t> executed_test_cases;
 
-  void run_test(individualt &ind, const counterexamplet &ce);
+  populationt::iterator find_candidate(populationt &pop);
 public:
-  typedef program_populationt populationt;
-
   /**
    * @brief
    *
@@ -79,7 +78,7 @@ public:
    *
    * @param pop
    */
-  void init(populationt &pop);
+  populationt::iterator init(populationt &pop);
 
   /**
    * @brief
@@ -88,7 +87,7 @@ public:
    *
    * @param individual
    */
-  void set_fitness(individualt &individual) const;
+  void set_fitness(individualt &individual);
 
   /**
    * @brief
