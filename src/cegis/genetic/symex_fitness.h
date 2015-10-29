@@ -29,6 +29,7 @@ private:
   configt &config;
   symex_test_runnert<configt> test_runner;
   counterexamplest counterexamples;
+  std::map<individualt *, size_t> executed_test_cases;
 
   void run_test(individualt &ind, const counterexamplet &ce);
 public:
@@ -69,7 +70,16 @@ public:
    *
    * @param ce
    */
-  void add_test_case(populationt &pop, const counterexamplet &ce);
+  void add_test_case(const counterexamplet &ce);
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @param pop
+   */
+  void init(populationt &pop);
 
   /**
    * @brief

@@ -48,14 +48,23 @@ void symex_fitnesst<configt>::run_test(individualt &individual,
 }
 
 template<class configt>
-void symex_fitnesst<configt>::add_test_case(populationt &pop,
-    const counterexamplet &ce)
+void symex_fitnesst<configt>::add_test_case(const counterexamplet &ce)
 {
   const counterexamplest::const_iterator end=counterexamples.end();
   if (end == std::find(counterexamples.begin(), counterexamples.end(), ce))
     counterexamples.push_back(ce);
+}
+
+template<class configt>
+void symex_fitnesst<configt>::init(populationt &pop)
+{
+  const size_t ces=counterexamples.size();
   for (individualt &individual : pop)
-    test_runner.run_test(individual, ce);
+  {
+    for (size_t i=executed_test_cases[&individual]; i < ces; ++i)
+      test_runner.run_test(individual, counterexamples[i]);
+    executed_test_cases[&individual]=ces;
+  }
   test_runner.join();
   assert(false);
 }

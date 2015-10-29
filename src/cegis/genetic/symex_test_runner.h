@@ -16,12 +16,28 @@
 template<class configt>
 class symex_test_runnert
 {
-  const class optionst &options;
-  configt &config;
 public:
   typedef std::map<const irep_idt, exprt> counterexamplet;
   typedef program_individualt individualt;
+private:
+  class bool_pipet
+  {
+    int fd[2u];
+    individualt *individual;
+  public:
+    bool_pipet(individualt *individual);
+    pid_t child_pid;
+    void run_test(const class optionst &options, configt &config,
+        const counterexamplet &ce);
+    void join();
+  };
+  typedef std::deque<bool_pipet> taskst;
+  taskst tasks;
+  const optionst &options;
+  configt &config;
 
+  void cleanup();
+public:
   /**
    * @brief
    *
