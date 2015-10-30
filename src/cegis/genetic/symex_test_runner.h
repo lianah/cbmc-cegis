@@ -22,11 +22,15 @@ public:
 private:
   class bool_pipet
   {
+#ifndef _WIN32
     int fd[2u];
+#endif
     individualt *individual;
   public:
-    bool_pipet(individualt *individual);
+#ifndef _WIN32
     pid_t child_pid;
+#endif
+    bool_pipet(individualt *individual);
     void run_test(const class optionst &options, configt &config,
         const counterexamplet &ce);
     void join();

@@ -9,11 +9,7 @@
 #include <cbmc/cbmc_solvers.h>
 #include <cbmc/bmc.h>
 
-// XXX: Debug
-#include <iostream>
-size_t test_index=0;
-// XXX: Debug
-
+#ifndef _WIN32
 #define BOOL_PIPE "bool_pipe"
 #define FORK "fork"
 
@@ -22,6 +18,7 @@ symex_test_runnert<configt>::bool_pipet::bool_pipet(individualt *individual) :
     individual(individual), child_pid(0u)
 {
 }
+#endif
 
 template<class configt>
 void symex_test_runnert<configt>::bool_pipet::run_test(
@@ -57,7 +54,9 @@ void symex_test_runnert<configt>::bool_pipet::run_test(
   const std::unique_ptr<cbmc_solverst::solvert> solver=solvers.get_solver();
   bmct bmc(options, st, msg, solver->prop_conv());
   const unsigned char is_safe=(safety_checkert::SAFE == bmc(gf));
-#ifndef _WIN32
+#ifdef _WIN32
+  if (is_safe) ++individual->fitness;
+#else
   ssize_t result;
   do
   {
@@ -70,8 +69,6 @@ void symex_test_runnert<configt>::bool_pipet::run_test(
   }
   close(fd[1u]);
   exit(EXIT_SUCCESS);
-#else
-  if (is_safe) ++fitness;
 #endif
 }
 
@@ -107,13 +104,25 @@ symex_test_runnert<configt>::~symex_test_runnert()
 {
 }
 
+namespace
+{
+#define MAX_CHILDREN 200u
+
+pid_t wait_child(int &status, const size_t size)
+{
+  const int options=size < MAX_CHILDREN ? WNOHANG : 0;
+  return waitpid(-1, &status, options);
+}
+}
+
 template<class configt>
 void symex_test_runnert<configt>::cleanup()
 {
+#ifndef _WIN32
   std::deque<pid_t> t;
   int status;
-  for (pid_t child_pid=waitpid(-1, &status, WNOHANG); child_pid > 0; child_pid=
-      waitpid(-1, &status, WNOHANG))
+  for (pid_t child_pid=wait_child(status, tasks.size()); child_pid > 0;
+      child_pid=wait_child(status, tasks.size()))
   {
     assert(WIFEXITED(status) && EXIT_SUCCESS == WEXITSTATUS(status));
     t.push_back(child_pid);
@@ -126,6 +135,7 @@ void symex_test_runnert<configt>::cleanup()
       return true;
     }
     return false;}), tasks.end());
+#endif
 }
 
 template<class configt>
@@ -134,13 +144,18 @@ void symex_test_runnert<configt>::run_test(individualt &individual,
 {
   cleanup();
   bool_pipet pipe(&individual);
+#ifndef _WIN32
   tasks.push_back(pipe);
   tasks.back().run_test(options, config, ce);
+#else
+  pipe.run_test(options, config, ce);
+#endif
 }
 
 template<class configt>
 void symex_test_runnert<configt>::join()
 {
+#ifndef _WIN32
   for (bool_pipet &task : tasks)
   {
     int status;
@@ -149,4 +164,5 @@ void symex_test_runnert<configt>::join()
     task.join();
   }
   tasks.clear();
+#endif
 }
