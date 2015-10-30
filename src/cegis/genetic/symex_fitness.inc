@@ -3,9 +3,6 @@
 #include <cbmc/cbmc_solvers.h>
 #include <cbmc/bmc.h>
 
-// XXX: Debug
-#include <iostream>
-
 template<class configt>
 symex_fitnesst<configt>::symex_fitnesst(const optionst &options,
     configt &config) :
@@ -26,28 +23,6 @@ void symex_fitnesst<configt>::seed(seedt &seed) const
 }
 
 template<class configt>
-void symex_fitnesst<configt>::run_test(individualt &individual,
-    const counterexamplet &ce)
-{
-  individualt::fitnesst &fitness=individual.fitness;
-  danger_goto_solutiont converted;
-  config.convert(converted, individual);
-  config.set_candidate(converted);
-  null_message_handlert msg;
-  config.set_test_case(ce);
-  const symbol_tablet &st=config.get_symbol_table();
-  cbmc_solverst solvers(options, st, msg);
-  const goto_functionst &gf=config.get_goto_functions();
-  const std::unique_ptr<cbmc_solverst::solvert> solver=solvers.get_solver();
-  bmct bmc(options, st, msg, solver->prop_conv());
-  if (safety_checkert::SAFE == bmc(gf)) ++fitness;
-  /*std::cout << "<run_test>" << std::endl;
-   std::cout << "  <fitness>" << fitness << "</fitness>" << std::endl;
-   std::cout << "  <target>" << get_target_fitness() << "</target>" << std::endl;
-   std::cout << "</run_test>" << std::endl;*/
-}
-
-template<class configt>
 void symex_fitnesst<configt>::add_test_case(const counterexamplet &ce)
 {
   const counterexamplest::const_iterator end=counterexamples.end();
@@ -56,43 +31,46 @@ void symex_fitnesst<configt>::add_test_case(const counterexamplet &ce)
 }
 
 template<class configt>
-void symex_fitnesst<configt>::init(populationt &pop)
+typename symex_fitnesst<configt>::populationt::iterator symex_fitnesst<configt>::find_candidate(
+    populationt &pop)
+{
+  const size_t ces=counterexamples.size();
+  for (populationt::iterator it=pop.begin(); it != pop.end(); ++it)
+    if (it->fitness == ces) return it;
+  return pop.end();
+}
+
+template<class configt>
+typename symex_fitnesst<configt>::populationt::iterator symex_fitnesst<configt>::init(
+    populationt &pop)
 {
   const size_t ces=counterexamples.size();
   for (individualt &individual : pop)
   {
-    for (size_t i=executed_test_cases[&individual]; i < ces; ++i)
+    size_t &executed=executed_test_cases[&individual];
+    for (size_t i=executed; i < ces; ++i, ++executed)
       test_runner.run_test(individual, counterexamples[i]);
-    executed_test_cases[&individual]=ces;
+    const populationt::iterator candidate=find_candidate(pop);
+    if (pop.end() != candidate)
+    {
+      // XXX: test_runner.abandon();
+      test_runner.join();
+      return candidate;
+    }
   }
   test_runner.join();
-  assert(false);
+  return find_candidate(pop);
 }
 
 template<class configt>
-void symex_fitnesst<configt>::set_fitness(individualt &individual) const
+void symex_fitnesst<configt>::set_fitness(individualt &individual)
 {
   individualt::fitnesst &fitness=individual.fitness;
   fitness=0u;
-  if (counterexamples.empty()) return;
-  danger_goto_solutiont converted;
-  config.convert(converted, individual);
-  config.set_candidate(converted);
-  null_message_handlert msg;
   for (const counterexamplet &ce : counterexamples)
-  {
-    config.set_test_case(ce);
-    const symbol_tablet &st=config.get_symbol_table();
-    cbmc_solverst solvers(options, st, msg);
-    const goto_functionst &gf=config.get_goto_functions();
-    const std::unique_ptr<cbmc_solverst::solvert> solver=solvers.get_solver();
-    bmct bmc(options, st, msg, solver->prop_conv());
-    if (safety_checkert::SAFE == bmc(gf)) ++fitness;
-  }
-  /*std::cout << "<set_fitness>" << std::endl;
-   std::cout << "  <fitness>" << fitness << "</fitness>" << std::endl;
-   std::cout << "  <target>" << get_target_fitness() << "</target>" << std::endl;
-   std::cout << "</set_fitness>" << std::endl;*/
+    test_runner.run_test(individual, ce);
+  test_runner.join();
+  executed_test_cases[&individual]=counterexamples.size();
 }
 
 template<class configt>

@@ -12,9 +12,11 @@ random_individualt::random_individualt(unsigned int seed, const typet &type,
     const std::function<size_t(size_t)> &max_prog_sz,
     const std::function<size_t(void)> &num_progs,
     const std::function<size_t(void)> &num_vars,
+    const std::function<size_t(void)> &num_consts,
     const std::function<size_t(void)> &num_x0) :
     type(type), info_factory(info_factory), min_prog_sz(min_prog_sz), max_prog_sz(
-        max_prog_sz), num_progs(num_progs), num_vars(num_vars), num_x0(num_x0)
+        max_prog_sz), num_progs(num_progs), num_vars(num_vars), num_consts(
+        num_consts), num_x0(num_x0)
 {
   srand(seed);
 }
@@ -100,9 +102,13 @@ void random_individualt::havoc(program_individualt &ind)
   progs.resize(num_progs());
   for (size_t i=0u; i < progs.size(); ++i)
     havoc(progs[i], i);
-  ind.x0.resize(num_x0());
-  for (unsigned int &x : ind.x0)
-    x=x0();
+  const size_t number_of_x0=num_x0();
+  ind.x0.resize(number_of_x0);
+  const size_t number_of_constants=num_consts();
+  for (size_t i=0; i < number_of_constants; ++i)
+    ind.x0[i]=constant();
+  for (size_t i=number_of_constants; i < number_of_x0; ++i)
+    ind.x0[i]=x0();
 }
 
 unsigned int random_individualt::rand() const

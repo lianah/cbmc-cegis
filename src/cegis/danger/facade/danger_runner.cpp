@@ -32,7 +32,6 @@
 #include <cegis/danger/facade/danger_runner.h>
 
 namespace
-
 {
 #define DANGER_STATISTICS "cegis-statistics"
 #define DANGER_MAX_SIZE "cegis-max-size"
@@ -205,7 +204,7 @@ int run_genetic(mstreamt &os, const optionst &opt, const danger_programt &prog,
     // Set-up genetic algorithm
     const typet type=danger_meta_type(); // XXX: Currently single user data type.
     random_individualt rnd(seed, type, info_fac, min_prog_sz, max_prog_sz,
-        num_progs, num_vars, num_x0);
+        num_progs, num_vars, num_consts, num_x0);
     tournament_selectt select(rnd, pop_size, rounds);
     random_mutatet mutate(rnd, num_consts);
     random_crosst cross(rnd);

@@ -70,11 +70,14 @@ bool is_nondet(const goto_programt::targett &target,
 namespace
 {
 const char NS_SEP[]="::";
+const char NONDET_CONSTANT_PREFIX[]="DANGER_CONSTANT_NONDET_";
 }
 bool is_global_const(const irep_idt &name, const typet &type)
 {
   if (!type.get_bool(ID_C_constant)) return false;
-  return std::string::npos == id2string(name).find(NS_SEP);
+  const std::string &n=id2string(name);
+  if (std::string::npos != n.find(NONDET_CONSTANT_PREFIX)) return true;
+  return std::string::npos == n.find(NS_SEP);
 }
 
 namespace
