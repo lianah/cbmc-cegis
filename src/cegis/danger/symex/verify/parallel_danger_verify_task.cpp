@@ -26,8 +26,7 @@ parallel_danger_verify_taskt::~parallel_danger_verify_taskt()
 parallel_danger_verify_taskt::parallel_danger_verify_taskt(
     const parallel_danger_verify_taskt &other) :
     options(other.options), config(other.config), candidate(other.candidate), mode(
-        other.mode), success(other.success), pipe(other.pipe), child_pid(
-        other.child_pid)
+        other.mode), success(other.success), pipe(other.pipe), child_pid(other.child_pid)
 {
   pipe.auto_close();
 }
@@ -236,43 +235,45 @@ void from_irep(bool &success, danger_verify_configt::counterexamplest &ces,
 
 void parallel_danger_verify_taskt::operator()()
 {
-  switch (mode)
-  {
-    case modet::FULL:
-    success=run_bmc<danger_config_fullt>(new_ces, options, config, candidate);
-    break;
-    case modet::ASSERTION:
-    success=run_bmc<danger_config_assertiont>(new_ces, options, config, candidate);
-    break;
-    default:
-    success=run_bmc<danger_config_rankingt>(new_ces, options, config, candidate);
-    break;
-  }
+switch (mode)
+{
+case modet::FULL:
+success=run_bmc<danger_config_fullt>(new_ces, options, config, candidate);
+break;
+case modet::ASSERTION:
+success=run_bmc<danger_config_assertiont>(new_ces, options, config, candidate);
+break;
+default:
+success=run_bmc<danger_config_rankingt>(new_ces, options, config, candidate);
+break;
+}
 #ifndef _WIN32
-  irept package;
-  to_irep(package, success, new_ces);
-  pipe.close_read();
-  pipe.send(package);
-  pipe.close_write();
+irept package;
+to_irep(package, success, new_ces);
+pipe.close_read();
+pipe.send(package);
+pipe.close_write();
 #endif
 }
 
-void parallel_danger_verify_taskt::read_counterexamples(bool &success, counterexamplest &counterexamples)
+void parallel_danger_verify_taskt::read_counterexamples(bool &success,
+counterexamplest &counterexamples)
 {
 #ifndef _WIN32
-  irept package;
-  pipe.receive(package);
-  pipe.close_read();
-  from_irep(this->success, new_ces, package);
+irept package;
+pipe.receive(package);
+pipe.close_read();
+from_irep(this->success, new_ces, package);
 #endif
-  std::copy(new_ces.begin(), new_ces.end(),
-    std::inserter(counterexamples, counterexamples.end()));
-  success=this->success;
+std::copy(new_ces.begin(), new_ces.end(),
+  std::inserter(counterexamples, counterexamples.end()));
+success=this->success;
 }
 
-parallel_danger_verify_poolt::parallel_danger_verify_poolt(counterexamplest &counterexamples, const optionst &options,
-    danger_verify_configt &config, const candidatet &candidate) :
-        ces(counterexamples), options(options), config(config), candidate(candidate)
+parallel_danger_verify_poolt::parallel_danger_verify_poolt(
+counterexamplest &counterexamples, const optionst &options,
+danger_verify_configt &config, const candidatet &candidate) :
+ces(counterexamples), options(options), config(config), candidate(candidate)
 {
 }
 
@@ -280,17 +281,18 @@ parallel_danger_verify_poolt::~parallel_danger_verify_poolt()
 {
 }
 
-void parallel_danger_verify_poolt::schedule(parallel_danger_verify_taskt::modet mode)
+void parallel_danger_verify_poolt::schedule(
+parallel_danger_verify_taskt::modet mode)
 {
-  tasks.push_back(parallel_danger_verify_taskt(options, config, candidate, mode));
-  parallel_danger_verify_taskt &task=tasks.back();
+tasks.push_back(parallel_danger_verify_taskt(options, config, candidate, mode));
+parallel_danger_verify_taskt &task=tasks.back();
 #ifndef _WIN32
-  const pid_t child_pid=fork();
-  if (child_pid) return task.set_parent_mode(child_pid);
+const pid_t child_pid=fork();
+if (child_pid) return task.set_parent_mode(child_pid);
 #endif
-  task();
+task();
 #ifndef _WIN32
-  exit(EXIT_SUCCESS);
+exit(EXIT_SUCCESS);
 #endif
 }
 
@@ -298,31 +300,32 @@ namespace
 {
 class joint
 {
-  bool &success;
-  parallel_danger_verify_poolt::counterexamplest &counterexamples;
+bool &success;
+parallel_danger_verify_poolt::counterexamplest &counterexamples;
 public:
-  joint(bool &success, parallel_danger_verify_poolt::counterexamplest &counterexamples) :
-    success(success), counterexamples(counterexamples)
+joint(bool &success,
+  parallel_danger_verify_poolt::counterexamplest &counterexamples) :
+  success(success), counterexamples(counterexamples)
 {
 }
 
 void operator()(parallel_danger_verify_taskt &task) const
 {
 #ifndef _WIN32
-  int status;
-  waitpid(task.get_child_pid(), &status, 0);
+int status;
+waitpid(task.get_child_pid(), &status, 0);
 #endif
-  bool success=false;
-  task.read_counterexamples(success, counterexamples);
-  if (!success) this->success=false;
+bool success=false;
+task.read_counterexamples(success, counterexamples);
+if (!success) this->success=false;
 }
 };
 }
 
 bool parallel_danger_verify_poolt::join()
 {
-  bool success=true;
-  const joint join(success, ces);
-  std::for_each(tasks.begin(), tasks.end(), join);
-  return success;
+bool success=true;
+const joint join(success, ces);
+std::for_each(tasks.begin(), tasks.end(), join);
+return success;
 }

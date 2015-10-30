@@ -13,6 +13,10 @@
 #include <cegis/value/program_individual.h>
 #include <util/expr.h>
 
+#ifdef _WIN32
+typedef int pid_t;
+#endif
+
 template<class configt>
 class symex_test_runnert
 {
@@ -27,9 +31,7 @@ private:
 #endif
     individualt *individual;
   public:
-#ifndef _WIN32
     pid_t child_pid;
-#endif
     bool_pipet(individualt *individual);
     void run_test(const class optionst &options, configt &config,
         const counterexamplet &ce);

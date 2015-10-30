@@ -12,13 +12,13 @@
 #ifndef _WIN32
 #define BOOL_PIPE "bool_pipe"
 #define FORK "fork"
+#endif
 
 template<class configt>
 symex_test_runnert<configt>::bool_pipet::bool_pipet(individualt *individual) :
     individual(individual), child_pid(0u)
 {
 }
-#endif
 
 template<class configt>
 void symex_test_runnert<configt>::bool_pipet::run_test(
@@ -104,6 +104,7 @@ symex_test_runnert<configt>::~symex_test_runnert()
 {
 }
 
+#ifndef _WIN32
 namespace
 {
 #define MAX_CHILDREN 200u
@@ -114,6 +115,7 @@ pid_t wait_child(int &status, const size_t size)
   return waitpid(-1, &status, options);
 }
 }
+#endif
 
 template<class configt>
 void symex_test_runnert<configt>::cleanup()

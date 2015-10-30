@@ -13,6 +13,10 @@
 #include <cegis/danger/symex/verify/danger_verify_config.h>
 #include <cegis/danger/symex/verify/irep_pipe.h>
 
+#ifdef _WIN32
+typedef int pid_t;
+#endif
+
 /**
  * @brief
  *
