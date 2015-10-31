@@ -4,26 +4,26 @@
 #include <cbmc/bmc.h>
 
 template<class configt>
-symex_fitnesst<configt>::symex_fitnesst(const optionst &options,
+lazy_fitnesst<configt>::lazy_fitnesst(const optionst &options,
     configt &config) :
-    options(options), config(config), test_runner(options, config)
+    test_runner(options, config)
 {
 }
 
 template<class configt>
-symex_fitnesst<configt>::~symex_fitnesst()
+lazy_fitnesst<configt>::~lazy_fitnesst()
 {
 }
 
 template<class configt>
 template<class seedt>
-void symex_fitnesst<configt>::seed(seedt &seed) const
+void lazy_fitnesst<configt>::seed(seedt &seed) const
 {
   // TODO: Implement!
 }
 
 template<class configt>
-void symex_fitnesst<configt>::add_test_case(const counterexamplet &ce)
+void lazy_fitnesst<configt>::add_test_case(const counterexamplet &ce)
 {
   const counterexamplest::const_iterator end=counterexamples.end();
   if (end == std::find(counterexamples.begin(), counterexamples.end(), ce))
@@ -31,7 +31,7 @@ void symex_fitnesst<configt>::add_test_case(const counterexamplet &ce)
 }
 
 template<class configt>
-typename symex_fitnesst<configt>::populationt::iterator symex_fitnesst<configt>::find_candidate(
+typename lazy_fitnesst<configt>::populationt::iterator lazy_fitnesst<configt>::find_candidate(
     populationt &pop)
 {
   const size_t ces=counterexamples.size();
@@ -41,7 +41,7 @@ typename symex_fitnesst<configt>::populationt::iterator symex_fitnesst<configt>:
 }
 
 template<class configt>
-typename symex_fitnesst<configt>::populationt::iterator symex_fitnesst<configt>::init(
+typename lazy_fitnesst<configt>::populationt::iterator lazy_fitnesst<configt>::init(
     populationt &pop)
 {
   const size_t ces=counterexamples.size();
@@ -53,7 +53,6 @@ typename symex_fitnesst<configt>::populationt::iterator symex_fitnesst<configt>:
     const populationt::iterator candidate=find_candidate(pop);
     if (pop.end() != candidate)
     {
-      // XXX: test_runner.abandon();
       test_runner.join();
       return candidate;
     }
@@ -63,7 +62,7 @@ typename symex_fitnesst<configt>::populationt::iterator symex_fitnesst<configt>:
 }
 
 template<class configt>
-void symex_fitnesst<configt>::set_fitness(individualt &individual)
+void lazy_fitnesst<configt>::set_fitness(individualt &individual)
 {
   individualt::fitnesst &fitness=individual.fitness;
   fitness=0u;
@@ -74,7 +73,7 @@ void symex_fitnesst<configt>::set_fitness(individualt &individual)
 }
 
 template<class configt>
-typename symex_fitnesst<configt>::individualt::fitnesst symex_fitnesst<configt>::get_target_fitness() const
+typename lazy_fitnesst<configt>::individualt::fitnesst lazy_fitnesst<configt>::get_target_fitness() const
 {
   return counterexamples.size();
 }

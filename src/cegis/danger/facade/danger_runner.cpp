@@ -209,7 +209,7 @@ int run_genetic(mstreamt &os, const optionst &opt, const danger_programt &prog,
     random_mutatet mutate(rnd, num_consts);
     random_crosst cross(rnd);
     danger_fitness_configt config(info_fac, prog);
-    typedef symex_fitnesst<danger_fitness_configt> fitnesst;
+    typedef lazy_fitnesst<danger_fitness_configt> fitnesst;
     fitnesst fitness(opt, config);
     ga_learnt<tournament_selectt, random_mutatet, random_crosst, fitnesst,
         danger_fitness_configt> learn(opt, select, mutate, cross, fitness,

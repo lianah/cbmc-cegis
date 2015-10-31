@@ -18,7 +18,7 @@
  * @details
  */
 template<class configt>
-class symex_fitnesst
+class lazy_fitnesst
 {
 public:
   typedef std::map<const irep_idt, exprt> counterexamplet;
@@ -26,8 +26,6 @@ public:
   typedef program_populationt populationt;
   typedef program_individualt individualt;
 private:
-  const class optionst &options;
-  configt &config;
   symex_test_runnert<configt> test_runner;
   counterexamplest counterexamples;
   std::map<individualt *, size_t> executed_test_cases;
@@ -42,14 +40,14 @@ public:
    * @param options
    * @param config
    */
-  symex_fitnesst(const optionst &options, configt &config);
+  lazy_fitnesst(const optionst &options, configt &config);
 
   /**
    * @brief
    *
    * @details
    */
-  ~symex_fitnesst();
+  ~lazy_fitnesst();
 
   /**
    * @brief
