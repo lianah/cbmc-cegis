@@ -13,6 +13,7 @@
 #include <cegis/genetic/symex_fitness.h>
 #include <cegis/genetic/genetic_constant_strategy.h>
 #include <cegis/genetic/genetic_preprocessing.h>
+#include <cegis/genetic/symex_test_runner.h>
 #include <cegis/seed/null_seed.h>
 #include <cegis/seed/literals_seed.h>
 #include <cegis/symex/cegis_symex_learn.h>
@@ -209,8 +210,9 @@ int run_genetic(mstreamt &os, const optionst &opt, const danger_programt &prog,
     random_mutatet mutate(rnd, num_consts);
     random_crosst cross(rnd);
     danger_fitness_configt config(info_fac, prog);
-    typedef lazy_fitnesst<danger_fitness_configt> fitnesst;
-    fitnesst fitness(opt, config);
+    symex_test_runnert<danger_fitness_configt> test_runner(opt, config);
+    typedef lazy_fitnesst<symex_test_runnert<danger_fitness_configt> > fitnesst;
+    fitnesst fitness(test_runner);
     ga_learnt<tournament_selectt, random_mutatet, random_crosst, fitnesst,
         danger_fitness_configt> learn(opt, select, mutate, cross, fitness,
         config);

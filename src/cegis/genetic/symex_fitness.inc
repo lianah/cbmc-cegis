@@ -3,36 +3,35 @@
 #include <cbmc/cbmc_solvers.h>
 #include <cbmc/bmc.h>
 
-template<class configt>
-lazy_fitnesst<configt>::lazy_fitnesst(const optionst &options,
-    configt &config) :
-    test_runner(options, config)
+template<class test_runnert>
+lazy_fitnesst<test_runnert>::lazy_fitnesst(test_runnert &test_runner) :
+    test_runner(test_runner)
 {
 }
 
-template<class configt>
-lazy_fitnesst<configt>::~lazy_fitnesst()
+template<class test_runnert>
+lazy_fitnesst<test_runnert>::~lazy_fitnesst()
 {
 }
 
-template<class configt>
+template<class test_runnert>
 template<class seedt>
-void lazy_fitnesst<configt>::seed(seedt &seed) const
+void lazy_fitnesst<test_runnert>::seed(seedt &seed) const
 {
   // TODO: Implement!
 }
 
-template<class configt>
-void lazy_fitnesst<configt>::add_test_case(const counterexamplet &ce)
+template<class test_runnert>
+void lazy_fitnesst<test_runnert>::add_test_case(const counterexamplet &ce)
 {
   const counterexamplest::const_iterator end=counterexamples.end();
   if (end == std::find(counterexamples.begin(), counterexamples.end(), ce))
     counterexamples.push_back(ce);
 }
 
-template<class configt>
-typename lazy_fitnesst<configt>::populationt::iterator lazy_fitnesst<configt>::find_candidate(
-    populationt &pop)
+template<class test_runnert>
+typename lazy_fitnesst<test_runnert>::populationt::iterator lazy_fitnesst<
+    test_runnert>::find_candidate(populationt &pop)
 {
   const size_t ces=counterexamples.size();
   for (populationt::iterator it=pop.begin(); it != pop.end(); ++it)
@@ -40,9 +39,9 @@ typename lazy_fitnesst<configt>::populationt::iterator lazy_fitnesst<configt>::f
   return pop.end();
 }
 
-template<class configt>
-typename lazy_fitnesst<configt>::populationt::iterator lazy_fitnesst<configt>::init(
-    populationt &pop)
+template<class test_runnert>
+typename lazy_fitnesst<test_runnert>::populationt::iterator lazy_fitnesst<
+    test_runnert>::init(populationt &pop)
 {
   const size_t ces=counterexamples.size();
   for (individualt &individual : pop)
@@ -61,8 +60,8 @@ typename lazy_fitnesst<configt>::populationt::iterator lazy_fitnesst<configt>::i
   return find_candidate(pop);
 }
 
-template<class configt>
-void lazy_fitnesst<configt>::set_fitness(individualt &individual)
+template<class test_runnert>
+void lazy_fitnesst<test_runnert>::set_fitness(individualt &individual)
 {
   individualt::fitnesst &fitness=individual.fitness;
   fitness=0u;
@@ -72,8 +71,9 @@ void lazy_fitnesst<configt>::set_fitness(individualt &individual)
   executed_test_cases[&individual]=counterexamples.size();
 }
 
-template<class configt>
-typename lazy_fitnesst<configt>::individualt::fitnesst lazy_fitnesst<configt>::get_target_fitness() const
+template<class test_runnert>
+typename lazy_fitnesst<test_runnert>::individualt::fitnesst lazy_fitnesst<
+    test_runnert>::get_target_fitness() const
 {
   return counterexamples.size();
 }

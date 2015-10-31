@@ -10,14 +10,15 @@
 #ifndef CEGIS_GENETIC_SYMEX_FITNESS_H_
 #define CEGIS_GENETIC_SYMEX_FITNESS_H_
 
-#include <cegis/genetic/symex_test_runner.h>
+#include <cegis/value/program_individual.h>
+#include <util/expr.h>
 
 /**
  * @brief
  *
  * @details
  */
-template<class configt>
+template<class test_runnert>
 class lazy_fitnesst
 {
 public:
@@ -26,7 +27,7 @@ public:
   typedef program_populationt populationt;
   typedef program_individualt individualt;
 private:
-  symex_test_runnert<configt> test_runner;
+  test_runnert &test_runner;
   counterexamplest counterexamples;
   std::map<individualt *, size_t> executed_test_cases;
 
@@ -37,10 +38,9 @@ public:
    *
    * @details
    *
-   * @param options
-   * @param config
+   * @param test_runner
    */
-  lazy_fitnesst(const optionst &options, configt &config);
+  lazy_fitnesst(test_runnert &);
 
   /**
    * @brief
