@@ -10,8 +10,9 @@
 #ifndef CEGIS_GENETIC_SYMEX_TEST_RUNNER_H_
 #define CEGIS_GENETIC_SYMEX_TEST_RUNNER_H_
 
-#include <cegis/value/program_individual.h>
 #include <util/expr.h>
+
+#include <cegis/value/program_individual.h>
 
 #ifdef _WIN32
 typedef int pid_t;
@@ -77,13 +78,6 @@ public:
    * @details
    */
   void join();
-
-  /**
-   * @brief
-   *
-   * @details
-   */
-  void abandon();
 };
 
 #include "symex_test_runner.inc"
