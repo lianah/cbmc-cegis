@@ -13,6 +13,7 @@
 #include <functional>
 
 #include <util/expr.h>
+#include <util/task_pool.h>
 #include <util/tempfile.h>
 
 #include <cegis/value/program_individual.h>
@@ -27,13 +28,7 @@ class concrete_test_runnert
   const std::function<std::string(void)> &source_code_provider;
   const temporary_filet executable;
   bool executable_compiled;
-#ifndef _WIN32
-  class taskt
-  {
-  };
-  typedef std::deque<taskt> taskst;
-  taskst tasks;
-#endif
+  task_poolt task_pool;
 public:
   typedef std::map<const irep_idt, exprt> counterexamplet;
   typedef program_individualt individualt;

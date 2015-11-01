@@ -7,51 +7,73 @@
 
 #include <xmllang/xml_parser.h>
 #include <util/xml_irep.h>
-
-#include <cegis/danger/symex/verify/irep_pipe.h>
+#include <util/irep_pipe.h>
 
 namespace
 {
 const char IREP_PIPE[]="irep_pipe";
-}
 
-irep_pipet::irep_pipet() :
-    read_closed(false), write_closed(false), close_on_destuction(false)
+void open_pipe(int filedes[2])
 {
 #ifndef _WIN32
-  if (pipe(fd))
+  if (pipe(filedes))
   {
     perror(IREP_PIPE);
     throw std::runtime_error("Error creating pipe.");
   }
 #endif
 }
+}
+
+irep_pipet::irep_pipet() :
+    read_closed(false), write_closed(false), close_on_destuction(false)
+{
+  open_pipe(fd);
+}
+
+irep_pipet::irep_pipet(const bool auto_close) :
+    read_closed(false), write_closed(false), close_on_destuction(auto_close)
+{
+  open_pipe(fd);
+}
 
 irep_pipet::~irep_pipet()
 {
-  if (close_on_destuction)
-  {
-    if (!read_closed) close_read();
-    if (!write_closed) close_write();
-  }
+  if (close_on_destuction) close();
 }
 
 void irep_pipet::close_read()
 {
   assert(!read_closed);
 #ifndef _WIN32
-  close(fd[0u]);
+  ::close(fd[0u]);
 #endif
   read_closed=true;
+}
+
+bool irep_pipet::is_read_closed() const
+{
+  return read_closed;
 }
 
 void irep_pipet::close_write()
 {
   assert(!write_closed);
 #ifndef _WIN32
-  close(fd[1u]);
+  ::close(fd[1u]);
 #endif
   write_closed=true;
+}
+
+bool irep_pipet::is_write_closed() const
+{
+  return write_closed;
+}
+
+void irep_pipet::close()
+{
+  if (!read_closed) close_read();
+  if (!write_closed) close_write();
 }
 
 namespace

@@ -48,6 +48,28 @@ void prepare_executable(bool &executable_compiled,
   if (result) throw std::runtime_error(COMPLING_FAILED);
   executable_compiled=true;
 }
+
+class conrete_test_runner_taskt
+{
+  concrete_test_runnert::individualt &ind;
+  const std::string command;
+public:
+  conrete_test_runner_taskt(concrete_test_runnert::individualt &ind,
+      const std::string &command) :
+      ind(ind), command(command)
+  {
+  }
+
+  int operator()() const
+  {
+    return system(command.c_str());
+  }
+
+  void operator()(const int status) const
+  {
+    if (EXIT_SUCCESS == status) ++ind.fitness;
+  }
+};
 }
 
 void concrete_test_runnert::run_test(individualt &ind,
@@ -55,8 +77,12 @@ void concrete_test_runnert::run_test(individualt &ind,
 {
   const std::string exe(executable());
   prepare_executable(executable_compiled, source_code_provider, exe);
+  const std::string command; // TODO: Seralise ind & ce
+  const conrete_test_runner_taskt task(ind, command);
+  task_pool.schedule(task, task);
 }
 
 void concrete_test_runnert::join()
 {
+  task_pool.join_all();
 }
