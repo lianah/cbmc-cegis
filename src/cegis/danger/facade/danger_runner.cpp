@@ -10,9 +10,9 @@
 #include <cegis/genetic/instruction_set_info_factory.h>
 #include <cegis/genetic/random_mutate.h>
 #include <cegis/genetic/random_cross.h>
-#include <cegis/genetic/symex_fitness.h>
 #include <cegis/genetic/genetic_constant_strategy.h>
 #include <cegis/genetic/genetic_preprocessing.h>
+#include <cegis/genetic/lazy_fitness.h>
 #include <cegis/genetic/symex_test_runner.h>
 #include <cegis/seed/null_seed.h>
 #include <cegis/seed/literals_seed.h>

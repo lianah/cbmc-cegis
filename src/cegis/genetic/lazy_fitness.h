@@ -95,6 +95,6 @@ public:
   individualt::fitnesst get_target_fitness() const;
 };
 
-#include "symex_fitness.inc"
+#include "lazy_fitness.inc"
 
 #endif /* CEGIS_GENETIC_SYMEX_FITNESS_H_ */
