@@ -34,6 +34,7 @@ class danger_learn_configt
   const danger_programt &original_program;
   danger_programt program;
   danger_variable_idst var_ids;
+  size_t num_consts;
 public:
   /**
    * @brief Counterexample type for this CEGIS component.
@@ -117,6 +118,24 @@ public:
    * @param candidate
    */
   void show_candidate(messaget::mstreamt &os, const candidatet &candidate);
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @return
+   */
+  size_t get_num_vars() const;
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @return
+   */
+  size_t get_num_consts() const;
 };
 
 #endif /* CEGIS_DANGER_LEARN_CONFIG_H_ */

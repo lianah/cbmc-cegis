@@ -11,7 +11,7 @@
 #include <cegis/danger/symex/learn/danger_learn_config.h>
 
 danger_learn_configt::danger_learn_configt(const danger_programt &program) :
-    original_program(program)
+    original_program(program), num_consts(0u)
 {
 }
 
@@ -24,7 +24,7 @@ void danger_learn_configt::process(const counterexamplest &counterexamples,
 {
   program=original_program;
   var_ids.clear();
-  const size_t num_consts=get_danger_variable_ids(program.st, var_ids);
+  num_consts=get_danger_variable_ids(program.st, var_ids);
   const size_t num_vars=var_ids.size();
   null_message_handlert msg;
   add_danger_library(program, msg, num_vars, num_consts, max_solution_size);
@@ -57,4 +57,14 @@ void danger_learn_configt::show_candidate(messaget::mstreamt &os,
     const candidatet &candidate)
 {
   print_danger_program(os, program, candidate);
+}
+
+size_t danger_learn_configt::get_num_vars() const
+{
+  return var_ids.size();
+}
+
+size_t danger_learn_configt::get_num_consts() const
+{
+  return num_consts;
 }

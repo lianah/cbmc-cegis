@@ -1,6 +1,6 @@
 /*******************************************************************\
 
-Module:
+  Module:
 
 Author: Daniel Kroening, kroening@kroening.com
 
@@ -33,15 +33,11 @@ struct cprover_library_entryt
 } cprover_library[]=
 #include "cprover_library.inc"
 
-void add_cprover_library(
-  const std::set<irep_idt> &functions,
-  symbol_tablet &symbol_table,
-  message_handlert &message_handler,
-  const std::string library_text_prefix)
+unsigned get_cprover_library_text(std::string &result,
+    const std::set<irep_idt> &functions,
+    const symbol_tablet &symbol_table,
+    const std::string library_text_prefix)
 {
-  if(config.ansi_c.lib==configt::ansi_ct::LIB_NONE)
-    return;
-
   std::ostringstream library_text;
 
   library_text <<
@@ -74,10 +70,26 @@ void add_cprover_library(
       }
     }
   }
+  result=library_text.str();
+  return count;
+}
+
+void add_cprover_library(
+  const std::set<irep_idt> &functions,
+  symbol_tablet &symbol_table,
+  message_handlert &message_handler,
+  const std::string library_text_prefix)
+{
+  if(config.ansi_c.lib==configt::ansi_ct::LIB_NONE)
+    return;
+
+  std::string library_text;
+  const unsigned count=get_cprover_library_text(library_text, functions,
+      symbol_table, library_text_prefix);
 
   if(count>0)
   {
-    std::istringstream in(library_text.str());
+    std::istringstream in(library_text);
     
     // switch mode temporarily from gcc C++ to gcc C flavour
     configt::ansi_ct::flavourt old_mode=config.ansi_c.mode;

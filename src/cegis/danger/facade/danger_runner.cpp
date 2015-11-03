@@ -13,7 +13,7 @@
 #include <cegis/genetic/genetic_constant_strategy.h>
 #include <cegis/genetic/genetic_preprocessing.h>
 #include <cegis/genetic/lazy_fitness.h>
-#include <cegis/genetic/symex_test_runner.h>
+#include <cegis/genetic/concrete_test_runner.h>
 #include <cegis/seed/null_seed.h>
 #include <cegis/seed/literals_seed.h>
 #include <cegis/symex/cegis_symex_learn.h>
@@ -22,6 +22,7 @@
 
 #include <cegis/danger/constant/constant_strategy.h>
 #include <cegis/danger/constant/default_constant_strategy.h>
+#include <cegis/danger/fitness/concrete_fitness_source_provider.h>
 #include <cegis/danger/instrument/meta_variables.h>
 #include <cegis/danger/preprocess/danger_preprocessing.h>
 #include <cegis/danger/symex/learn/add_variable_refs.h>
@@ -173,6 +174,16 @@ public:
     }
     return user_max_prog_size;
   }
+
+  size_t operator()() const
+  {
+    const danger_programt::loopst &l=prog.loops;
+    const size_t max_num_skolem=
+        std::max_element(l.begin(), l.end(),
+            [](const danger_programt::loopt &l, const danger_programt::loopt &r)
+            { return l.skolem_choices.size() < r.skolem_choices.size();})->skolem_choices.size();
+    return std::max(max_num_skolem, user_max_prog_size);
+  }
 };
 }
 
@@ -209,13 +220,14 @@ int run_genetic(mstreamt &os, const optionst &opt, const danger_programt &prog,
     tournament_selectt select(rnd, pop_size, rounds);
     random_mutatet mutate(rnd, num_consts);
     random_crosst cross(rnd);
-    danger_fitness_configt config(info_fac, prog);
-    symex_test_runnert<danger_fitness_configt> test_runner(opt, config);
-    typedef lazy_fitnesst<symex_test_runnert<danger_fitness_configt> > fitnesst;
+    danger_fitness_configt converter(info_fac, prog);
+    concrete_fitness_source_providert src(prog, std::ref(max_prog_sz));
+    concrete_test_runnert test_runner(std::ref(src));
+    typedef lazy_fitnesst<concrete_test_runnert> fitnesst;
     fitnesst fitness(test_runner);
     ga_learnt<tournament_selectt, random_mutatet, random_crosst, fitnesst,
         danger_fitness_configt> learn(opt, select, mutate, cross, fitness,
-        config);
+        converter);
     return run_parallel(os, opt, prog, learn, preproc);
   }
   danger_learn_configt learn_config(prog);

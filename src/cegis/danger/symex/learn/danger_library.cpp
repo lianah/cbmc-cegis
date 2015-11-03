@@ -83,17 +83,10 @@ void set_init_values(danger_programt &prog)
   pos=init_array(st, body, DANGER_OPS, --pos);
   pos=init_array(st, body, DANGER_RESULT_OPS, pos);
 }
-}
 
-void add_danger_library(danger_programt &prog, message_handlert &msg,
-    const size_t num_vars, const size_t num_consts,
+std::string get_prefix(const size_t num_vars, const size_t num_consts,
     const size_t max_solution_size)
 {
-  symbol_tablet &symbol_table=prog.st;
-  goto_functionst &goto_functions=prog.gf;
-  add_placeholder(symbol_table);
-  std::set<irep_idt> functions;
-  functions.insert(DANGER_EXECUTE);
   std::string prefix("#define __CPROVER_danger_number_of_vars ");
   prefix+=integer2string(num_vars);
   prefix+="\n#define __CPROVER_danger_number_of_consts ";
@@ -102,9 +95,35 @@ void add_danger_library(danger_programt &prog, message_handlert &msg,
   prefix+=integer2string(num_vars + max_solution_size - 1);
   prefix+="\n#define __CPROVER_danger_max_solution_size ";
   prefix+=integer2string(max_solution_size);
-  prefix+='\n';
-  add_cprover_library(functions, symbol_table, msg, prefix);
-  goto_convert(DANGER_EXECUTE, symbol_table, goto_functions, msg);
+  return prefix+='\n';
+}
+}
+
+std::string get_danger_library_text(const size_t num_vars,
+    const size_t num_consts, const size_t max_solution_size)
+{
+  symbol_tablet st;
+  add_placeholder(st);
+  std::set<irep_idt> functions;
+  functions.insert(DANGER_EXECUTE);
+  std::string text;
+  get_cprover_library_text(text, functions, st,
+      get_prefix(num_vars, num_consts, max_solution_size));
+  return text;
+}
+
+void add_danger_library(danger_programt &prog, message_handlert &msg,
+    const size_t num_vars, const size_t num_consts,
+    const size_t max_solution_size)
+{
+  symbol_tablet &st=prog.st;
+  goto_functionst &goto_functions=prog.gf;
+  add_placeholder(st);
+  std::set<irep_idt> functions;
+  functions.insert(DANGER_EXECUTE);
+  const std::string prefix(get_prefix(num_vars, num_consts, max_solution_size));
+  add_cprover_library(functions, st, msg, prefix);
+  goto_convert(DANGER_EXECUTE, st, goto_functions, msg);
   set_loop_id(goto_functions);
   set_init_values(prog);
 }

@@ -25,7 +25,7 @@
  */
 class concrete_test_runnert
 {
-  const std::function<std::string(void)> &source_code_provider;
+  const std::function<std::string(void)> source_code_provider;
   const temporary_filet executable;
   bool executable_compiled;
   task_poolt task_pool;
@@ -40,8 +40,7 @@ public:
    *
    * @param source_code_provider
    */
-  concrete_test_runnert(
-      const std::function<std::string(void)> &source_code_provider);
+  concrete_test_runnert(std::function<std::string(void)> source_code_provider);
 
   /**
    * @brief
