@@ -89,23 +89,27 @@ void __CPROVER_danger_execute(struct __CPROVER_danger_instructiont *program,
           if (opcode < 13)
             if (opcode < 12)
             {
-    __CPROVER_danger_opcode_first_11: op1%=sizeof(op0);
-    __CPROVER_danger_opcode_last_11: result=op0 << op1;
+    __CPROVER_danger_opcode_first_11: result=op1;
+    result%=sizeof(op0);
+    __CPROVER_danger_opcode_last_11: result=op0 << result;
             }
             else
             {
-    __CPROVER_danger_opcode_first_12:  op1%=sizeof(op0);
-    __CPROVER_danger_opcode_last_12:  result=op0 >> op1;
+    __CPROVER_danger_opcode_first_12:  result=op1;
+    result%=sizeof(op0);
+    __CPROVER_danger_opcode_last_12:  result=op0 >> result;
             }
           else if (opcode < 14)
           {
-    __CPROVER_danger_opcode_first_13: op1%=sizeof(op0);
-    __CPROVER_danger_opcode_last_13: result=op0 >> op1;
+    __CPROVER_danger_opcode_first_13: result=op1;
+    result%=sizeof(op0);
+    __CPROVER_danger_opcode_last_13: result=op0 >> result;
           }
           else
           {
-    __CPROVER_danger_opcode_first_14: op1%=sizeof(op0);
-    __CPROVER_danger_opcode_last_14: result=sop0 >> op1;
+    __CPROVER_danger_opcode_first_14: result=op1;
+    result%=sizeof(op0);
+    __CPROVER_danger_opcode_last_14: result=sop0 >> result;
           }
     else if (opcode < 19)
       if (opcode < 17)
