@@ -177,7 +177,8 @@ bool handle_internals(const std::string &line)
       || "    __CPROVER_rounding_mode = 0;" == line
       || "    __CPROVER_thread_id = (unsigned long int)0;" == line
       || "    __CPROVER_threads_exited = ARRAY_OF((_Bool)0);" == line
-      || "  assert((_Bool)0);" == line;
+      || "  assert((_Bool)0);" == line || "void assert(void);" == line
+      || "static signed int assert#return_value;" == line;
 }
 
 std::string &post_process(std::string &source, std::stringstream &ss)

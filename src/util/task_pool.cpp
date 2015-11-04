@@ -34,7 +34,7 @@ void execute_and_remove(task_poolt::handlerst &handlers, const pid_t pid,
   }
 }
 
-void cleanup(task_poolt::task_idst &tasks, task_poolt::handlerst &handlers)
+void cleanup(task_poolt::task_idst &task_ids, task_poolt::handlerst &handlers)
 {
 #ifndef _WIN32
   std::map<task_poolt::task_idt, int> joined;
@@ -46,7 +46,7 @@ void cleanup(task_poolt::task_idst &tasks, task_poolt::handlerst &handlers)
   {
     const task_poolt::task_idt id=task.first;
     execute_and_remove(handlers, id, task.second);
-    tasks.erase(id);
+    task_ids.erase(id);
   }
 #else
   NOT_SUPPORTED();

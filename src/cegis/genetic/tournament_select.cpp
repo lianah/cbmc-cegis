@@ -173,7 +173,6 @@ tournament_selectt::selectiont tournament_selectt::select(populationt &pop)
   arenat arena(pop);
   for (size_t contestants=0; contestants < rounds;)
   {
-    const populationt::size_type idx=rand() % pop.size();
     populationt::iterator contestant=pop.begin();
     std::advance(contestant, rand() % pop.size());
     if (arena.add_contestant(contestant)) ++contestants;

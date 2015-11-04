@@ -95,7 +95,7 @@ public:
 
   void operator()(const int status) const
   {
-    if(!WIFEXITED(status)) return;
+    if (!WIFEXITED(status)) return;
     if (EXIT_SUCCESS == WEXITSTATUS(status)) ++ind.fitness;
   }
 };
