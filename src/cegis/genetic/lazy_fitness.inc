@@ -3,9 +3,6 @@
 #include <cbmc/cbmc_solvers.h>
 #include <cbmc/bmc.h>
 
-// XXX: Debug
-#include <iostream>
-
 template<class test_runnert>
 lazy_fitnesst<test_runnert>::lazy_fitnesst(test_runnert &test_runner) :
     test_runner(test_runner)
@@ -27,7 +24,6 @@ void lazy_fitnesst<test_runnert>::seed(seedt &seed) const
 template<class test_runnert>
 void lazy_fitnesst<test_runnert>::add_test_case(const counterexamplet &ce)
 {
-  std::cout << "<ce>" << ce.begin()->second.to_string() << "</ce>" << std::endl;
   const counterexamplest::const_iterator end=counterexamples.end();
   if (end == std::find(counterexamples.begin(), counterexamples.end(), ce))
     counterexamples.push_back(ce);
@@ -48,7 +44,6 @@ typename lazy_fitnesst<test_runnert>::populationt::iterator lazy_fitnesst<
     test_runnert>::init(populationt &pop)
 {
   const size_t ces=counterexamples.size();
-  std::cout << "<init>" << ces << "</init>" << std::endl; // XXX: Debug
   for (individualt &individual : pop)
   {
     size_t &executed=executed_test_cases[&individual];
@@ -58,13 +53,6 @@ typename lazy_fitnesst<test_runnert>::populationt::iterator lazy_fitnesst<
     if (pop.end() != candidate)
     {
       test_runner.join();
-      std::cout << "<cand_fitness>" << candidate->fitness << "</cand_fitness>" << std::endl;
-      std::cout << "<cand_exec>" << executed_test_cases[&*candidate] << "</cand_exec>" << std::endl;
-      candidate->fitness=0u;
-      for(const counterexamplet &ce : counterexamples)
-        test_runner.run_test(*candidate, ce);
-      test_runner.join();
-      std::cout << "<tested_candidate>" << candidate->fitness << "</tested_candidate>" << std::endl;
       return candidate;
     }
   }

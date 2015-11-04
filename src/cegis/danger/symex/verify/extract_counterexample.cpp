@@ -4,9 +4,6 @@
 
 #include <cegis/danger/symex/verify/extract_counterexample.h>
 
-// XXX: Debug
-#include <iostream>
-
 namespace
 {
 class is_pc_equalt
@@ -51,8 +48,6 @@ public:
   void operator()(const goto_trace_stept &step)
   {
     if (!should_extract(step)) return;
-    std::cout << "<extract_ce>" << step.pc->code.to_string() << "</extract_ce>" << std::endl; // XXX: Debug
-    std::cout << "<ce_value>" << step.lhs_object_value.to_string() << "</ce_value>" << std::endl; // XXX: Debug
     const symbol_exprt &lhs=step.lhs_object;
     result.insert(std::make_pair(lhs.get_identifier(), step.lhs_object_value));
   }

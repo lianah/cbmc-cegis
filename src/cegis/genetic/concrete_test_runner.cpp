@@ -6,12 +6,6 @@
 
 #include <cegis/genetic/concrete_test_runner.h>
 
-// XXX: Debug
-#include <iostream>
-#include <ansi-c/expr2c.h>
-#include <util/symbol_table.h>
-#include <util/namespace.h>
-
 #define EXECUTABLE_PREFIX "test_runner"
 #define EXECUTABLE_SUFFIX ".exe"
 #define SOURCE_FILE_PREFIX "concrete_test"
@@ -71,9 +65,6 @@ void prepare_executable(bool &executable_compiled,
   std::string source;
   implement_deserialise(source);
   source+=source_code_provider();
-  std::cout << "<src>" << std::endl;
-  std::cout << source << std::endl;
-  std::cout << "</src>" << std::endl;
   write_file(source_file_name.c_str(), source);
   std::string compile_command(COMPILE_COMMAND);
   compile_command+=source_file_name;
@@ -97,25 +88,13 @@ public:
 
   int operator()() const
   {
-    std::cout << "<run>" << command << "</run>" << std::endl;
     const int result=system(command.c_str());
-    std::cout << "<result>" << result << "</result>" << std::endl;
-    std::cout << "<WIFEXITED>" << WIFEXITED(result) << "</WIFEXITED>" << std::endl;
-    std::cout << "<WEXITSTATUS>" << WEXITSTATUS(result) << "</WEXITSTATUS>" << std::endl;
-    std::cout << "<WTERMSIG>" << WTERMSIG(result) << "</WTERMSIG>" << std::endl;
-    //return result;
     if (!WIFEXITED(result)) return EXIT_FAILURE;
     return WEXITSTATUS(result);
-    //return system(command.c_str());
   }
 
   void operator()(const int status) const
   {
-    std::cout << "<status>" << status << "</status>" << std::endl;
-    std::cout << "<WIFEXITED>" << WIFEXITED(status) << "</WIFEXITED>" << std::endl;
-    std::cout << "<WEXITSTATUS>" << WEXITSTATUS(status) << "</WEXITSTATUS>" << std::endl;
-    std::cout << "<WTERMSIG>" << WTERMSIG(status) << "</WTERMSIG>" << std::endl;
-    std::cout << "<join>" << std::boolalpha << (EXIT_SUCCESS == WEXITSTATUS(status)) << "</join>" << std::endl;
     if(!WIFEXITED(status)) return;
     if (EXIT_SUCCESS == WEXITSTATUS(status)) ++ind.fitness;
   }
@@ -132,8 +111,6 @@ void concrete_test_runnert::run_test(individualt &ind,
   std::string command(exe);
   for (const std::pair<const irep_idt, exprt> &assignment : ce)
   {
-    const symbol_tablet st;
-    const namespacet ns(st);
     command+=" ";
     const bv_arithmetict arith(assignment.second);
     const mp_integer::llong_t v=arith.to_integer().to_long();

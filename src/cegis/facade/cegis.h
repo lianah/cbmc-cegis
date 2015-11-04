@@ -39,7 +39,6 @@ int run_cegis(learnt &learn, oraclet &oracle, preproct &preproc, seedt &seed, si
     do
     {
       const typename learnt::candidatet &candidate=learn.next_candidate();
-      learn.show_candidate(os);
       oracle.verify(candidate);
     } while (oracle.has_counterexamples()
           && learn.learn(oracle.counterexamples_begin(), oracle.counterexamples_end()));
