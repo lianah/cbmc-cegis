@@ -1,5 +1,8 @@
 #include <util/options.h>
 
+// XXX: Debug
+#include <iostream>
+
 template<class selectt, class mutatet, class crosst, class fitnesst,
     class convertt>
 ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::ga_learnt(
@@ -73,6 +76,8 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::set_fitness(
   fitness.set_fitness(ind);
   typedef typename selectt::individualt::fitnesst target_fitnesst;
   const target_fitnesst target_fitness=fitness.get_target_fitness();
+  std::cout << "<target_fitness>" << target_fitness << "</target_fitness>" << std::endl;
+  std::cout << "<ind.fitness>" << ind.fitness << "</ind.fitness>" << std::endl;
   const bool have_solution=(target_fitness == ind.fitness);
   if (have_solution) convert.convert(current_candidate, ind);
   return have_solution;
@@ -84,6 +89,7 @@ template<class itert>
 bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
     const itert &last)
 {
+  std::cout << "learn(first, last)" << std::endl;
   for (; first != last; ++first)
     fitness.add_test_case(*first);
   const typename selectt::populationt::iterator it=fitness.init(pop);
@@ -93,6 +99,7 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
     return true;
   }
 
+  std::cout << "</init>" << std::endl;
   typename selectt::selectiont selection;
   bool evolving=true;
   while (evolving)

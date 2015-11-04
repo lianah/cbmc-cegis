@@ -36,7 +36,7 @@ void __CPROVER_danger_execute(struct __CPROVER_danger_instructiont *program,
     const unsigned int * const op2_ptr=__CPROVER_danger_OPS[op2_id];
     __CPROVER_assume(op0_ptr && op1_ptr && op2_ptr);  // No null pointers in op array
     const unsigned int op0=*op0_ptr;
-    const unsigned int op1=*op1_ptr;
+    unsigned int op1=*op1_ptr;
     __CPROVER_assume(opcode != 19 && opcode != 20 || op1); // Avoid div by 0.
     const unsigned int op2=*op2_ptr;
 #define sop0 ((int) op0)
@@ -88,13 +88,25 @@ void __CPROVER_danger_execute(struct __CPROVER_danger_instructiont *program,
         else
           if (opcode < 13)
             if (opcode < 12)
-    __CPROVER_danger_opcode_11: result=op0 << op1;
+            {
+    __CPROVER_danger_opcode_first_11: op1%=sizeof(op0);
+    __CPROVER_danger_opcode_last_11: result=op0 << op1;
+            }
             else
-    __CPROVER_danger_opcode_12:  result=op0 >> op1;
+            {
+    __CPROVER_danger_opcode_first_12:  op1%=sizeof(op0);
+    __CPROVER_danger_opcode_last_12:  result=op0 >> op1;
+            }
           else if (opcode < 14)
-    __CPROVER_danger_opcode_13: result=op0 >> op1;
+          {
+    __CPROVER_danger_opcode_first_13: op1%=sizeof(op0);
+    __CPROVER_danger_opcode_last_13: result=op0 >> op1;
+          }
           else
-    __CPROVER_danger_opcode_14: result=sop0 >> op1;
+          {
+    __CPROVER_danger_opcode_first_14: op1%=sizeof(op0);
+    __CPROVER_danger_opcode_last_14: result=sop0 >> op1;
+          }
     else if (opcode < 19)
       if (opcode < 17)
         if (opcode < 16)

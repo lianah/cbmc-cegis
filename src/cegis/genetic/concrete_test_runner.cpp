@@ -6,6 +6,12 @@
 
 #include <cegis/genetic/concrete_test_runner.h>
 
+// XXX: Debug
+#include <iostream>
+#include <ansi-c/expr2c.h>
+#include <util/symbol_table.h>
+#include <util/namespace.h>
+
 #define EXECUTABLE_PREFIX "test_runner"
 #define EXECUTABLE_SUFFIX ".exe"
 #define SOURCE_FILE_PREFIX "concrete_test"
@@ -28,7 +34,7 @@ void implement_deserialise(std::string &source)
 {
   source+=
       "#include <stdlib.h>\n\n"
-          "#define __CPROVER_cegis_next_arg() atoi(argv[__CPROVER_cegis_deserialise_index++])\n"
+          "#define __CPROVER_cegis_next_arg() atol(argv[__CPROVER_cegis_deserialise_index++])\n"
           "#define __CPROVER_cegis_deserialise_init() unsigned int __CPROVER_cegis_deserialise_index=__CPROVER_cegis_first_prog_offset\n"
           "#define __CPROVER_cegis_declare_prog(var_name, sz) const size_t sz=__CPROVER_cegis_next_arg(); \\\n"
           "  struct __CPROVER_danger_instructiont var_name[sz]; \\\n"
@@ -41,7 +47,7 @@ void implement_deserialise(std::string &source)
           "}\n"
           "#define __CPROVER_cegis_deserialise_x0(var_name) var_name=__CPROVER_cegis_next_arg()\n"
           "#define __CPROVER_cegis_ce_value_init() unsigned int __CPROVER_cegis_ce_index=1u\n"
-          "#define __CPROVER_cegis_ce_value() atoi(argv[__CPROVER_cegis_ce_index++])\n";
+          "#define __CPROVER_cegis_ce_value() atol(argv[__CPROVER_cegis_ce_index++])\n";
 
 }
 
@@ -51,7 +57,7 @@ void write_file(const char * const path, const std::string &content)
   ofs << content;
 }
 
-#define COMPILE_COMMAND "gcc -std=c99 "
+#define COMPILE_COMMAND "gcc -std=c99 -g0 -O3 "
 #define EXECUTABLE_SEPARATOR " -o "
 #define COMPLING_FAILED "Compiling test runner failed."
 
@@ -65,6 +71,9 @@ void prepare_executable(bool &executable_compiled,
   std::string source;
   implement_deserialise(source);
   source+=source_code_provider();
+  std::cout << "<src>" << std::endl;
+  std::cout << source << std::endl;
+  std::cout << "</src>" << std::endl;
   write_file(source_file_name.c_str(), source);
   std::string compile_command(COMPILE_COMMAND);
   compile_command+=source_file_name;
@@ -88,12 +97,27 @@ public:
 
   int operator()() const
   {
-    return system(command.c_str());
+    std::cout << "<run>" << command << "</run>" << std::endl;
+    const int result=system(command.c_str());
+    std::cout << "<result>" << result << "</result>" << std::endl;
+    std::cout << "<WIFEXITED>" << WIFEXITED(result) << "</WIFEXITED>" << std::endl;
+    std::cout << "<WEXITSTATUS>" << WEXITSTATUS(result) << "</WEXITSTATUS>" << std::endl;
+    std::cout << "<WTERMSIG>" << WTERMSIG(result) << "</WTERMSIG>" << std::endl;
+    //return result;
+    if (!WIFEXITED(result)) return EXIT_FAILURE;
+    return WEXITSTATUS(result);
+    //return system(command.c_str());
   }
 
   void operator()(const int status) const
   {
-    if (EXIT_SUCCESS == status) ++ind.fitness;
+    std::cout << "<status>" << status << "</status>" << std::endl;
+    std::cout << "<WIFEXITED>" << WIFEXITED(status) << "</WIFEXITED>" << std::endl;
+    std::cout << "<WEXITSTATUS>" << WEXITSTATUS(status) << "</WEXITSTATUS>" << std::endl;
+    std::cout << "<WTERMSIG>" << WTERMSIG(status) << "</WTERMSIG>" << std::endl;
+    std::cout << "<join>" << std::boolalpha << (EXIT_SUCCESS == WEXITSTATUS(status)) << "</join>" << std::endl;
+    if(!WIFEXITED(status)) return;
+    if (EXIT_SUCCESS == WEXITSTATUS(status)) ++ind.fitness;
   }
 };
 
@@ -108,24 +132,27 @@ void concrete_test_runnert::run_test(individualt &ind,
   std::string command(exe);
   for (const std::pair<const irep_idt, exprt> &assignment : ce)
   {
+    const symbol_tablet st;
+    const namespacet ns(st);
     command+=" ";
     const bv_arithmetict arith(assignment.second);
-    const mp_integer::ullong_t v=arith.to_integer().to_ulong();
-    command+=integer2string(v);
+    const mp_integer::llong_t v=arith.to_integer().to_long();
+    command+=integer2string(static_cast<unsigned int>(v));
   }
   for (const individualt::programt &prog : ind.programs)
   {
+    if (prog.empty()) continue;
     command+=" ";
     command+=integer2string(prog.size());
     for (const individualt::instructiont &instr : prog)
     {
       command+=" ";
-      command+=integer2string(instr.opcode);
+      command+=integer2string(static_cast<unsigned int>(instr.opcode));
       size_t op_count=0;
       for (const individualt::instructiont::opt &op : instr.ops)
       {
         command+=" ";
-        command+=integer2string(op);
+        command+=integer2string(static_cast<unsigned int>(op));
         ++op_count;
       }
       for (; op_count < 3u; ++op_count)
@@ -135,7 +162,7 @@ void concrete_test_runnert::run_test(individualt &ind,
   for (const individualt::nondet_choices::value_type &x0 : ind.x0)
   {
     command+=" ";
-    command+=integer2string(x0);
+    command+=integer2string(static_cast<unsigned int>(x0));
   }
   const conrete_test_runner_taskt task(ind, command);
   task_pool.schedule(task, task);

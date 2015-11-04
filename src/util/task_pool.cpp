@@ -23,6 +23,17 @@ task_poolt::~task_poolt()
 
 namespace
 {
+void execute_and_remove(task_poolt::handlerst &handlers, const pid_t pid,
+    const int status)
+{
+  const task_poolt::handlerst::iterator it=handlers.find(pid);
+  if (handlers.end() != it)
+  {
+    it->second(status);
+    handlers.erase(it);
+  }
+}
+
 void cleanup(task_poolt::task_idst &tasks, task_poolt::handlerst &handlers)
 {
 #ifndef _WIN32
@@ -34,12 +45,7 @@ void cleanup(task_poolt::task_idst &tasks, task_poolt::handlerst &handlers)
   for (const std::pair<task_poolt::task_idt, int> &task : joined)
   {
     const task_poolt::task_idt id=task.first;
-    const task_poolt::handlerst::iterator it=handlers.find(id);
-    if (handlers.end() != it)
-    {
-      it->second(task.second);
-      handlers.erase(it);
-    }
+    execute_and_remove(handlers, id, task.second);
     tasks.erase(id);
   }
 #else
@@ -48,11 +54,18 @@ void cleanup(task_poolt::task_idst &tasks, task_poolt::handlerst &handlers)
 }
 }
 
+#define FORK_ERROR "Fork system call failed."
+
 task_poolt::task_idt task_poolt::schedule(const taskt &task)
 {
   cleanup(task_ids, handlers);
 #ifndef _WIN32
   const pid_t child_pid=fork();
+  if (child_pid == -1)
+  {
+    perror(FORK_ERROR);
+    throw std::runtime_error(FORK_ERROR);
+  }
   if (child_pid)
   {
     task_ids.insert(child_pid);
@@ -86,18 +99,27 @@ void task_poolt::join(const task_idt id)
 #ifndef _WIN32
   int status;
   waitpid(id, &status, 0);
-  const handlerst::iterator it=handlers.find(id);
-  if (handlers.end() != it)
-  {
-    it->second(status);
-    handlers.erase(it);
-  }
+  execute_and_remove(handlers, id, status);
   task_ids.erase(task_id);
+#else
+  NOT_SUPPORTED();
 #endif
 }
 
 void task_poolt::join_all()
 {
-  for (const task_idt id : task_ids)
-    join(id);
+#ifndef _WIN32
+  const size_t num_children=task_ids.size();
+  int status;
+  for (size_t i=0; i < num_children; ++i)
+  {
+    const pid_t pid=waitpid(-1, &status, 0);
+    assert(pid > 0);
+    execute_and_remove(handlers, pid, status);
+  }
+  task_ids.clear();
+  assert(handlers.empty());
+#else
+  NOT_SUPPORTED();
+#endif
 }

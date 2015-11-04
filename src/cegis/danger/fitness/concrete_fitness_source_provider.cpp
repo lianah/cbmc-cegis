@@ -35,6 +35,10 @@ void add_danger_execute(std::string &source, const size_t num_vars,
   std::string text=get_danger_library_text(num_vars, num_consts, max_prog_size);
   substitute(text, "#define opcode program[i].opcode",
       "const opcodet opcode=program[i].opcode;");
+  substitute(text,
+      "    *(unsigned int *)__CPROVER_danger_RESULT_OPS[i]=result;\n",
+      "    if(i == (size-1)) *(unsigned int *)__CPROVER_danger_RESULT_OPS[__CPROVER_danger_max_solution_size-1]=result;\n"
+          "    else *(unsigned int *)__CPROVER_danger_RESULT_OPS[i]=result;\n");
   source+=text;
 }
 
