@@ -6,6 +6,11 @@
 
 #include <cegis/genetic/dynamic_test_runner.h>
 
+// XXX: Debug
+#include <iostream>
+#include <iterator>
+// XXX: Debug
+
 #define LIBRARY_PREFIX "fitness_test"
 #ifndef _WIN32
 #define LIBRARY_SUFFIX ".so"
@@ -61,7 +66,8 @@ void write_file(const char * const path, const std::string &content)
 
 #define SOURCE_FILE_PREFIX "concrete_test"
 #define SOURCE_FILE_SUFFIX ".c"
-#define COMPILE_COMMAND "gcc -std=c99 -g0 -O3 -shared -rdynamic -fPIC "
+//#define COMPILE_COMMAND "gcc -std=c99 -g0 -O3 -shared -rdynamic -fPIC "
+#define COMPILE_COMMAND "gcc -std=c99 -g3 -O0 -shared -rdynamic -fPIC "
 #define ARTIFACT_SEPARATOR " -o "
 #define FUNC "__CPROVER_cegis_test_fitness"
 #define COMPLING_FAILED "Compiling test runner failed."
@@ -142,7 +148,17 @@ void dynamic_test_runnert::run_test(individualt &ind, const counterexamplet &ce)
   const char *argv[argc];
   for (int i=0; i < argc; ++i)
     argv[i]=args[i].c_str();
-  if (EXIT_SUCCESS == fitness_tester(argc, argv)) ++ind.fitness;
+
+  if (EXIT_SUCCESS == fitness_tester(argc, argv))
+  {
+    // XXX: Debug
+    std::cout << "<fitness_tester>" << std::endl;
+     std::copy(args.begin(), args.end(),
+     std::ostream_iterator<std::string>(std::cout, " "));
+     std::cout << "</fitness_tester>" << std::endl;
+    // XXX: Debug
+    ++ind.fitness;
+  }
 }
 
 void dynamic_test_runnert::join()

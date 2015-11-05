@@ -10,6 +10,9 @@
 #include <cegis/danger/symex/verify/insert_constraint.h>
 #include <cegis/danger/fitness/concrete_fitness_source_provider.h>
 
+// XXX: Debug
+#include <iostream>
+
 concrete_fitness_source_providert::concrete_fitness_source_providert(
     const danger_programt &prog, const std::function<size_t(void)> max_size) :
     prog(prog), max_size(max_size), learn_config(prog)
@@ -27,6 +30,7 @@ void add_assume_implementation(std::string &source)
   source+=
       "#define __CPROVER_cegis_assert(constraint) if(constraint) { return 0; } else { return 1; }\n";
   source+="static unsigned int __CPROVER_danger_assume_failed=0;\n";
+  source+="#define __CPROVER_assume(constraint) \n";
   source+=
       "#define __CPROVER_danger_execute_assume(constraint) if (!(constraint)) { __CPROVER_danger_assume_failed=1; return; }\n";
 }
@@ -37,13 +41,26 @@ void add_danger_execute(std::string &source, const size_t num_vars,
   std::string text=get_danger_library_text(num_vars, num_consts, max_prog_size);
   substitute(text, "#define opcode program[i].opcode",
       "const opcodet opcode=program[i].opcode;");
-  substitute(text,
-      "    *(unsigned int *)__CPROVER_danger_RESULT_OPS[i]=result;\n",
-      "    if(i == (size-1)) *(unsigned int *)__CPROVER_danger_RESULT_OPS[__CPROVER_danger_max_solution_size-1]=result;\n"
-          "    else *(unsigned int *)__CPROVER_danger_RESULT_OPS[i]=result;\n");
+  substitute(text, "#line 1 \"<builtin-library>\"",
+      "//#line 2 \"<builtin-library>\"");
+  substitute(text, "#line 1 \"<builtin-library-__CPROVER_danger_execute>\"",
+      "//#line 2 \"<builtin-library-__CPROVER_danger_execute>\"");
+  const char result_op[]=
+      "    *(unsigned int *)__CPROVER_danger_RESULT_OPS[i]=result;\n  }\n";
+  const std::string::size_type pos=text.find(result_op);
+  assert(std::string::npos != pos);
+  text.insert(pos + strlen(result_op),
+      "if (size <= 0 || size >= __CPROVER_danger_max_solution_size) return;\n"
+          "int diff=__CPROVER_danger_max_solution_size-size;\n"
+          "for (int i = size-1; i >= 0; --i) {\n"
+          "  *(unsigned int *)__CPROVER_danger_RESULT_OPS[i+diff]=*(unsigned int *)__CPROVER_danger_RESULT_OPS[i];\n"
+          "}\n");
+  substitute(text, "__CPROVER_assume(op0_ptr && op1_ptr && op2_ptr)",
+      "__CPROVER_danger_execute_assume(op0_ptr && op1_ptr && op2_ptr)");
+  substitute(text, "__CPROVER_assume(opcode != 19 && opcode != 20 || op1)",
+      "__CPROVER_danger_execute_assume(opcode != 19 && opcode != 20 || op1)");
   substitute(text, "void __CPROVER_danger_execute(",
       "void __CPROVER_danger_execute_impl(");
-  substitute(text, "__CPROVER_assume(", "__CPROVER_danger_execute_assume(");
   source+=text;
   source+=
       "#define __CPROVER_danger_execute(prog, size) __CPROVER_danger_execute_impl(prog, size); if (__CPROVER_danger_assume_failed) { __CPROVER_danger_assume_failed=0; return 1; }\n";
