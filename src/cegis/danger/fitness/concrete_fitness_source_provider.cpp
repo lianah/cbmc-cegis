@@ -26,7 +26,9 @@ void add_assume_implementation(std::string &source)
 {
   source+=
       "#define __CPROVER_cegis_assert(constraint) if(constraint) { return 0; } else { return 1; }\n";
-  source+="#define __CPROVER_assume(constraint) \n";
+  source+="static unsigned int __CPROVER_danger_assume_failed=0;\n";
+  source+=
+      "#define __CPROVER_danger_execute_assume(constraint) if (!(constraint)) { __CPROVER_danger_assume_failed=1; return; }\n";
 }
 
 void add_danger_execute(std::string &source, const size_t num_vars,
@@ -39,7 +41,12 @@ void add_danger_execute(std::string &source, const size_t num_vars,
       "    *(unsigned int *)__CPROVER_danger_RESULT_OPS[i]=result;\n",
       "    if(i == (size-1)) *(unsigned int *)__CPROVER_danger_RESULT_OPS[__CPROVER_danger_max_solution_size-1]=result;\n"
           "    else *(unsigned int *)__CPROVER_danger_RESULT_OPS[i]=result;\n");
+  substitute(text, "void __CPROVER_danger_execute(",
+      "void __CPROVER_danger_execute_impl(");
+  substitute(text, "__CPROVER_assume(", "__CPROVER_danger_execute_assume(");
   source+=text;
+  source+=
+      "#define __CPROVER_danger_execute(prog, size) __CPROVER_danger_execute_impl(prog, size); if (__CPROVER_danger_assume_failed) { __CPROVER_danger_assume_failed=0; return 1; }\n";
 }
 
 bool contains(const std::string &haystack, const std::string &needle)

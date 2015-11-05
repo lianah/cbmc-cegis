@@ -14,6 +14,7 @@
 #include <cegis/genetic/genetic_preprocessing.h>
 #include <cegis/genetic/lazy_fitness.h>
 #include <cegis/genetic/concrete_test_runner.h>
+#include <cegis/genetic/dynamic_test_runner.h>
 #include <cegis/seed/null_seed.h>
 #include <cegis/seed/literals_seed.h>
 #include <cegis/symex/cegis_symex_learn.h>
@@ -222,8 +223,10 @@ int run_genetic(mstreamt &os, const optionst &opt, const danger_programt &prog,
     random_crosst cross(rnd);
     danger_fitness_configt converter(info_fac, prog);
     concrete_fitness_source_providert src(prog, std::ref(max_prog_sz));
-    concrete_test_runnert test_runner(std::ref(src));
-    typedef lazy_fitnesst<concrete_test_runnert> fitnesst;
+    dynamic_test_runnert test_runner(std::ref(src), std::ref(max_prog_sz));
+    typedef lazy_fitnesst<dynamic_test_runnert> fitnesst;
+    //concrete_test_runnert test_runner(std::ref(src));
+    //typedef lazy_fitnesst<concrete_test_runnert> fitnesst;
     fitnesst fitness(test_runner);
     ga_learnt<tournament_selectt, random_mutatet, random_crosst, fitnesst,
         danger_fitness_configt> learn(opt, select, mutate, cross, fitness,

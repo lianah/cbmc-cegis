@@ -52,7 +52,7 @@ void write_file(const char * const path, const std::string &content)
 }
 
 #define COMPILE_COMMAND "gcc -std=c99 -g0 -O3 "
-#define EXECUTABLE_SEPARATOR " -o "
+#define ARTIFACT_SEPARATOR " -o "
 #define COMPLING_FAILED "Compiling test runner failed."
 
 void prepare_executable(bool &executable_compiled,
@@ -68,7 +68,7 @@ void prepare_executable(bool &executable_compiled,
   write_file(source_file_name.c_str(), source);
   std::string compile_command(COMPILE_COMMAND);
   compile_command+=source_file_name;
-  compile_command+=EXECUTABLE_SEPARATOR;
+  compile_command+=ARTIFACT_SEPARATOR;
   compile_command+=executable;
   const int result=system(compile_command.c_str());
   if (result) throw std::runtime_error(COMPLING_FAILED);
