@@ -4,6 +4,9 @@
 #include <cegis/genetic/random_individual.h>
 #include <cegis/genetic/tournament_select.h>
 
+// XXX: Debug
+#include <iostream>
+
 #define MUTATION_OPS 2u
 
 bool tournament_selectt::selectiont::can_mutate() const
@@ -58,116 +61,105 @@ void tournament_selectt::init(populationt &pop)
 
 namespace
 {
-#define ARENA_SIZE 2u
+typedef tournament_selectt::populationt::iterator contestantt;
+
+class fitness_is_less_thant
+{
+  const contestantt no_contestant;
+public:
+  fitness_is_less_thant(const contestantt &no_contestant) :
+      no_contestant(no_contestant)
+  {
+  }
+
+  bool operator()(const contestantt &lhs, const contestantt &rhs) const
+  {
+    if (lhs == rhs) return false;
+    if (no_contestant == lhs) return false;
+    if (no_contestant == rhs) return true;
+    return lhs->fitness < rhs->fitness;
+  }
+};
+
+class fitness_is_greater_thant
+{
+  const contestantt no_contestant;
+public:
+  fitness_is_greater_thant(const contestantt &no_contestant) :
+      no_contestant(no_contestant)
+  {
+  }
+
+  bool operator()(const contestantt &lhs, const contestantt &rhs) const
+  {
+    if (lhs == rhs) return false;
+    if (no_contestant == lhs) return false;
+    if (no_contestant == rhs) return true;
+    return lhs->fitness > rhs->fitness;
+  }
+};
+
+#define MATCH_SIZE 2u
 
 class arenat
 {
-  typedef tournament_selectt::populationt::iterator contestantt;
+  typedef std::multiset<contestantt, fitness_is_greater_thant> winnerst;
+  typedef std::multiset<contestantt, fitness_is_less_thant> loserst;
   typedef std::pair<contestantt, contestantt> matcht;
   typedef typename tournament_selectt::populationt::value_type::fitnesst fitnesst;
-  std::array<matcht, ARENA_SIZE> matches;
   const contestantt no_contestant;
-  size_t fight_count;
+  winnerst winners;
+  loserst losers;
 
-  bool fill_contestant(contestantt &lhs, const contestantt &rhs)
+  bool contains(const contestantt &c)
   {
-    if (no_contestant != lhs) return false;
-    lhs=rhs;
-    return true;
-  }
-
-  bool fill_matches(const contestantt &contestant)
-  {
-    for (matcht &match : matches)
-    {
-      if (fill_contestant(match.first, contestant)) return true;
-      if (fill_contestant(match.second, contestant)) return true;
-    }
-    return false;
-  }
-
-  bool does_underdog_win() const
-  {
-    return (fight_count / 2) % 2;
-  }
-
-  bool fight(contestantt &champion, const contestantt &challenger)
-  {
-    const bool underdog_wins=does_underdog_win();
-    ++fight_count;
-    const bool champ_is_underdog=champion->fitness < challenger->fitness;
-    if (underdog_wins == champ_is_underdog) return false;
-    champion=challenger;
-    return true;
-  }
-
-  contestantt &get_first(matcht &match)
-  {
-    return does_underdog_win() ? match.second : match.first;
-  }
-
-  contestantt &get_second(matcht &match)
-  {
-    return does_underdog_win() ? match.first : match.second;
-  }
-
-  bool contains(const contestantt &contestant)
-  {
-    auto pred=[&contestant](const matcht &match)
-    {
-      return match.first == contestant || match.second == contestant;
-    };
-    return matches.end() != std::find_if(matches.begin(), matches.end(), pred);
+    if (winners.end() != std::find(winners.begin(), winners.end(), c))
+      return true;
+    return losers.end() != std::find(losers.begin(), losers.end(), c);
   }
 public:
   arenat(tournament_selectt::populationt &pop) :
-      no_contestant(pop.end()), fight_count(0u)
+      no_contestant(pop.end()), winners(no_contestant), losers(no_contestant)
   {
-    matches.fill(std::make_pair(no_contestant, no_contestant));
   }
 
-  bool add_contestant(const contestantt &contestant)
+  bool add_contestant(contestantt contestant)
   {
     if (contains(contestant)) return false;
-    if (fill_matches(contestant)) return true;
-    fight_count=0u;
-    for (matcht &match : matches)
+    winners.insert(contestant);
+    if (winners.size() > MATCH_SIZE)
     {
-      contestantt &first=get_first(match);
-      contestantt &second=get_second(match);
-      const contestantt champion=first;
-      if (fight(first, contestant))
-      {
-        second=champion;
-        break;
-      }
-      if (fight(second, contestant)) break;
+      winnerst::iterator it=winners.end();
+      losers.insert(*--it);
+      winners.erase(it);
+    }
+    if (losers.size() > MATCH_SIZE)
+    {
+      loserst::iterator it=losers.end();
+      losers.erase(--it);
     }
     return true;
-  }
-
-  tournament_selectt::individualst &get_container(
-      tournament_selectt::selectiont &selection)
-  {
-    const size_t count=fight_count % 4;
-    if (count == 0 || count == 1) return selection.parents;
-    return selection.children;
   }
 
   void select(tournament_selectt::selectiont &selection)
   {
-    fight_count=0;
-    for (matcht &match : matches)
-    {
-      get_container(selection).push_back(get_first(match));
-      ++fight_count;
-      get_container(selection).push_back(get_second(match));
-      ++fight_count;
-    }
+    assert(MATCH_SIZE == winners.size());
+    assert(MATCH_SIZE == losers.size());
+    std::copy(winners.begin(), winners.end(),
+        std::back_inserter(selection.parents));
+    std::copy(losers.begin(), losers.end(),
+        std::back_inserter(selection.children));
   }
 };
+
+// XXX: Debug
+size_t parent_fitness_sum=0;
+size_t parent_max_fitness=0;
+size_t parent_min_fitness=0;
+size_t cross_count=0;
+// XXX: Debug
 }
-#include <iostream>
+
 tournament_selectt::selectiont tournament_selectt::select(populationt &pop)
 {
   arenat arena(pop);
@@ -179,13 +171,29 @@ tournament_selectt::selectiont tournament_selectt::select(populationt &pop)
   }
   tournament_selectt::selectiont selection;
   arena.select(selection);
-  // XXX: Debug
-  std::cout << "<parent[0]>" << selection.parents[0]->fitness << "</parent[0]>" << std::endl;
-  std::cout << "<parent[1]>" << selection.parents[1]->fitness << "</parent[1]>" << std::endl;
-  std::cout << "<children[0]>" << selection.children[0]->fitness << "</children[0]>" << std::endl;
-  std::cout << "<children[1]>" << selection.children[1]->fitness << "</children[1]>" << std::endl;
-  // XXX: Debug
   assert(selection.parents[0]->fitness >= selection.parents[1]->fitness);
+  assert(selection.parents[1]->fitness >= selection.children[0]->fitness);
   assert(selection.children[0]->fitness <= selection.children[1]->fitness);
+  // XXX: Debug
+  const size_t ff=selection.parents[0]->fitness;
+  parent_max_fitness=std::max(parent_max_fitness, ff);
+  parent_min_fitness=std::min(parent_min_fitness, ff);
+  parent_fitness_sum+=ff;
+  const size_t mf=selection.parents[1]->fitness;
+  parent_max_fitness=std::max(parent_max_fitness, mf);
+  parent_min_fitness=std::min(parent_min_fitness, mf);
+  parent_fitness_sum+=mf;
+  // XXX: Debug
+  if (++cross_count % 10000 == 0)
+  {
+    std::cout << "<parent_max_fitness>" << parent_max_fitness
+        << "</parent_max_fitness>" << std::endl;
+    std::cout << "<parent_min_fitness>" << parent_min_fitness
+        << "</parent_min_fitness>" << std::endl;
+    std::cout << "<parent_avg_fitness>"
+        << ((double) parent_fitness_sum / (double) cross_count) / 2.0
+        << "</parent_avg_fitness>" << std::endl;
+  }
+  // XXX: Debug
   return selection;
 }

@@ -77,7 +77,16 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::set_fitness(
   if (have_solution) convert.convert(current_candidate, ind);
   return have_solution;
 }
+
+// XXX: Debug
 #include <iostream>
+
+namespace
+{
+size_t count=0;
+}
+// XXX: Debug
+
 template<class selectt, class mutatet, class crosst, class fitnesst,
     class convertt>
 template<class itert>
@@ -86,8 +95,29 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
 {
   for (; first != last; ++first)
     fitness.add_test_case(*first);
-  std::cout << "<fitness>" << fitness.get_target_fitness() << "</fitness>" << std::endl;
+
+  // XXX: Debug
+  std::cout << "<target>" << fitness.get_target_fitness() << "</target>"
+      << std::endl;
+  // XXX: Debug
+
   const typename selectt::populationt::iterator it=fitness.init(pop);
+  // XXX: Debug
+  size_t max_fitness=0;
+  size_t min_fitness=fitness.get_target_fitness();
+  size_t fitness_sum=0;
+  for (const typename selectt::populationt::value_type &ind : pop)
+  {
+    const typename selectt::populationt::value_type::fitnesst f=ind.fitness;
+    max_fitness=std::max(max_fitness, f);
+    min_fitness=std::min(min_fitness, f);
+    fitness_sum+=f;
+  }
+  std::cout << "<max_fitness>" << max_fitness << "</max_fitness>" << std::endl;
+  std::cout << "<min_fitness>" << min_fitness << "</min_fitness>" << std::endl;
+  std::cout << "<avg_fitness>" << ((double) fitness_sum / (double) pop.size())
+      << "</avg_fitness>" << std::endl;
+  // XXX: Debug
   if (pop.end() != it)
   {
     convert.convert(current_candidate, *it);
