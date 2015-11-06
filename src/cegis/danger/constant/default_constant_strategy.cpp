@@ -11,14 +11,14 @@ namespace
 //const char NONDET_PREFIX[]="DANGER_CONSTANT_NONDET_";
 }
 
-size_t default_constant_strategy(danger_programt &program,
+void default_constant_strategy(danger_programt &program,
     const size_t max_length)
 {
   const typet type(danger_meta_type());
   const bv_spect spec(type);
   add_danger_constant(program, from_integer(spec.max_value().to_ulong(), type));
   add_danger_constant(program, from_integer(0u, type));
-  return 2u + literals_constant_strategy(program, max_length);
+  //return 2u + literals_constant_strategy(program, max_length);
   /*for (size_t i=0; i < max_length; ++i)
   {
     const side_effect_expr_nondett value(type);

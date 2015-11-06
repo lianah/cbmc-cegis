@@ -92,15 +92,21 @@ public:
 };
 }
 
-size_t literals_constant_strategy(danger_programt &program,
-    const size_t max_length)
+std::vector<constant_exprt> collect_literal_constants(
+    const class danger_programt &program)
 {
   const compare_constantt compare(program);
   constant_sett constants(compare);
   const constant_expr_visitort visitor(program, constants);
   const danger_programt::program_ranget &range=program.danger_range;
   std::for_each(range.begin, range.end, visitor);
+  return std::vector<constant_exprt>(constants.begin(), constants.end());
+}
+
+void literals_constant_strategy(danger_programt &program,
+    const size_t max_length)
+{
+  const std::vector<constant_exprt> lit(collect_literal_constants(program));
   const add_constantt add_constant(program);
-  std::for_each(constants.begin(), constants.end(), add_constant);
-  return constants.size();
+  std::for_each(lit.begin(), lit.end(), add_constant);
 }

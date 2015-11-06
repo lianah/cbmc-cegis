@@ -10,6 +10,6 @@ int main(void) {
 
   }
 
-  assert(a > 0);
+  __CPROVER_assert(a > 0, "A");
   return 0;
 }

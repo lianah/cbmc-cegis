@@ -10,6 +10,6 @@ int main(void) {
     i++;
   }
 
-  assert(i * 4 < len || i >= x);
+  __CPROVER_assert(i * 4 < len || i >= x, "A");
   return 0;
 }

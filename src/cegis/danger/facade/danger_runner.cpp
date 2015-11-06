@@ -42,10 +42,12 @@ namespace
 typedef messaget::mstreamt mstreamt;
 
 template<class learnt, class verifyt, class preproct>
-int run_statistics(mstreamt &os, const optionst &options, learnt &learn,
-    verifyt &verify, preproct &preproc)
+int run_statistics(mstreamt &os, const optionst &options,
+    const danger_programt &prog, learnt &learn, verifyt &verify,
+    preproct &preproc)
 {
-  null_seedt seed;
+  //null_seedt seed;
+  danger_literals_seedt seed(prog);  // XXX: Benchmark performance
   const size_t max_prog_size=options.get_unsigned_int_option(DANGER_MAX_SIZE);
   if (!options.get_bool_option(DANGER_STATISTICS))
     return run_cegis(learn, verify, preproc, seed, max_prog_size, os);
@@ -63,10 +65,10 @@ int run_parallel(mstreamt &os, const optionst &options,
   if (options.get_bool_option(DANGER_PARALLEL_VERIFY))
   {
     parallel_danger_verifiert verify(options, verify_config);
-    return run_statistics(os, options, learn, verify, preproc);
+    return run_statistics(os, options, prog, learn, verify, preproc);
   }
   cegis_symex_verifyt<danger_verify_configt> verify(options, verify_config);
-  return run_statistics(os, options, learn, verify, preproc);
+  return run_statistics(os, options, prog, learn, verify, preproc);
 }
 
 namespace

@@ -16,9 +16,9 @@ lazy_fitnesst<test_runnert>::~lazy_fitnesst()
 
 template<class test_runnert>
 template<class seedt>
-void lazy_fitnesst<test_runnert>::seed(seedt &seed) const
+void lazy_fitnesst<test_runnert>::seed(seedt &seeder)
 {
-  // TODO: Implement!
+  seeder(counterexamples);
 }
 
 template<class test_runnert>

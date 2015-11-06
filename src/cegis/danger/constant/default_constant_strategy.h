@@ -10,8 +10,6 @@ Author: Daniel Kroening, kroening@kroening.com
 #ifndef CEGIS_DANGER_DEFAULT_CONSTANT_STRATEGY_H_
 #define CEGIS_DANGER_DEFAULT_CONSTANT_STRATEGY_H_
 
-#include <cstddef>
-
 /**
  * @brief
  *
@@ -22,7 +20,7 @@ Author: Daniel Kroening, kroening@kroening.com
  *
  * @return
  */
-size_t default_constant_strategy(class danger_programt &program,
+void default_constant_strategy(class danger_programt &program,
     const size_t max_length);
 
 #endif /* CEGIS_DANGER_DEFAULT_CONSTANT_STRATEGY_H_ */

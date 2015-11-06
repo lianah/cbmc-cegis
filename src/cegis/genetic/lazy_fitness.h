@@ -58,7 +58,7 @@ public:
    * @tparam seedt
    */
   template<class seedt>
-  void seed(seedt &seed) const;
+  void seed(seedt &seed);
 
   /**
    * @brief

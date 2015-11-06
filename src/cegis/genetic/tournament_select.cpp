@@ -167,7 +167,7 @@ public:
   }
 };
 }
-
+#include <iostream>
 tournament_selectt::selectiont tournament_selectt::select(populationt &pop)
 {
   arenat arena(pop);
@@ -179,5 +179,13 @@ tournament_selectt::selectiont tournament_selectt::select(populationt &pop)
   }
   tournament_selectt::selectiont selection;
   arena.select(selection);
+  // XXX: Debug
+  std::cout << "<parent[0]>" << selection.parents[0]->fitness << "</parent[0]>" << std::endl;
+  std::cout << "<parent[1]>" << selection.parents[1]->fitness << "</parent[1]>" << std::endl;
+  std::cout << "<children[0]>" << selection.children[0]->fitness << "</children[0]>" << std::endl;
+  std::cout << "<children[1]>" << selection.children[1]->fitness << "</children[1]>" << std::endl;
+  // XXX: Debug
+  assert(selection.parents[0]->fitness >= selection.parents[1]->fitness);
+  assert(selection.children[0]->fitness <= selection.children[1]->fitness);
   return selection;
 }

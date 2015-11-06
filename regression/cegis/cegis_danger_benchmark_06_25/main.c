@@ -24,6 +24,6 @@ int main(void) {
     }
   }
 
-  assert (lockstate == 0);
+  __CPROVER_assert(lockstate == 0, "A");
   return 0;
 }

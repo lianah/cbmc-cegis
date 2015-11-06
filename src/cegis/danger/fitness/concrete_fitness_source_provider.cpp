@@ -10,9 +10,6 @@
 #include <cegis/danger/symex/verify/insert_constraint.h>
 #include <cegis/danger/fitness/concrete_fitness_source_provider.h>
 
-// XXX: Debug
-#include <iostream>
-
 concrete_fitness_source_providert::concrete_fitness_source_providert(
     const danger_programt &prog, const std::function<size_t(void)> max_size) :
     prog(prog), max_size(max_size), learn_config(prog)
