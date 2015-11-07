@@ -34,15 +34,23 @@ void random_crosst::operator ()(const individualst &parents,
   const size_t prog_limit=parents.front()->programs.size();
   const size_t target_prog_index=rand() % prog_limit;
 
-  individualst::value_type::value_type &father=*parents.front();
-  individualst::value_type::value_type &mother=*parents[1u];
+  const individualst::value_type::value_type &father=*parents.front();
+  const individualst::value_type::value_type &mother=*parents[1u];
   individualst::value_type::value_type &son=*children.front();
   individualst::value_type::value_type &daughter=*children[1u];
-  son.x0=father.x0;
-  daughter.x0=mother.x0;
 
-  programt &f_prog=father.programs[target_prog_index];
-  programt &m_prog=mother.programs[target_prog_index];
+  const individualst::value_type::value_type::nondet_choices &f_x0=father.x0;
+  const individualst::value_type::value_type::nondet_choices &m_x0=mother.x0;
+  individualst::value_type::value_type::nondet_choices &s_x0=son.x0;
+  individualst::value_type::value_type::nondet_choices &d_x0=daughter.x0;
+  const size_t x0_offset=random.rand() % (f_x0.size() + 1);
+  std::copy(f_x0.begin(), f_x0.begin() + x0_offset, s_x0.begin());
+  std::copy(m_x0.begin() + x0_offset, m_x0.end(), s_x0.begin() + x0_offset);
+  std::copy(m_x0.begin(), m_x0.begin() + x0_offset, d_x0.begin());
+  std::copy(f_x0.begin() + x0_offset, f_x0.end(), d_x0.begin() + x0_offset);
+
+  const programt &f_prog=father.programs[target_prog_index];
+  const programt &m_prog=mother.programs[target_prog_index];
   programt &s_prog=son.programs[target_prog_index];
   programt &d_prog=daughter.programs[target_prog_index];
 
@@ -50,7 +58,7 @@ void random_crosst::operator ()(const individualst &parents,
   const size_t f_sz=f_prog.size();
   const size_t m_sz=m_prog.size();
   if (!f_sz || !m_sz) return;
-  size_t father_offset=rand() % (f_sz + 1);
+  size_t father_offset=random.rand() % (f_sz + 1);
   size_t mo_lower=father_offset + m_sz;
   mo_lower=mo_lower <= max_prog_sz ? 0u : mo_lower - max_prog_sz;
   const size_t mo_upper=std::min(m_sz, max_prog_sz + father_offset - f_sz);

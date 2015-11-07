@@ -24,7 +24,7 @@ bool tournament_selectt::selectiont::can_cross() const
 
 tournament_selectt::individualt &tournament_selectt::selectiont::mutation_lhs()
 {
-  return *parents[1];
+  return *children.front();
 }
 
 const tournament_selectt::individualt &tournament_selectt::selectiont::mutation_rhs() const
@@ -155,7 +155,7 @@ public:
 // XXX: Debug
 size_t parent_fitness_sum=0;
 size_t parent_max_fitness=0;
-size_t parent_min_fitness=0;
+size_t parent_min_fitness=999999;
 size_t cross_count=0;
 // XXX: Debug
 }
@@ -193,6 +193,10 @@ tournament_selectt::selectiont tournament_selectt::select(populationt &pop)
     std::cout << "<parent_avg_fitness>"
         << ((double) parent_fitness_sum / (double) cross_count) / 2.0
         << "</parent_avg_fitness>" << std::endl;
+    parent_fitness_sum=0u;
+    parent_max_fitness=0u;
+    parent_min_fitness=999999u;
+    cross_count=0;
   }
   // XXX: Debug
   return selection;

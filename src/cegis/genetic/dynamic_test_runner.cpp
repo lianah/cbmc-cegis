@@ -83,6 +83,7 @@ void prepare_library(dynamic_test_runnert::lib_handlet &handle,
   substitute(source, "int main(const int argc, const char * const argv[])\n",
       "int " FUNC "(const int argc, const char * const argv[])\n");
   write_file(source_file_name.c_str(), source);
+  assert(false); // XXX: Debug
   std::string compile_command(COMPILE_COMMAND);
   compile_command+=source_file_name;
   compile_command+=ARTIFACT_SEPARATOR;

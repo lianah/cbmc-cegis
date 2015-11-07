@@ -8,8 +8,14 @@
 
 namespace
 {
-const char CONSTANT_PREFIX[]="DANGER_CONSTANT_NONDET_";
+const char NONDET_CONSTANT_PREFIX[]="DANGER_CONSTANT_NONDET_";
+std::string get_ndt_name(size_t index)
+{
+  std::string name(NONDET_CONSTANT_PREFIX);
+  return name+=integer2string(index);
+}
 
+const char CONSTANT_PREFIX[]="DANGER_CONSTANT_";
 std::string get_name(size_t index)
 {
   std::string name(CONSTANT_PREFIX);
@@ -27,7 +33,7 @@ void genetic_constant_strategy(danger_programt &prog, const size_t max_length)
   // XXX: Benchmark performance
   for (const constant_exprt &expr : literals)
   {
-    const std::string base_name(get_name(const_index++));
+    const std::string base_name(get_ndt_name(const_index++));
     pos=declare_danger_variable(st, gf, pos, base_name, expr.type());
     pos=assign_danger_variable(st, gf, pos, base_name, expr);
   }
@@ -36,5 +42,5 @@ void genetic_constant_strategy(danger_programt &prog, const size_t max_length)
   type.set(ID_C_constant, true);
   // TODO: Multiply by number of programs and loops?
   for (size_t i=0; i < max_length; ++i)
-    pos=declare_danger_variable(st, gf, pos, get_name(const_index++), type);
+    pos=declare_danger_variable(st, gf, pos, get_ndt_name(const_index++), type);
 }
