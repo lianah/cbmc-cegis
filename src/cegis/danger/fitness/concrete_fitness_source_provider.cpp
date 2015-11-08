@@ -26,10 +26,9 @@ void add_assume_implementation(std::string &source)
 {
   source+=
       "#define __CPROVER_cegis_assert(constraint) if(constraint) { return 0; } else { return 1; }\n";
-  source+="static unsigned int __CPROVER_danger_assume_failed=0;\n";
   source+="#define __CPROVER_assume(constraint) \n";
   source+=
-      "#define __CPROVER_danger_execute_assume(constraint) if (!(constraint)) { __CPROVER_danger_assume_failed=1; return; }\n";
+      "#define __CPROVER_danger_execute_assume(constraint) if (!(constraint)) { return 1; }\n";
 }
 
 void add_danger_execute(std::string &source, const size_t num_vars,
@@ -47,20 +46,21 @@ void add_danger_execute(std::string &source, const size_t num_vars,
   const std::string::size_type pos=text.find(result_op);
   assert(std::string::npos != pos);
   text.insert(pos + strlen(result_op),
-      "if (size <= 0 || size >= __CPROVER_danger_max_solution_size) return;\n"
+      "if (size <= 0 || size >= __CPROVER_danger_max_solution_size) return 0;\n"
           "int diff=__CPROVER_danger_max_solution_size-size;\n"
           "for (int i = size-1; i >= 0; --i) {\n"
           "  *(unsigned int *)__CPROVER_danger_RESULT_OPS[i+diff]=*(unsigned int *)__CPROVER_danger_RESULT_OPS[i];\n"
-          "}\n");
+          "}\n"
+          "return 0;\n");
   substitute(text, "__CPROVER_assume(op0_ptr && op1_ptr && op2_ptr)",
       "__CPROVER_danger_execute_assume(op0_ptr && op1_ptr && op2_ptr)");
   substitute(text, "__CPROVER_assume(opcode != 19 && opcode != 20 || op1)",
       "__CPROVER_danger_execute_assume(opcode != 19 && opcode != 20 || op1)");
   substitute(text, "void __CPROVER_danger_execute(",
-      "void __CPROVER_danger_execute_impl(");
+      "int __CPROVER_danger_execute_impl(");
   source+=text;
   source+=
-      "#define __CPROVER_danger_execute(prog, size) __CPROVER_danger_execute_impl(prog, size); if (__CPROVER_danger_assume_failed) { __CPROVER_danger_assume_failed=0; return 1; }\n";
+      "#define __CPROVER_danger_execute(prog, size) if (__CPROVER_danger_execute_impl(prog, size)) { return 1; }\n";
 }
 
 bool contains(const std::string &haystack, const std::string &needle)
@@ -226,7 +226,7 @@ std::string &post_process(std::string &source, std::stringstream &ss)
 void add_first_prog_offset(std::string &source, const size_t num_ce_vars)
 {
   source+="#define __CPROVER_cegis_first_prog_offset ";
-  source+=integer2string(num_ce_vars + 1u);
+  source+=integer2string(num_ce_vars);
   source+="\n";
 }
 }

@@ -175,7 +175,7 @@ tournament_selectt::selectiont tournament_selectt::select(populationt &pop)
   assert(selection.parents[1]->fitness >= selection.children[0]->fitness);
   assert(selection.children[0]->fitness <= selection.children[1]->fitness);
   // XXX: Debug
-  const size_t ff=selection.parents[0]->fitness;
+  /*const size_t ff=selection.parents[0]->fitness;
   parent_max_fitness=std::max(parent_max_fitness, ff);
   parent_min_fitness=std::min(parent_min_fitness, ff);
   parent_fitness_sum+=ff;
@@ -197,7 +197,7 @@ tournament_selectt::selectiont tournament_selectt::select(populationt &pop)
     parent_max_fitness=0u;
     parent_min_fitness=999999u;
     cross_count=0;
-  }
+  }*/
   // XXX: Debug
   return selection;
 }

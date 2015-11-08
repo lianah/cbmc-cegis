@@ -97,13 +97,13 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
     fitness.add_test_case(*first);
 
   // XXX: Debug
-  std::cout << "<target>" << fitness.get_target_fitness() << "</target>"
-      << std::endl;
+  /*std::cout << "<target>" << fitness.get_target_fitness() << "</target>"
+      << std::endl;*/
   // XXX: Debug
 
   const typename selectt::populationt::iterator it=fitness.init(pop);
   // XXX: Debug
-  size_t max_fitness=0;
+  /*size_t max_fitness=0;
   size_t min_fitness=fitness.get_target_fitness();
   size_t fitness_sum=0;
   for (const typename selectt::populationt::value_type &ind : pop)
@@ -116,7 +116,7 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
   std::cout << "<max_fitness>" << max_fitness << "</max_fitness>" << std::endl;
   std::cout << "<min_fitness>" << min_fitness << "</min_fitness>" << std::endl;
   std::cout << "<avg_fitness>" << ((double) fitness_sum / (double) pop.size())
-      << "</avg_fitness>" << std::endl;
+      << "</avg_fitness>" << std::endl;*/
   // XXX: Debug
   if (pop.end() != it)
   {

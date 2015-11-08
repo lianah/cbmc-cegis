@@ -6,6 +6,11 @@
 
 #include <cegis/genetic/dynamic_test_runner.h>
 
+// XXX: Debug
+#include <iostream>
+#include <iterator>
+// XXX: Debug
+
 #define LIBRARY_PREFIX "fitness_test"
 #ifndef _WIN32
 #define LIBRARY_SUFFIX ".so"
@@ -35,8 +40,8 @@ namespace
 void implement_deserialise(std::string &source)
 {
   source+=
-      "#include <stdlib.h>\n\n"
-          "#define __CPROVER_cegis_next_arg() atol(argv[__CPROVER_cegis_deserialise_index++])\n"
+      "#include <string.h>\n\n"
+          "#define __CPROVER_cegis_next_arg() argv[__CPROVER_cegis_deserialise_index++]\n"
           "#define __CPROVER_cegis_deserialise_init() unsigned int __CPROVER_cegis_deserialise_index=__CPROVER_cegis_first_prog_offset\n"
           "#define __CPROVER_cegis_declare_prog(var_name, sz) const size_t sz=__CPROVER_cegis_next_arg(); \\\n"
           "  struct __CPROVER_danger_instructiont var_name[sz]; \\\n"
@@ -48,8 +53,8 @@ void implement_deserialise(std::string &source)
           "  var_name[i].op2=__CPROVER_cegis_next_arg(); \\\n"
           "}\n"
           "#define __CPROVER_cegis_deserialise_x0(var_name) var_name=__CPROVER_cegis_next_arg()\n"
-          "#define __CPROVER_cegis_ce_value_init() unsigned int __CPROVER_cegis_ce_index=1u\n"
-          "#define __CPROVER_cegis_ce_value() atol(argv[__CPROVER_cegis_ce_index++])\n";
+          "#define __CPROVER_cegis_ce_value_init() unsigned int __CPROVER_cegis_ce_index=0u\n"
+          "#define __CPROVER_cegis_ce_value() argv[__CPROVER_cegis_ce_index++]\n";
 
 }
 
@@ -61,7 +66,7 @@ void write_file(const char * const path, const std::string &content)
 
 #define SOURCE_FILE_PREFIX "concrete_test"
 #define SOURCE_FILE_SUFFIX ".c"
-#define COMPILE_COMMAND "gcc -std=c99 -g0 -O3 -shared -rdynamic -fPIC "
+#define COMPILE_COMMAND "gcc -std=c99 -g0 -O2 -shared -rdynamic -fPIC "
 //#define COMPILE_COMMAND "gcc -std=c99 -g3 -O0 -shared -rdynamic -fPIC "
 #define ARTIFACT_SEPARATOR " -o "
 #define FUNC "__CPROVER_cegis_test_fitness"
@@ -80,10 +85,13 @@ void prepare_library(dynamic_test_runnert::lib_handlet &handle,
   std::string source;
   implement_deserialise(source);
   source+=source_code_provider();
-  substitute(source, "int main(const int argc, const char * const argv[])\n",
-      "int " FUNC "(const int argc, const char * const argv[])\n");
+  substitute(source, "int main(const int argc, const char * const argv[])\n"
+      "{\n",
+      "int " FUNC "(const unsigned int argv[])\n"
+      "{\n"
+      "memset(__CPROVER_danger_OPS, 0, sizeof(__CPROVER_danger_OPS));\n"
+      "memset(__CPROVER_danger_RESULT_OPS, 0, sizeof(__CPROVER_danger_RESULT_OPS));\n");
   write_file(source_file_name.c_str(), source);
-  assert(false); // XXX: Debug
   std::string compile_command(COMPILE_COMMAND);
   compile_command+=source_file_name;
   compile_command+=ARTIFACT_SEPARATOR;
@@ -110,42 +118,58 @@ void prepare_library(dynamic_test_runnert::lib_handlet &handle,
 void dynamic_test_runnert::run_test(individualt &ind, const counterexamplet &ce)
 {
   prepare_library(handle, fitness_tester, source_code_provider, shared_library);
-  std::deque<std::string> args(1, LIBRARY_PREFIX);
+  std::deque<unsigned int> args;
   for (const std::pair<const irep_idt, exprt> &assignment : ce)
   {
     const bv_arithmetict arith(assignment.second);
     const mp_integer::llong_t v=arith.to_integer().to_long();
-    args.push_back(integer2string(static_cast<unsigned int>(v)));
+    args.push_back(static_cast<unsigned int>(v));
   }
   const individualt::programst &progs=ind.programs;
   const size_t num_progs=progs.size();
   for (size_t i=0; i < num_progs; ++i)
   {
-    const individualt::programt &prog=progs[i];
     if (max_prog_sz(i) == 0u) continue;
-    args.push_back(integer2string(prog.size()));
+    const individualt::programt &prog=progs[i];
+    assert(!prog.empty());
+    args.push_back(static_cast<unsigned int>(prog.size()));
     for (const individualt::instructiont &instr : prog)
     {
-      args.push_back(integer2string(static_cast<unsigned int>(instr.opcode)));
+      args.push_back(static_cast<unsigned int>(instr.opcode));
       size_t op_count=0;
       for (const individualt::instructiont::opt &op : instr.ops)
       {
-        args.push_back(integer2string(static_cast<unsigned int>(op)));
+        args.push_back(static_cast<unsigned int>(op));
         ++op_count;
       }
       for (; op_count < 3u; ++op_count)
-        args.push_back("0");
+        args.push_back(0u);
     }
   }
   for (const individualt::nondet_choices::value_type &x0 : ind.x0)
-    args.push_back(integer2string(static_cast<unsigned int>(x0)));
+    args.push_back(static_cast<unsigned int>(x0));
 
   const int argc=args.size();
-  const char *argv[argc];
+  unsigned int argv[argc];
   for (int i=0; i < argc; ++i)
-    argv[i]=args[i].c_str();
+    argv[i]=args[i];
 
-  if (EXIT_SUCCESS == fitness_tester(argc, argv)) ++ind.fitness;
+  if (EXIT_SUCCESS == fitness_tester(argv)) ++ind.fitness;
+
+  // XXX: Debug
+  /*std::copy(args.begin(), args.end(),
+      std::ostream_iterator<unsigned int>(std::cout, " "));
+  std::cout << ";";
+  if (EXIT_SUCCESS == fitness_tester(argv))
+  {
+    std::cout << "0";
+    ++ind.fitness;
+  } else
+  {
+    std::cout << "1";
+  }
+  std::cout << std::endl;*/
+// XXX: Debug
 }
 
 void dynamic_test_runnert::join()

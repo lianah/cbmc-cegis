@@ -25,7 +25,7 @@
 class dynamic_test_runnert
 {
 public:
-  typedef int (*fitness_testert)(int, const char **);
+  typedef int (*fitness_testert)(const unsigned int[]);
   typedef void *lib_handlet;
 private:
   const std::function<std::string(void)> source_code_provider;

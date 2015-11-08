@@ -29,7 +29,7 @@ void implement_deserialise(std::string &source)
   source+=
       "#include <stdlib.h>\n\n"
           "#define __CPROVER_cegis_next_arg() atol(argv[__CPROVER_cegis_deserialise_index++])\n"
-          "#define __CPROVER_cegis_deserialise_init() unsigned int __CPROVER_cegis_deserialise_index=__CPROVER_cegis_first_prog_offset\n"
+          "#define __CPROVER_cegis_deserialise_init() unsigned int __CPROVER_cegis_deserialise_index=1u+__CPROVER_cegis_first_prog_offset\n"
           "#define __CPROVER_cegis_declare_prog(var_name, sz) const size_t sz=__CPROVER_cegis_next_arg(); \\\n"
           "  struct __CPROVER_danger_instructiont var_name[sz]; \\\n"
           "for (unsigned int i=0; i < sizeof(var_name) / sizeof(struct __CPROVER_danger_instructiont); ++i) \\\n"
