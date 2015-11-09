@@ -9,6 +9,6 @@ int main(void) {
     x -= 2;
   }
 
-  assert(x >= 0);
+  __CPROVER_assert(x >= 0, "A");
   return 0;
 }

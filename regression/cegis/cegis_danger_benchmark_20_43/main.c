@@ -7,7 +7,7 @@ int main(void) {
     x++;
   }
 
-  assert(x == 10);
+  __CPROVER_assert(x == 10, "A");
 
   return 0;
 }

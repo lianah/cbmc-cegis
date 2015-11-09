@@ -74,23 +74,21 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::set_fitness(
   typedef typename selectt::individualt::fitnesst target_fitnesst;
   const target_fitnesst target_fitness=fitness.get_target_fitness();
   const bool have_solution=(target_fitness == ind.fitness);
-  //if (have_solution) convert.convert(current_candidate, ind);
-  // XXX: Debug
-  if (have_solution)
-  {
-    convert.convert(current_candidate, ind);
-    fitness.set_fitness(ind, true);
-  }
-  // XXX: Debug
+  if (have_solution) convert.convert(current_candidate, ind);
   return have_solution;
 }
 
 // XXX: Debug
 #include <iostream>
+#include <chrono>
 
 namespace
 {
-size_t count=0;
+typedef std::chrono::high_resolution_clock clockt;
+typedef clockt::time_point time_pointt;
+time_pointt program_startup=clockt::now();
+
+//size_t count=0;
 }
 // XXX: Debug
 
@@ -109,20 +107,20 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
   // XXX: Debug
   const typename selectt::populationt::iterator it=fitness.init(pop);
   // XXX: Debug
-  size_t max_fitness=0;
-  size_t min_fitness=fitness.get_target_fitness();
-  size_t fitness_sum=0;
-  for (const typename selectt::populationt::value_type &ind : pop)
-  {
-    const typename selectt::populationt::value_type::fitnesst f=ind.fitness;
-    max_fitness=std::max(max_fitness, f);
-    min_fitness=std::min(min_fitness, f);
-    fitness_sum+=f;
-  }
-  std::cout << "<max_fitness>" << max_fitness << "</max_fitness>" << std::endl;
-  std::cout << "<min_fitness>" << min_fitness << "</min_fitness>" << std::endl;
-  std::cout << "<avg_fitness>" << ((double) fitness_sum / (double) pop.size())
-      << "</avg_fitness>" << std::endl;
+  /*size_t max_fitness=0;
+   size_t min_fitness=fitness.get_target_fitness();
+   size_t fitness_sum=0;
+   for (const typename selectt::populationt::value_type &ind : pop)
+   {
+   const typename selectt::populationt::value_type::fitnesst f=ind.fitness;
+   max_fitness=std::max(max_fitness, f);
+   min_fitness=std::min(min_fitness, f);
+   fitness_sum+=f;
+   }
+   std::cout << "<max_fitness>" << max_fitness << "</max_fitness>" << std::endl;
+   std::cout << "<min_fitness>" << min_fitness << "</min_fitness>" << std::endl;
+   std::cout << "<avg_fitness>" << ((double) fitness_sum / (double) pop.size())
+   << "</avg_fitness>" << std::endl;*/
   // XXX: Debug
   if (pop.end() != it)
   {
@@ -134,6 +132,10 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
   bool evolving=true;
   while (evolving)
   {
+    // XXX: Debug
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(clockt::now() - program_startup) > std::chrono::minutes(15))
+      return false;
+    // XXX: Debug
     selection=select.select(pop);
     if (should_mutate(options))
     {

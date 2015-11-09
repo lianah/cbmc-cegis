@@ -6,11 +6,6 @@
 
 #include <cegis/genetic/dynamic_test_runner.h>
 
-// XXX: Debug
-#include <iostream>
-#include <iterator>
-// XXX: Debug
-
 #define LIBRARY_PREFIX "fitness_test"
 #ifndef _WIN32
 #define LIBRARY_SUFFIX ".so"
@@ -66,8 +61,8 @@ void write_file(const char * const path, const std::string &content)
 
 #define SOURCE_FILE_PREFIX "concrete_test"
 #define SOURCE_FILE_SUFFIX ".c"
-#define COMPILE_COMMAND "gcc -std=c99 -g0 -O2 -shared -rdynamic -fPIC "
-//#define COMPILE_COMMAND "gcc -std=c99 -g3 -O0 -shared -rdynamic -fPIC "
+//#define COMPILE_COMMAND "gcc -std=c99 -g0 -O2 -shared -rdynamic -fPIC "
+#define COMPILE_COMMAND "gcc -std=c99 -g3 -O0 -shared -rdynamic -fPIC "
 #define ARTIFACT_SEPARATOR " -o "
 #define FUNC "__CPROVER_cegis_test_fitness"
 #define COMPLING_FAILED "Compiling test runner failed."
@@ -115,7 +110,7 @@ void prepare_library(dynamic_test_runnert::lib_handlet &handle,
 }
 }
 
-void dynamic_test_runnert::run_test(individualt &ind, const counterexamplet &ce, bool debug)
+void dynamic_test_runnert::run_test(individualt &ind, const counterexamplet &ce)
 {
   prepare_library(handle, fitness_tester, source_code_provider, shared_library);
   std::deque<unsigned int> args;
@@ -154,24 +149,7 @@ void dynamic_test_runnert::run_test(individualt &ind, const counterexamplet &ce,
   for (int i=0; i < argc; ++i)
     argv[i]=args[i];
 
-  if (!debug) {
   if (EXIT_SUCCESS == fitness_tester(argv)) ++ind.fitness;
-
-  // XXX: Debug
-  }else{
-  std::copy(args.begin(), args.end(),
-      std::ostream_iterator<unsigned int>(std::cout, " "));
-  std::cout << ";";
-  if (EXIT_SUCCESS == fitness_tester(argv))
-  {
-    std::cout << "0";
-    ++ind.fitness;
-  } else
-  {
-    std::cout << "1";
-  }
-  std::cout << std::endl;}
-// XXX: Debug
 }
 
 void dynamic_test_runnert::join()

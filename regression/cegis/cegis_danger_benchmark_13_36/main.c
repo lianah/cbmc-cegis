@@ -9,6 +9,6 @@ int main(void) {
     y++;
   }
 
-  assert(x == y);
+  __CPROVER_assert(x == y, "A");
   return 0;
 }

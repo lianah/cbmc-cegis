@@ -1,5 +1,7 @@
 #include <algorithm>
 
+#include <util/expr_util.h>
+
 #include <cegis/danger/util/danger_program_helper.h>
 #include <cegis/danger/symex/verify/insert_constraint.h>
 #include <cegis/seed/literals_seed.h>
@@ -250,18 +252,20 @@ public:
     return it->second;
   }
 
-  const valuest::value_type &get_value(const irep_idt &id, size_t index) const
-  {
-    const valuest &values=operator[](id);
-    return values.at(index % values.size());
-  }
-
   size_t size() const
   {
     size_t size=0;
     for (pool_storaget::const_iterator it=pool.begin(); it != pool.end(); ++it)
       size=std::max(size, it->second.size());
     return size;
+  }
+
+  valuest::value_type get_value(const irep_idt &id, const typet &type,
+      const size_t index) const
+  {
+    const valuest &values=operator[](id);
+    if (values.empty()) return to_constant_expr(gen_zero(type));
+    return values.at(index % values.size());
   }
 
   void seed(danger_verify_configt::counterexamplest &counterexamples) const
@@ -273,7 +277,8 @@ public:
       for (constraint_varst::const_iterator v=vs.begin(); v != vs.end(); ++v)
       {
         const irep_idt &id=v->get_identifier();
-        ce.insert(std::make_pair(id, get_value(id, i)));
+        const typet &type=v->type();
+        ce.insert(std::make_pair(id, get_value(id, type, i)));
       }
       counterexamples.push_back(ce);
     }

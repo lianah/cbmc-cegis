@@ -36,8 +36,20 @@
 
 namespace
 {
-#define DANGER_STATISTICS "cegis-statistics"
+bool is_genetic(const optionst &opt)
+{
+  return opt.get_bool_option("cegis-genetic");
+}
+
 #define DANGER_MAX_SIZE "cegis-max-size"
+
+size_t get_max_prog_size(const optionst &options)
+{
+  if (is_genetic(options)) return 1u;
+  return options.get_unsigned_int_option(DANGER_MAX_SIZE);
+}
+
+#define DANGER_STATISTICS "cegis-statistics"
 
 typedef messaget::mstreamt mstreamt;
 
@@ -46,9 +58,9 @@ int run_statistics(mstreamt &os, const optionst &options,
     const danger_programt &prog, learnt &learn, verifyt &verify,
     preproct &preproc)
 {
-  //null_seedt seed;
-  danger_literals_seedt seed(prog);  // XXX: Benchmark performance
-  const size_t max_prog_size=options.get_unsigned_int_option(DANGER_MAX_SIZE);
+  null_seedt seed;
+  //danger_literals_seedt seed(prog);  // XXX: Benchmark performance
+  const size_t max_prog_size=get_max_prog_size(options);
   if (!options.get_bool_option(DANGER_STATISTICS))
     return run_cegis(learn, verify, preproc, seed, max_prog_size, os);
   cegis_statistics_wrappert<learnt, verifyt, mstreamt> stat(learn, verify, os);
@@ -107,11 +119,6 @@ public:
     return count(num_consts);
   }
 };
-
-bool is_genetic(const optionst &opt)
-{
-  return opt.get_bool_option("cegis-genetic");
-}
 
 class lazy_sizet
 {

@@ -64,7 +64,7 @@ public:
    * @param ind
    * @param ce
    */
-  void run_test(individualt &ind, const counterexamplet &ce, bool debug=false); // XXX: Debug
+  void run_test(individualt &ind, const counterexamplet &ce);
 
   /**
    * @brief

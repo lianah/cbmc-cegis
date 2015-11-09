@@ -32,7 +32,7 @@ void random_crosst::operator ()(const individualst &parents,
 {
   assert(parents.size() >= 2 && children.size() >= 2);
   const size_t prog_limit=parents.front()->programs.size();
-  const size_t target_prog_index=rand() % prog_limit;
+  const size_t target_prog_index=random.rand() % prog_limit;
 
   const individualst::value_type::value_type &father=*parents.front();
   const individualst::value_type::value_type &mother=*parents[1u];
@@ -64,7 +64,7 @@ void random_crosst::operator ()(const individualst &parents,
   const size_t mo_upper=std::min(m_sz, max_prog_sz + father_offset - f_sz);
   assert(mo_upper >= mo_lower);
   const size_t mo_range=mo_upper - mo_lower + 1;
-  size_t mother_offset=mo_range ? mo_lower + rand() % mo_range : 0u;
+  size_t mother_offset=mo_range ? mo_lower + random.rand() % mo_range : 0u;
 
   if (father_offset == 0u && mother_offset == m_sz) ++father_offset;
   if (mother_offset == 0u && father_offset == f_sz) ++mother_offset;

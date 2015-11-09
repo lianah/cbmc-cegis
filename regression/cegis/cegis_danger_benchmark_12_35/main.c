@@ -7,6 +7,6 @@ int main(void) {
     y *= 2;
   }
 
-  assert(x != 6);
+  __CPROVER_assert(x != 6, "A");
   return 0;
 }

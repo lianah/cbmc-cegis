@@ -37,6 +37,6 @@ int main(void) {
     else x -= 4;
   }
 
-  assert((x % 2) == (y % 2));
+  __CPROVER_assert((x % 2) == (y % 2), "A");
   return 0;
 }

@@ -85,7 +85,7 @@ public:
    *
    * @param individual
    */
-  void set_fitness(individualt &individual, bool debug=false); // XXX: Debug
+  void set_fitness(individualt &individual);
 
   /**
    * @brief

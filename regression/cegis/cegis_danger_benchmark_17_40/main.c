@@ -13,6 +13,6 @@ int main(void) {
     }
   }
 
-  assert(x == y);
+  __CPROVER_assert(x == y, "A");
   return 0;
 }

@@ -37,6 +37,11 @@ public:
     opcodet opcode;
     opst ops;
 
+    /*instructiont();
+    instructiont(const instructiont &other);
+    ~instructiont();
+    instructiont &operator=(const instructiont &other);*/
+
     /**
      * @brief
      *

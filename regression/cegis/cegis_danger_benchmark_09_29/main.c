@@ -5,6 +5,6 @@ int main(void) {
     x += 2;
   }
 
-  assert(x % 2);
+  __CPROVER_assert(x % 2, "A");
   return 0;
 }
