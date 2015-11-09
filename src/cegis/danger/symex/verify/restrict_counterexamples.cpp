@@ -42,6 +42,14 @@ void force_all_guards_violated(exprt::operandst &op, const size_t num_loops)
     op.push_back(not_Gx);
   }
 }
+
+void get_all_exits(exprt::operandst &op, const size_t num_loops)
+{
+  for (size_t i=0; i < num_loops; ++i)
+  {
+    op.push_back(danger_component_as_bool(get_Gx(i)));
+  }
+}
 }
 
 void force_assertion_satisfaction(goto_functionst &gf, const size_t num_loops)
@@ -62,6 +70,23 @@ void force_assertion_violation(goto_functionst &gf, const size_t num_loops)
   op.push_back(not_Ax);
   goto_programt::targett pos=add_assume(gf);
   pos->guard=conjunction(op);
+}
+
+void force_loop_exit(goto_functionst &gf, const exprt::operandst &loop_guards)
+{
+  const size_t num_loops=loop_guards.size();
+  exprt::operandst exits;
+  for (size_t i=0; i < num_loops; ++i)
+  {
+    const notequal_exprt Gx=danger_component_as_bool(get_Gx(i));
+    exprt not_Gx_prime=loop_guards[i];
+    if (ID_not == not_Gx_prime.id()) not_Gx_prime=
+        to_not_expr(not_Gx_prime).op();
+    else not_Gx_prime=not_exprt(not_Gx_prime);
+    exits.push_back(and_exprt(Gx, not_Gx_prime));
+  }
+  goto_programt::targett pos=add_assume(gf);
+  pos->guard=disjunction(exits);
 }
 
 void force_guard_violation(goto_functionst &gf, const size_t num_loops)

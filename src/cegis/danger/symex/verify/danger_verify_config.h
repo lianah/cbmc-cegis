@@ -112,6 +112,15 @@ public:
    * @return
    */
   size_t get_number_of_loops() const;
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @return
+   */
+  exprt::operandst get_loop_guards() const;
 };
 
 #endif /* CEGIS_DANGER_VERIFY_CONFIG_H_ */

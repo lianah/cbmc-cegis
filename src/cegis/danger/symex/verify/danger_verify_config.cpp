@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include <cegis/danger/symex/verify/insert_constraint.h>
 #include <cegis/danger/symex/verify/insert_candidate.h>
 #include <cegis/danger/symex/verify/extract_counterexample.h>
@@ -46,4 +48,14 @@ void danger_verify_configt::convert(counterexamplest &counterexamples,
 size_t danger_verify_configt::get_number_of_loops() const
 {
   return original_program.loops.size();
+}
+
+exprt::operandst danger_verify_configt::get_loop_guards() const
+{
+  exprt::operandst loop_guards;
+  const danger_programt::loopst &loops=original_program.loops;
+  std::transform(loops.begin(), loops.end(), std::back_inserter(loop_guards),
+      [](const danger_programt::loopt &loop)
+      { return loop.guard;});
+  return loop_guards;
 }

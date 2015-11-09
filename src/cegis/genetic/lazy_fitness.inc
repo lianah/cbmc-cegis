@@ -61,11 +61,11 @@ typename lazy_fitnesst<test_runnert>::populationt::iterator lazy_fitnesst<
 }
 
 template<class test_runnert>
-void lazy_fitnesst<test_runnert>::set_fitness(individualt &individual)
+void lazy_fitnesst<test_runnert>::set_fitness(individualt &individual, bool debug)
 {
   individual.fitness=0u;
   for (const counterexamplet &ce : counterexamples)
-    test_runner.run_test(individual, ce);
+    test_runner.run_test(individual, ce, debug);
   test_runner.join();
   executed_test_cases[&individual]=counterexamples.size();
 }

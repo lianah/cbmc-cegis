@@ -115,7 +115,7 @@ void prepare_library(dynamic_test_runnert::lib_handlet &handle,
 }
 }
 
-void dynamic_test_runnert::run_test(individualt &ind, const counterexamplet &ce)
+void dynamic_test_runnert::run_test(individualt &ind, const counterexamplet &ce, bool debug)
 {
   prepare_library(handle, fitness_tester, source_code_provider, shared_library);
   std::deque<unsigned int> args;
@@ -154,10 +154,12 @@ void dynamic_test_runnert::run_test(individualt &ind, const counterexamplet &ce)
   for (int i=0; i < argc; ++i)
     argv[i]=args[i];
 
+  if (!debug) {
   if (EXIT_SUCCESS == fitness_tester(argv)) ++ind.fitness;
 
   // XXX: Debug
-  /*std::copy(args.begin(), args.end(),
+  }else{
+  std::copy(args.begin(), args.end(),
       std::ostream_iterator<unsigned int>(std::cout, " "));
   std::cout << ";";
   if (EXIT_SUCCESS == fitness_tester(argv))
@@ -168,7 +170,7 @@ void dynamic_test_runnert::run_test(individualt &ind, const counterexamplet &ce)
   {
     std::cout << "1";
   }
-  std::cout << std::endl;*/
+  std::cout << std::endl;}
 // XXX: Debug
 }
 

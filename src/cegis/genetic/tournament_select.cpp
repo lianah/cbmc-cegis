@@ -63,92 +63,51 @@ namespace
 {
 typedef tournament_selectt::populationt::iterator contestantt;
 
-class fitness_is_less_thant
-{
-  const contestantt no_contestant;
-public:
-  fitness_is_less_thant(const contestantt &no_contestant) :
-      no_contestant(no_contestant)
-  {
-  }
-
-  bool operator()(const contestantt &lhs, const contestantt &rhs) const
-  {
-    if (lhs == rhs) return false;
-    if (no_contestant == lhs) return false;
-    if (no_contestant == rhs) return true;
-    return lhs->fitness < rhs->fitness;
-  }
-};
-
-class fitness_is_greater_thant
-{
-  const contestantt no_contestant;
-public:
-  fitness_is_greater_thant(const contestantt &no_contestant) :
-      no_contestant(no_contestant)
-  {
-  }
-
-  bool operator()(const contestantt &lhs, const contestantt &rhs) const
-  {
-    if (lhs == rhs) return false;
-    if (no_contestant == lhs) return false;
-    if (no_contestant == rhs) return true;
-    return lhs->fitness > rhs->fitness;
-  }
-};
-
-#define MATCH_SIZE 2u
-
 class arenat
 {
-  typedef std::multiset<contestantt, fitness_is_greater_thant> winnerst;
-  typedef std::multiset<contestantt, fitness_is_less_thant> loserst;
-  typedef std::pair<contestantt, contestantt> matcht;
-  typedef typename tournament_selectt::populationt::value_type::fitnesst fitnesst;
   const contestantt no_contestant;
-  winnerst winners;
-  loserst losers;
+  contestantt father;
+  contestantt mother;
+  contestantt son;
+  contestantt daughter;
 
   bool contains(const contestantt &c)
   {
-    if (winners.end() != std::find(winners.begin(), winners.end(), c))
-      return true;
-    return losers.end() != std::find(losers.begin(), losers.end(), c);
+    return father == c || mother == c || son == c || daughter == c;
   }
 public:
   arenat(tournament_selectt::populationt &pop) :
-      no_contestant(pop.end()), winners(no_contestant), losers(no_contestant)
+      no_contestant(pop.end()), father(no_contestant), mother(no_contestant), son(
+          no_contestant), daughter(no_contestant)
   {
   }
 
-  bool add_contestant(contestantt contestant)
+  bool add_contestant(const contestantt &contestant)
   {
     if (contains(contestant)) return false;
-    winners.insert(contestant);
-    if (winners.size() > MATCH_SIZE)
+    if (no_contestant == father) father=contestant;
+    else if (no_contestant == mother) mother=contestant;
+    else if (no_contestant == son) son=contestant;
+    else if (no_contestant == daughter) daughter=contestant;
+    else if (father->fitness < contestant->fitness)
     {
-      winnerst::iterator it=winners.end();
-      losers.insert(*--it);
-      winners.erase(it);
-    }
-    if (losers.size() > MATCH_SIZE)
+      mother=father;
+      father=contestant;
+    } else if (mother->fitness < contestant->fitness) mother=contestant;
+    else if (daughter->fitness > contestant->fitness)
     {
-      loserst::iterator it=losers.end();
-      losers.erase(--it);
-    }
+      son=daughter;
+      daughter=contestant;
+    } else if (son->fitness > contestant->fitness) son=contestant;
     return true;
   }
 
   void select(tournament_selectt::selectiont &selection)
   {
-    assert(MATCH_SIZE == winners.size());
-    assert(MATCH_SIZE == losers.size());
-    std::copy(winners.begin(), winners.end(),
-        std::back_inserter(selection.parents));
-    std::copy(losers.begin(), losers.end(),
-        std::back_inserter(selection.children));
+    selection.parents.push_back(father);
+    selection.parents.push_back(mother);
+    selection.children.push_back(son);
+    selection.children.push_back(daughter);
   }
 };
 
@@ -171,11 +130,8 @@ tournament_selectt::selectiont tournament_selectt::select(populationt &pop)
   }
   tournament_selectt::selectiont selection;
   arena.select(selection);
-  assert(selection.parents[0]->fitness >= selection.parents[1]->fitness);
-  assert(selection.parents[1]->fitness >= selection.children[0]->fitness);
-  assert(selection.children[0]->fitness <= selection.children[1]->fitness);
   // XXX: Debug
-  /*const size_t ff=selection.parents[0]->fitness;
+  const size_t ff=selection.parents[0]->fitness;
   parent_max_fitness=std::max(parent_max_fitness, ff);
   parent_min_fitness=std::min(parent_min_fitness, ff);
   parent_fitness_sum+=ff;
@@ -197,7 +153,7 @@ tournament_selectt::selectiont tournament_selectt::select(populationt &pop)
     parent_max_fitness=0u;
     parent_min_fitness=999999u;
     cross_count=0;
-  }*/
+  }
   // XXX: Debug
   return selection;
 }

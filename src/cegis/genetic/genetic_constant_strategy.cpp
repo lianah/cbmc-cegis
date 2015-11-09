@@ -23,6 +23,8 @@ std::string get_name(size_t index)
 }
 }
 
+#include <iostream>
+
 void genetic_constant_strategy(danger_programt &prog, const size_t max_length)
 {
   symbol_tablet &st=prog.st;
@@ -33,6 +35,8 @@ void genetic_constant_strategy(danger_programt &prog, const size_t max_length)
   // XXX: Benchmark performance
   for (const constant_exprt &expr : literals)
   {
+    std::cout << "<id>" << const_index << "</id>" << std::endl;
+    std::cout << "<id>" << expr.to_string() << "</id>" << std::endl;
     const std::string base_name(get_ndt_name(const_index++));
     pos=declare_danger_variable(st, gf, pos, base_name, expr.type());
     pos=assign_danger_variable(st, gf, pos, base_name, expr);

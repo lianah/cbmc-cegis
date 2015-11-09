@@ -129,6 +129,7 @@ public:
 
   void process(const candidatet &candidate)
   {
+    //force_loop_exit(gf, config.get_loop_guards());
     force_assertion_violation(gf, config.get_number_of_loops());
     // XXX: Use different strategy?
     //force_assertion_violation(gf, config.get_number_of_loops());

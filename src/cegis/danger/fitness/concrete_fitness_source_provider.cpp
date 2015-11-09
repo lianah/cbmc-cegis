@@ -54,7 +54,7 @@ void add_danger_execute(std::string &source, const size_t num_vars,
           "return 0;\n");
   substitute(text, "__CPROVER_assume(op0_ptr && op1_ptr && op2_ptr)",
       "__CPROVER_danger_execute_assume(op0_ptr && op1_ptr && op2_ptr)");
-  substitute(text, "__CPROVER_assume(opcode != 19 && opcode != 20 || op1)",
+  substitute(text, "__CPROVER_assume((opcode != 19 && opcode != 20) || op1)",
       "__CPROVER_danger_execute_assume(opcode != 19 && opcode != 20 || op1)");
   substitute(text, "void __CPROVER_danger_execute(",
       "int __CPROVER_danger_execute_impl(");

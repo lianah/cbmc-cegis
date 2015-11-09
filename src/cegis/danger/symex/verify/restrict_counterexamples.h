@@ -39,6 +39,16 @@ void force_assertion_violation(goto_functionst &gf, const size_t num_loops);
  * @details
  *
  * @param gf
+ * @param loop_guards
+ */
+void force_loop_exit(goto_functionst &gf, const exprt::operandst &loop_guards);
+
+/**
+ * @brief
+ *
+ * @details
+ *
+ * @param gf
  * @param num_loops
  */
 void force_guard_violation(goto_functionst &gf, const size_t num_loops);
