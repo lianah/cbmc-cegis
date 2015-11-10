@@ -133,7 +133,8 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
   while (evolving)
   {
     // XXX: Debug
-    if (std::chrono::duration_cast<std::chrono::milliseconds>(clockt::now() - program_startup) > std::chrono::minutes(15))
+    if (std::chrono::duration_cast < std::chrono::milliseconds
+        > (clockt::now() - program_startup) > std::chrono::minutes(5))
       return false;
     // XXX: Debug
     selection=select.select(pop);

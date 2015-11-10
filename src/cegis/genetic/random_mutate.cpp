@@ -56,7 +56,7 @@ void random_mutatet::operator()(individualt &lhs, const individualt &rhs) const
       if (!mutation_target) return mutate_opcode(instr, random, i);
       --mutation_target;
       const size_t length=instr.ops.size();
-      if (num_x0 < length)
+      if (mutation_target < length)
       {
         instr.ops[mutation_target]=random.op(i);
         return;

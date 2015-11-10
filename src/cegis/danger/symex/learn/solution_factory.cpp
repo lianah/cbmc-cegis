@@ -20,10 +20,10 @@
 
 namespace
 {
-const unsigned char get_const_value(const exprt &expr)
+const program_individualt::instructiont::opt get_const_value(const exprt &expr)
 {
   const bv_arithmetict bv(expr);
-  return static_cast<unsigned char>(bv.to_integer().to_ulong());
+  return static_cast<program_individualt::instructiont::opt>(bv.to_integer().to_ulong());
 }
 
 typedef std::map<size_t, const irep_idt> danger_variable_namest;
@@ -132,8 +132,8 @@ public:
   {
   }
 
-  void operator()(const unsigned char opcode,
-      const std::vector<unsigned char> &ops)
+  void operator()(const program_individualt::instructiont::opcodet opcode,
+      const program_individualt::instructiont::opst &ops)
   {
     const instruction_sett::const_iterator instr_entry=instrset.find(opcode);
     assert(instrset.end() != instr_entry);
@@ -162,11 +162,15 @@ public:
   void operator()(const exprt &prog_arary_member)
   {
     const struct_exprt &instr_rep=to_struct_expr(prog_arary_member);
-    const unsigned char opcode=get_const_value(instr_rep.op0());
-    const unsigned char op0=get_const_value(instr_rep.op1());
-    const unsigned char op1=get_const_value(instr_rep.op2());
-    const unsigned char op2=get_const_value(instr_rep.op3());
-    const std::vector<unsigned char> ops= { op0, op1, op2 };
+    const program_individualt::instructiont::opcodet opcode=get_const_value(
+        instr_rep.op0());
+    const program_individualt::instructiont::opcodet op0=get_const_value(
+        instr_rep.op1());
+    const program_individualt::instructiont::opcodet op1=get_const_value(
+        instr_rep.op2());
+    const program_individualt::instructiont::opcodet op2=get_const_value(
+        instr_rep.op3());
+    const program_individualt::instructiont::opst ops={ op0, op1, op2 };
     operator()(opcode, ops);
     if (insidx % prog_size == 0) switch_prog();
   }
@@ -257,6 +261,6 @@ void create_danger_solution(danger_goto_solutiont &result,
   danger_goto_solutiont::nondet_choicest &nondet=result.x0_choices;
   nondet.clear();
   const typet type=danger_meta_type(); // XXX: Currently single data type.
-  for (const individualt::nondet_choices::value_type &x0 : ind.x0)
+  for (const individualt::x0t::value_type &x0 : ind.x0)
     nondet.push_back(from_integer(x0, type));
 }

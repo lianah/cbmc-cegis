@@ -120,7 +120,7 @@ public:
    *
    * @return
    */
-  program_individualt::nondet_choices::value_type x0() const;
+  program_individualt::x0t::value_type x0() const;
 
   /**
    * @brief
@@ -129,7 +129,7 @@ public:
    *
    * @return
    */
-  program_individualt::nondet_choices::value_type constant() const;
+  program_individualt::x0t::value_type constant() const;
 
   /**
    * @brief

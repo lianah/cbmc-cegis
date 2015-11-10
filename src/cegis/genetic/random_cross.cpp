@@ -34,15 +34,15 @@ void random_crosst::operator ()(const individualst &parents,
   const size_t prog_limit=parents.front()->programs.size();
   const size_t target_prog_index=random.rand() % prog_limit;
 
-  const individualst::value_type::value_type &father=*parents.front();
-  const individualst::value_type::value_type &mother=*parents[1u];
-  individualst::value_type::value_type &son=*children.front();
-  individualst::value_type::value_type &daughter=*children[1u];
+  const populationt::value_type &father=*parents.front();
+  const populationt::value_type &mother=*parents[1u];
+  populationt::value_type &son=*children.front();
+  populationt::value_type &daughter=*children[1u];
 
-  const individualst::value_type::value_type::nondet_choices &f_x0=father.x0;
-  const individualst::value_type::value_type::nondet_choices &m_x0=mother.x0;
-  individualst::value_type::value_type::nondet_choices &s_x0=son.x0;
-  individualst::value_type::value_type::nondet_choices &d_x0=daughter.x0;
+  const populationt::value_type::x0t &f_x0=father.x0;
+  const populationt::value_type::x0t &m_x0=mother.x0;
+  populationt::value_type::x0t &s_x0=son.x0;
+  populationt::value_type::x0t &d_x0=daughter.x0;
   const size_t x0_offset=random.rand() % (f_x0.size() + 1);
   std::copy(f_x0.begin(), f_x0.begin() + x0_offset, s_x0.begin());
   std::copy(m_x0.begin() + x0_offset, m_x0.end(), s_x0.begin() + x0_offset);

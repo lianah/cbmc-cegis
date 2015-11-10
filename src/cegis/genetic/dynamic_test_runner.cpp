@@ -61,8 +61,8 @@ void write_file(const char * const path, const std::string &content)
 
 #define SOURCE_FILE_PREFIX "concrete_test"
 #define SOURCE_FILE_SUFFIX ".c"
-//#define COMPILE_COMMAND "gcc -std=c99 -g0 -O2 -shared -rdynamic -fPIC "
-#define COMPILE_COMMAND "gcc -std=c99 -g3 -O0 -shared -rdynamic -fPIC "
+#define COMPILE_COMMAND "gcc -std=c99 -g0 -O2 -shared -rdynamic -fPIC "
+//#define COMPILE_COMMAND "gcc -std=c99 -g3 -O0 -shared -rdynamic -fPIC "
 #define ARTIFACT_SEPARATOR " -o "
 #define FUNC "__CPROVER_cegis_test_fitness"
 #define COMPLING_FAILED "Compiling test runner failed."
@@ -141,7 +141,7 @@ void dynamic_test_runnert::run_test(individualt &ind, const counterexamplet &ce)
         args.push_back(0u);
     }
   }
-  for (const individualt::nondet_choices::value_type &x0 : ind.x0)
+  for (const individualt::x0t::value_type &x0 : ind.x0)
     args.push_back(static_cast<unsigned int>(x0));
 
   const int argc=args.size();

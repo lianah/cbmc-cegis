@@ -68,12 +68,12 @@ void random_individualt::havoc(program_individualt::programt &prog,
     havoc(prog[i], i);
 }
 
-program_individualt::nondet_choices::value_type random_individualt::x0() const
+program_individualt::x0t::value_type random_individualt::x0() const
 {
   return rand();
 }
 
-program_individualt::nondet_choices::value_type random_individualt::constant() const
+program_individualt::x0t::value_type random_individualt::constant() const
 {
   const bv_spect spec(type);
   const unsigned int width=spec.width;
@@ -103,12 +103,13 @@ void random_individualt::havoc(program_individualt &ind)
   for (size_t i=0u; i < progs.size(); ++i)
     havoc(progs[i], i);
   const size_t number_of_x0=num_x0();
-  ind.x0.resize(number_of_x0);
+  program_individualt::x0t &ind_x0=ind.x0;
+  ind_x0.resize(number_of_x0);
   const size_t number_of_constants=num_consts();
   for (size_t i=0; i < number_of_constants; ++i)
-    ind.x0[i]=constant();
+    ind_x0[i]=constant();
   for (size_t i=number_of_constants; i < number_of_x0; ++i)
-    ind.x0[i]=x0();
+    ind_x0[i]=x0();
 }
 
 unsigned int random_individualt::rand() const

@@ -29,7 +29,7 @@ public:
 private:
   test_runnert &test_runner;
   counterexamplest counterexamples;
-  std::map<individualt *, size_t> executed_test_cases;
+  std::map<const individualt *, size_t> executed_test_cases;
 
   populationt::iterator find_candidate(populationt &pop);
 public:
