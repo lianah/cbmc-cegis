@@ -47,6 +47,7 @@ int run_cegis(learnt &learn, oraclet &oracle, preproct &preproc, seedt &seed, si
       learn.show_candidate(os);
       return 0;
     }
+    if (max_size == -1) break;
   }
   return 10;
 }

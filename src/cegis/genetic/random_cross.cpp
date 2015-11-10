@@ -13,6 +13,8 @@ random_crosst::~random_crosst()
 {
 }
 
+#include <iostream> // XXX: Debug
+
 namespace
 {
 void fix_result_ops(random_crosst::programt::value_type &instr,
@@ -21,7 +23,8 @@ void fix_result_ops(random_crosst::programt::value_type &instr,
   for (random_crosst::programt::value_type::opt &op : instr.ops)
   {
     if (op < num_vars) continue;
-    op-=(org_index - new_index);
+    if (org_index > new_index) op-=(org_index - new_index);
+    else op+=(new_index - org_index);
     op%=(num_vars + new_index);
   }
 }
@@ -30,6 +33,7 @@ void fix_result_ops(random_crosst::programt::value_type &instr,
 void random_crosst::operator ()(const individualst &parents,
     const individualst &children)
 {
+  std::cout <<" <cross />" << std::endl; // XXX: Debug
   assert(parents.size() >= 2 && children.size() >= 2);
   const size_t prog_limit=parents.front()->programs.size();
   const size_t target_prog_index=random.rand() % prog_limit;

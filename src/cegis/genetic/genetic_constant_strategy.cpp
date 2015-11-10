@@ -41,7 +41,7 @@ void genetic_constant_strategy(danger_programt &prog, const size_t max_length)
     std::cout << "<id>" << const_index << "</id>" << std::endl;
     std::cout << "<id>" << expr.to_string() << "</id>" << std::endl;
     // XXX: Debug
-    const std::string base_name(get_ndt_name(const_index++));
+    const std::string base_name(get_name(const_index++));
     pos=declare_danger_variable(st, gf, pos, base_name, expr.type());
     pos=assign_danger_variable(st, gf, pos, base_name, expr);
   }

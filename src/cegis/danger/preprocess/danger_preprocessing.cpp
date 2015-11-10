@@ -32,13 +32,31 @@ size_t danger_preprocessingt::get_min_solution_size() const
   return std::max(sklm, size_t(1u));
 }
 
+// XXX: Debug
+#include <iostream>
+// XXX: Debug
+
 void danger_preprocessingt::operator ()()
 {
   const namespacet ns(original_program.st);
   null_message_handlert null_msg;
-  goto_inline(original_program.gf, ns, null_msg);
+  goto_functionst &gf=original_program.gf;
+  // XXX: Debug
+  std::cout << "<before_preproc>" << std::endl;
+  gf.output(ns, std::cout);
+  std::cout << "</before_preproc>" << std::endl;
+  // XXX: Debug
+  goto_inline(gf, ns, null_msg);
+  gf.update();
   danger_remove_loops_and_assertion(original_program);
+  gf.update();
   store_skolem_choices(original_program);
+  // XXX: Debug
+  std::cout << "<after_preproc>" << std::endl;
+  gf.output(ns, std::cout);
+  std::cout << "</after_preproc>" << std::endl;
+  // XXX: Debug
+  gf.update();
   current_program=original_program;
 }
 

@@ -45,7 +45,7 @@ bool is_genetic(const optionst &opt)
 
 size_t get_max_prog_size(const optionst &options)
 {
-  if (is_genetic(options)) return 1u;
+  if (is_genetic(options)) return -1;
   return options.get_unsigned_int_option(DANGER_MAX_SIZE);
 }
 
@@ -99,6 +99,10 @@ class variable_counter_helper
       danger_variable_idst ids;
       num_consts=get_danger_variable_ids(prog.st, ids);
       num_vars=ids.size();
+      // XXX: Debug
+      for (const std::pair<const irep_idt, size_t> id : ids)
+        std::cout << "<id>" << id.first << "</id>" << std::endl;
+      // XXX: Debug
       counted=true;
     }
     return value;

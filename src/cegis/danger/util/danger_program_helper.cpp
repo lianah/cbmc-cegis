@@ -42,6 +42,39 @@ const irep_idt &get_affected_variable(const goto_programt::instructiont &instr)
   }
 }
 
+class id_searcht: public const_expr_visitort
+{
+  const irep_idt &id;
+  bool found;
+public:
+  id_searcht(const irep_idt &id) :
+      id(id), found(false)
+  {
+  }
+
+  virtual ~id_searcht()
+  {
+  }
+
+  virtual void operator()(const exprt &expr)
+  {
+    if (ID_symbol != expr.id()) return;
+    if (id == to_symbol_expr(expr).get_identifier()) found=true;
+  }
+
+  bool is_found()
+  {
+    return found;
+  }
+};
+
+bool contains(const exprt &rhs, const irep_idt &id)
+{
+  id_searcht search(id);
+  rhs.visit(search);
+  return search.is_found();
+}
+
 bool is_nondet(const goto_programt::targett &target,
     const goto_programt::targett &end)
 {
@@ -54,7 +87,9 @@ bool is_nondet(const goto_programt::targett &target,
     if (++next == end) return true;
     const goto_programt::instructiont next_instr=*next;
     if (goto_program_instruction_typet::ASSIGN != next_instr.type) return true;
-    return get_affected_variable(instr) != get_affected_variable(next_instr);
+    const irep_idt id(get_affected_variable(instr));
+    if (id != get_affected_variable(next_instr)) return true;
+    return contains(to_code_assign(next_instr.code).rhs(), id);
   }
   case goto_program_instruction_typet::ASSIGN:
   {
@@ -101,4 +136,22 @@ goto_programt::targett fix_target_by_offset(
   const size_t distance=std::distance(original_offset, target);
   std::advance(new_offset, distance);
   return new_offset;
+}
+
+void erase_target(goto_programt::instructionst &body,
+    const goto_programt::targett &target)
+{
+  goto_programt::targett succ=target;
+  assert(++succ != body.end());
+  for (goto_programt::instructiont &instr : body)
+  {
+    for (goto_programt::targett &t : instr.targets)
+      if (target == t) t=succ;
+  }
+  body.erase(target);
+}
+
+void erase_target(goto_programt &body, const goto_programt::targett &target)
+{
+  erase_target(body.instructions, target);
 }

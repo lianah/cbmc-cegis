@@ -5,6 +5,8 @@ int main(void) {
     return 0;
   }
 
+  x=x;
+
   while (x > 0) {
     x -= 2;
   }

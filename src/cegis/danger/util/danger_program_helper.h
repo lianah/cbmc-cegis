@@ -96,4 +96,25 @@ goto_programt::targett fix_target_by_offset(
     goto_programt::targett new_offset,
     const goto_programt::const_targett &target);
 
+/**
+ * @brief
+ *
+ * @details
+ *
+ * @param body
+ * @param target
+ */
+void erase_target(goto_programt::instructionst &body,
+    const goto_programt::targett &target);
+
+/**
+ * @brief
+ *
+ * @details
+ *
+ * @param body
+ * @param target
+ */
+void erase_target(goto_programt &body, const goto_programt::targett &target);
+
 #endif /* CEGIS_DANGER_PROGRAM_HELPER_H_ */

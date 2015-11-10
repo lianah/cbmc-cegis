@@ -61,8 +61,8 @@ void write_file(const char * const path, const std::string &content)
 
 #define SOURCE_FILE_PREFIX "concrete_test"
 #define SOURCE_FILE_SUFFIX ".c"
-#define COMPILE_COMMAND "gcc -std=c99 -g0 -O2 -shared -rdynamic -fPIC "
-//#define COMPILE_COMMAND "gcc -std=c99 -g3 -O0 -shared -rdynamic -fPIC "
+//#define COMPILE_COMMAND "gcc -std=c99 -g0 -O2 -shared -rdynamic -fPIC "
+#define COMPILE_COMMAND "gcc -std=c99 -g3 -O0 -shared -rdynamic -fPIC "
 #define ARTIFACT_SEPARATOR " -o "
 #define FUNC "__CPROVER_cegis_test_fitness"
 #define COMPLING_FAILED "Compiling test runner failed."
@@ -110,7 +110,13 @@ void prepare_library(dynamic_test_runnert::lib_handlet &handle,
 }
 }
 
-void dynamic_test_runnert::run_test(individualt &ind, const counterexamplet &ce)
+// XXX: Debug
+#include <iostream>
+#include <iterator>
+// XXX: Debug
+
+void dynamic_test_runnert::run_test(individualt &ind, const counterexamplet &ce,
+    const size_t bounty)
 {
   prepare_library(handle, fitness_tester, source_code_provider, shared_library);
   std::deque<unsigned int> args;
@@ -149,7 +155,33 @@ void dynamic_test_runnert::run_test(individualt &ind, const counterexamplet &ce)
   for (int i=0; i < argc; ++i)
     argv[i]=args[i];
 
-  if (EXIT_SUCCESS == fitness_tester(argv)) ++ind.fitness;
+  //if (EXIT_SUCCESS == fitness_tester(argv)) ind.fitness+=bounty;
+
+  // XXX: Debug
+  unsigned int argv2[argc];
+  for (int i=0; i < argc; ++i)
+    argv2[i]=args[i];
+  const int first_opinion=fitness_tester(argv);
+  const int second_opinion=fitness_tester(argv2);
+  if (first_opinion != second_opinion)
+  {
+    std::cout << "<fitness>";
+    std::copy(args.begin(), args.end(), std::ostream_iterator<unsigned int>(std::cout, " "));
+    std::cout << "</fitness>" << std::endl;
+  }
+  assert (first_opinion == second_opinion);
+  if (EXIT_SUCCESS == fitness_tester(argv)) ind.fitness+=bounty;
+  /*if (EXIT_SUCCESS == fitness_tester(argv) && (ind.fitness+=bounty) == 5)
+  {
+    int result=fitness_tester(argv);
+    result=fitness_tester(argv);
+    result=fitness_tester(argv);
+    result=fitness_tester(argv);
+  std::cout << "<fitness>";
+  std::copy(args.begin(), args.end(), std::ostream_iterator<unsigned int>(std::cout, " "));
+  std::cout << "</fitness>" << std::endl;
+  }*/
+  // XXX: Debug
 }
 
 void dynamic_test_runnert::join()

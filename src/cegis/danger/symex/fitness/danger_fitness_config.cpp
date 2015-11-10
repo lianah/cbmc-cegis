@@ -79,7 +79,7 @@ void danger_fitness_configt::set_test_case(const counterexamplet &ce)
     if (program_contains_ce)
     {
       goto_programt::targett assignment=quantifier;
-      get_danger_body(gf).instructions.erase(++assignment);
+      erase_target(get_danger_body(gf).instructions, ++assignment);
     }
     danger_assign_user_variable(st, gf, quantifier, var, it->second);
   }

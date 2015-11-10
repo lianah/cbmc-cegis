@@ -63,8 +63,9 @@ public:
    *
    * @param ind
    * @param ce
+   * @param bounty
    */
-  void run_test(individualt &ind, const counterexamplet &ce);
+  void run_test(individualt &ind, const counterexamplet &ce, size_t bounty);
 
   /**
    * @brief
