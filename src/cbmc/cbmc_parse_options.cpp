@@ -427,6 +427,7 @@ void cbmc_parse_optionst::get_command_line_options(optionst &options)
       max_prog_size=string2integer(cmdline.get_value("cegis-max-size")).to_ulong();
     options.set_option("cegis-max-size", max_prog_size);
     options.set_option("cegis-parallel-verify", cmdline.isset("cegis-parallel-verify"));
+    //options.set_option("cegis-parallel-verify", true);
     options.set_option("cegis-statistics", cmdline.isset("cegis-statistics"));
     options.set_option("cegis-genetic", cmdline.isset("cegis-genetic"));
     unsigned int genetic_rounds=10u;

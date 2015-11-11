@@ -25,20 +25,16 @@ template<class test_runnert>
 void lazy_fitnesst<test_runnert>::add_test_case(const counterexamplet &ce)
 {
   const counterexamplest::const_iterator end=counterexamples.end();
+  // XXX: This should never occur
   //if (end == std::find(counterexamples.begin(), counterexamples.end(), ce))
-  assert (end == std::find(counterexamples.begin(), counterexamples.end(), ce));
-    counterexamples.push_back(ce);
+  assert(end == std::find(counterexamples.begin(), counterexamples.end(), ce));
+  counterexamples.push_back(ce);
 }
 
 template<class test_runnert>
 typename lazy_fitnesst<test_runnert>::populationt::iterator lazy_fitnesst<
     test_runnert>::find_candidate(populationt &pop)
 {
-  for (const populationt::value_type &ind : pop)
-    for (const populationt::value_type::programt &prog : ind.programs)
-      for (size_t i=0; i < prog.size(); ++i)
-        for (const populationt::value_type::programt::value_type::opt &op : prog[i].ops)
-          assert (op < (5+i));
   const size_t ces=get_target_fitness();
   for (populationt::iterator it=pop.begin(); it != pop.end(); ++it)
     if (it->fitness == ces) return it;
@@ -48,8 +44,8 @@ typename lazy_fitnesst<test_runnert>::populationt::iterator lazy_fitnesst<
 size_t get_bounty(const size_t index)
 {
   /*size_t bounty=1u;
-  bounty+=index / 5u;
-  return bounty;*/
+   bounty+=index / 5u;
+   return bounty;*/
   return 1u;
 }
 

@@ -168,6 +168,17 @@ public:
    * @return
    */
   size_t get_max_prog_size(size_t prog_index) const;
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @param prog_index
+   *
+   * @return
+   */
+  size_t get_min_prog_size(size_t prog_index) const;
 };
 
 #endif /* CEGIS_GENETIC_RANDOM_INDIVIDUAL_H_ */

@@ -91,7 +91,6 @@ time_pointt program_startup=clockt::now();
 //size_t count=0;
 }
 // XXX: Debug
-
 template<class selectt, class mutatet, class crosst, class fitnesst,
     class convertt>
 template<class itert>

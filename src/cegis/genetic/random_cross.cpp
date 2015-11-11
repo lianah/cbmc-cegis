@@ -13,8 +13,6 @@ random_crosst::~random_crosst()
 {
 }
 
-#include <iostream> // XXX: Debug
-
 namespace
 {
 void fix_result_ops(random_crosst::programt::value_type &instr,
@@ -33,7 +31,6 @@ void fix_result_ops(random_crosst::programt::value_type &instr,
 void random_crosst::operator ()(const individualst &parents,
     const individualst &children)
 {
-  std::cout <<" <cross />" << std::endl; // XXX: Debug
   assert(parents.size() >= 2 && children.size() >= 2);
   const size_t prog_limit=parents.front()->programs.size();
   const size_t target_prog_index=random.rand() % prog_limit;
@@ -58,20 +55,22 @@ void random_crosst::operator ()(const individualst &parents,
   programt &s_prog=son.programs[target_prog_index];
   programt &d_prog=daughter.programs[target_prog_index];
 
+  const size_t min_prog_sz=random.get_min_prog_size(target_prog_index);
   const size_t max_prog_sz=random.get_max_prog_size(target_prog_index);
   const size_t f_sz=f_prog.size();
   const size_t m_sz=m_prog.size();
-  if (!f_sz || !m_sz) return;
-  size_t father_offset=random.rand() % (f_sz + 1);
+  if (f_sz < min_prog_sz || m_sz < min_prog_sz) return;
+  const size_t all_instrs=f_sz + m_sz;
+  const size_t child_max=std::min(max_prog_sz, all_instrs - min_prog_sz);
+  const size_t father_offset=random.rand() % (f_sz + 1);
   size_t mo_lower=father_offset + m_sz;
-  mo_lower=mo_lower <= max_prog_sz ? 0u : mo_lower - max_prog_sz;
-  const size_t mo_upper=std::min(m_sz, max_prog_sz + father_offset - f_sz);
+  mo_lower=mo_lower <= child_max ? 0u : mo_lower - child_max;
+  const size_t mo_upper=std::min(m_sz, child_max + father_offset - f_sz);
   assert(mo_upper >= mo_lower);
   const size_t mo_range=mo_upper - mo_lower + 1;
-  size_t mother_offset=mo_range ? mo_lower + random.rand() % mo_range : 0u;
+  const size_t mother_offset=
+      mo_range ? mo_lower + random.rand() % mo_range : 0u;
 
-  if (father_offset == 0u && mother_offset == m_sz) ++father_offset;
-  if (mother_offset == 0u && father_offset == f_sz) ++mother_offset;
   s_prog.resize(father_offset + m_sz - mother_offset);
   d_prog.resize(mother_offset + f_sz - father_offset);
   assert(!s_prog.empty());

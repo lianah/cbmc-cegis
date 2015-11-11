@@ -126,3 +126,8 @@ size_t random_individualt::get_max_prog_size(const size_t prog_index) const
 {
   return max_prog_sz(prog_index);
 }
+
+size_t random_individualt::get_min_prog_size(const size_t prog_index) const
+{
+  return min_prog_sz(prog_index);
+}
