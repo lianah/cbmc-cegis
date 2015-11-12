@@ -26,6 +26,8 @@ void fix_result_ops(random_crosst::programt::value_type &instr,
     op%=(num_vars + new_index);
   }
 }
+
+//size_t cross_count=1; // XXX: Debug
 }
 
 void random_crosst::operator ()(const individualst &parents,
@@ -82,4 +84,12 @@ void random_crosst::operator ()(const individualst &parents,
     fix_result_ops(s_prog[f]=m_prog[m], m, f, num_vars);
   for (size_t m=mother_offset, f=father_offset; f < f_sz; ++m, ++f)
     fix_result_ops(d_prog[m]=f_prog[f], f, m, num_vars);
+
+  // XXX: Debug
+  /*for (const populationt::value_type::instructiont &instr : d_prog)
+   for (const populationt::value_type::instructiont::opt &op : instr.ops)
+   assert(op != 80);
+   assert(cross_count);
+   ++cross_count;*/
+  // XXX: Debug
 }

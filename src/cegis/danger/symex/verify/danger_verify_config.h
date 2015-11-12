@@ -24,6 +24,8 @@ class danger_verify_configt
   const danger_programt &original_program;
   danger_programt program;
   goto_programt::targetst quantifiers;
+  bool limit_ce;
+  size_t max_ce_width;
 public:
   /**
    * @brief Counterexample type for this CEGIS component.
@@ -121,6 +123,15 @@ public:
    * @return
    */
   exprt::operandst get_loop_guards() const;
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @param size
+   */
+  void set_max_ce_width(size_t size);
 };
 
 #endif /* CEGIS_DANGER_VERIFY_CONFIG_H_ */

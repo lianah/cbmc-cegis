@@ -84,6 +84,15 @@ public:
    *
    * @details
    *
+   * @param word_width_in_bits
+   */
+  void set_word_width(size_t word_width_in_bits);
+
+  /**
+   * @brief
+   *
+   * @details
+   *
    * @return
    */
   const symbol_tablet &get_symbol_table() const;

@@ -3,51 +3,52 @@
  Module: Counterexample-Guided Inductive Synthesis
 
  Author: Daniel Kroening, kroening@kroening.com
-         Pascal Kesseli, pascal.kesseil@cs.ox.ac.uk
+ Pascal Kesseli, pascal.kesseil@cs.ox.ac.uk
 
-\*******************************************************************/
+ \*******************************************************************/
 
-#ifndef CEGIS_PARALLEL_DANGER_VERIFIER_H_
-#define CEGIS_PARALLEL_DANGER_VERIFIER_H_
+#ifndef CEGIS_LIMITED_WORDSIZE_VERIFY_H_
+#define CEGIS_LIMITED_WORDSIZE_VERIFY_H_
 
-#include <cegis/danger/symex/verify/danger_verify_config.h>
+#include <deque>
+#include <functional>
 
-// TODO: Refactor this to use task_poolt.
 /**
  * @brief
  *
  * @details
  */
-class parallel_danger_verifiert
+template<class verifyt>
+class limited_wordsize_verifyt
 {
+  verifyt &verifier;
+  const std::function<void(size_t)> set_wordsize;
+  bool is_success;
 public:
-  typedef danger_verify_configt::counterexamplet counterexamplet;
-  typedef std::set<counterexamplet> counterexamplest;
+  typedef typename verifyt::candidatet candidatet;
+  typedef typename verifyt::counterexamplet counterexamplet;
+  typedef typename std::deque<counterexamplet> counterexamplest;
+  typedef typename counterexamplest::const_iterator const_iterator;
 private:
-  const class optionst &options;
-  danger_verify_configt &config;
-  counterexamplest all_ces;
-  bool is_failure;
+  counterexamplest ces;
 public:
-  typedef danger_verify_configt::candidatet candidatet;
-  typedef counterexamplest::const_iterator const_iterator;
-
   /**
    * @brief
    *
    * @details
    *
-   * @param options
-   * @param config
+   * @param verifier
+   * @param set_wordsize
    */
-  parallel_danger_verifiert(const optionst &options, danger_verify_configt &config);
+  limited_wordsize_verifyt(verifyt &verifier,
+      std::function<void(size_t)> set_wordsize);
 
   /**
-   * @brief
+   * @brief Default destructor.
    *
-   * @details
+   * @details No cleanup tasks performed.
    */
-  ~parallel_danger_verifiert();
+  ~limited_wordsize_verifyt();
 
   /**
    * @brief Verifies a given candidate solution.
@@ -96,4 +97,6 @@ public:
   bool success() const;
 };
 
-#endif /* CEGIS_PARALLEL_DANGER_VERIFIER_H_ */
+#include "limited_wordsize_verify.inc"
+
+#endif /* CEGIS_LIMITED_WORDSIZE_VERIFY_H_ */

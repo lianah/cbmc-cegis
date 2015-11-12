@@ -25,9 +25,12 @@ public:
 private:
   const class optionst &options;
   learn_configurationt &config;
+  size_t word_width;
   size_t max_solution_size;
   candidatet current_candidate;
   counterexamplest counterexamples;
+
+  safety_checkert::resultt run_bmc(message_handlert &msg, const optionst &opt);
 public:
   /**
    * @brief

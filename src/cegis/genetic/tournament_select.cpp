@@ -33,16 +33,6 @@ const tournament_selectt::individualt &tournament_selectt::selectiont::mutation_
   return *parents.front();
 }
 
-const tournament_selectt::individualst &tournament_selectt::selectiont::get_parents() const
-{
-  return parents;
-}
-
-const tournament_selectt::individualst &tournament_selectt::selectiont::get_children() const
-{
-  return children;
-}
-
 tournament_selectt::tournament_selectt(random_individualt &random,
     size_t pop_size, size_t rounds) :
     random(random), pop_size(pop_size), rounds(rounds)

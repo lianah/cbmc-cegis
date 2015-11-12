@@ -117,4 +117,14 @@ void erase_target(goto_programt::instructionst &body,
  */
 void erase_target(goto_programt &body, const goto_programt::targett &target);
 
+/**
+ * @brief
+ *
+ * @details
+ *
+ * @param prog
+ * @param width_in_bits
+ */
+void restrict_bv_size(class danger_programt &prog, size_t width_in_bits);
+
 #endif /* CEGIS_DANGER_PROGRAM_HELPER_H_ */

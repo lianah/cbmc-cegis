@@ -2,6 +2,8 @@
 
 #include <goto-programs/goto_functions.h>
 
+#include <cegis/wordsize/restrict_bv_size.h>
+#include <cegis/danger/options/danger_program.h>
 #include <cegis/danger/meta/literals.h>
 #include <cegis/danger/util/danger_program_helper.h>
 
@@ -154,4 +156,12 @@ void erase_target(goto_programt::instructionst &body,
 void erase_target(goto_programt &body, const goto_programt::targett &target)
 {
   erase_target(body.instructions, target);
+}
+
+void restrict_bv_size(danger_programt &prog, const size_t width_in_bits)
+{
+  restrict_bv_size(prog.st, prog.gf, width_in_bits);
+  for (danger_programt::loopt &loop : prog.loops)
+    restrict_bv_size(loop.guard, width_in_bits);
+  restrict_bv_size(prog.assertion, width_in_bits);
 }

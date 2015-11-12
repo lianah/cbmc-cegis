@@ -63,6 +63,7 @@ goto_programt::instructionst &get_prog(
   }
 }
 
+// TODO: Replace construct by name prefixes for programs
 class read_instrt
 {
   danger_goto_solutiont::danger_programst &progs;

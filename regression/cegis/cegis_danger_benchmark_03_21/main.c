@@ -1,8 +1,9 @@
 int main(void) {
-  unsigned int x, y;
+  unsigned int x = 0;
+  unsigned int y = 1;
 
-  x = 0;
-  y = 1;
+  //x = 0;
+  //y = 1;
 
   while (x < 1000000) {
     x++;

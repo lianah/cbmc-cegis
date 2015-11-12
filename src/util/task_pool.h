@@ -75,6 +75,15 @@ public:
   task_idt schedule(const taskt &task, const on_completet &on_complete);
 
   /**
+   * @brief
+   *
+   * @details
+   *
+   * @param id
+   */
+  void cancel(task_idt id);
+
+  /**
    * @brief Joins a task.
    *
    * @details Waits for the given task to complete.

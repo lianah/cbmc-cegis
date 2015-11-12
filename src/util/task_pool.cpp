@@ -1,4 +1,5 @@
 #ifndef _WIN32
+#include <sys/signal.h>
 #include <sys/wait.h>
 #endif
 #include <algorithm>
@@ -90,6 +91,16 @@ task_poolt::task_idt task_poolt::schedule(const taskt &task,
   const task_poolt::task_idt id=schedule(task);
   handlers.insert(std::make_pair(id, on_complete));
   return id;
+}
+
+void task_poolt::cancel(const task_idt id)
+{
+#ifndef _WIN32
+  kill(id, SIGTERM);
+  join(id);
+#else
+  NOT_SUPPORTED();
+#endif
 }
 
 void task_poolt::join(const task_idt id)

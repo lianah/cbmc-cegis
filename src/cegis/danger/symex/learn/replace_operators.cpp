@@ -50,7 +50,7 @@ public:
     const danger_variable_namest &names=is_res ? rnames : this->names;
     const size_t op=is_res ? instr_idx : is_op0 ? op0 : is_op1 ? op1 : op2;
     const danger_variable_namest::const_iterator name=names.find(op);
-    if (names.end() == name) return;
+    assert(names.end() != name);
     const symbol_exprt symbol(st.lookup(name->second).symbol_expr());
     const typet danger_type(danger_meta_type());
     if (type_eq(danger_type, symbol.type(), ns)) expr=symbol;

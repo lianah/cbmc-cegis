@@ -6,6 +6,7 @@
 #include <cegis/facade/cegis.h>
 #include <cegis/genetic/ga_learn.h>
 #include <cegis/genetic/random_individual.h>
+#include <cegis/genetic/match_select.h>
 #include <cegis/genetic/tournament_select.h>
 #include <cegis/genetic/instruction_set_info_factory.h>
 #include <cegis/genetic/random_mutate.h>
@@ -19,7 +20,9 @@
 #include <cegis/seed/literals_seed.h>
 #include <cegis/symex/cegis_symex_learn.h>
 #include <cegis/symex/cegis_symex_verify.h>
+#include <cegis/wordsize/limited_wordsize_verify.h>
 #include <cegis/statistics/cegis_statistics_wrapper.h>
+#include <cegis/learn/concurrent_learn.h>
 
 #include <cegis/danger/constant/constant_strategy.h>
 #include <cegis/danger/constant/default_constant_strategy.h>
@@ -67,24 +70,37 @@ int run_statistics(mstreamt &os, const optionst &options,
   return run_cegis(stat, stat, preproc, seed, max_prog_size, os);
 }
 
+#define CEGIS_LIMIT_WORDSIZE "cegis-limit-wordsize"
+
+template<class learnert, class verifiert, class preproct>
+int run_limited(mstreamt &os, const optionst &options,
+    const danger_programt &prog, danger_verify_configt &config, learnert &learn,
+    verifiert &verify, preproct &preproc)
+{
+  if (!options.get_bool_option(CEGIS_LIMIT_WORDSIZE))
+    return run_statistics(os, options, prog, learn, verify, preproc);
+  limited_wordsize_verifyt<verifiert> limited_verify(verify,
+      [&config](const size_t width)
+      { config.set_max_ce_width(width);});
+  return run_statistics(os, options, prog, learn, limited_verify, preproc);
+}
+
 #define DANGER_PARALLEL_VERIFY "cegis-parallel-verify"
 
 template<class learnert, class preproct>
 int run_parallel(mstreamt &os, const optionst &options,
     const danger_programt &prog, learnert &learn, preproct &preproc)
 {
-  danger_verify_configt verify_config(prog);
+  danger_verify_configt config(prog);
   if (options.get_bool_option(DANGER_PARALLEL_VERIFY))
   {
-    parallel_danger_verifiert verify(options, verify_config);
-    return run_statistics(os, options, prog, learn, verify, preproc);
+    parallel_danger_verifiert verify(options, config);
+    return run_limited(os, options, prog, config, learn, verify, preproc);
   }
-  cegis_symex_verifyt<danger_verify_configt> verify(options, verify_config);
-  return run_statistics(os, options, prog, learn, verify, preproc);
+  cegis_symex_verifyt<danger_verify_configt> verify(options, config);
+  return run_limited(os, options, prog, config, learn, verify, preproc);
 }
 
-namespace
-{
 class variable_counter_helper
 {
   const danger_programt &prog;
@@ -195,6 +211,29 @@ public:
     return std::max(max_num_skolem, user_max_prog_size);
   }
 };
+
+#define CEGIS_MATCH_SELECT "cegis-match-select"
+
+template<class fitnesst, class mutatet, class crosst, class convertert,
+    class preproct>
+int run_match(mstreamt &os, const optionst &opt, const danger_programt &prog,
+    random_individualt &rnd, const size_t pop_size, const size_t rounds,
+    fitnesst &fitness, mutatet &mutate, crosst &cross, convertert &converter,
+    preproct &preproc)
+{
+  if (opt.get_bool_option(CEGIS_MATCH_SELECT))
+  {
+    match_selectt select(fitness.get_test_case_data(), rnd, pop_size, rounds);
+    ga_learnt<match_selectt, mutatet, crosst, fitnesst, danger_fitness_configt> learn(
+        opt, select, mutate, cross, fitness, converter);
+    return run_parallel(os, opt, prog, learn, preproc);
+  }
+  tournament_selectt select(rnd, pop_size, rounds);
+  ga_learnt<tournament_selectt, random_mutatet, random_crosst, fitnesst,
+      danger_fitness_configt> learn(opt, select, mutate, cross, fitness,
+      converter);
+  return run_parallel(os, opt, prog, learn, preproc);
+
 }
 
 template<class preproct>
@@ -227,23 +266,22 @@ int run_genetic(mstreamt &os, const optionst &opt, const danger_programt &prog,
     const typet type=danger_meta_type(); // XXX: Currently single user data type.
     random_individualt rnd(seed, type, info_fac, min_prog_sz, max_prog_sz,
         num_progs, num_vars, num_consts, num_x0);
-    tournament_selectt select(rnd, pop_size, rounds);
-    random_mutatet mutate(rnd, num_consts);
-    random_crosst cross(rnd);
     danger_fitness_configt converter(info_fac, prog);
     concrete_fitness_source_providert src(prog, std::ref(max_prog_sz));
     dynamic_test_runnert test_runner(std::ref(src), std::ref(max_prog_sz));
     typedef lazy_fitnesst<dynamic_test_runnert> fitnesst;
-    //concrete_test_runnert test_runner(std::ref(src));
-    //typedef lazy_fitnesst<concrete_test_runnert> fitnesst;
     fitnesst fitness(test_runner);
-    ga_learnt<tournament_selectt, random_mutatet, random_crosst, fitnesst,
-        danger_fitness_configt> learn(opt, select, mutate, cross, fitness,
-        converter);
-    return run_parallel(os, opt, prog, learn, preproc);
+    //tournament_selectt select(rnd, pop_size, rounds);
+    match_selectt select(fitness.get_test_case_data(), rnd, pop_size, rounds);
+    random_mutatet mutate(rnd, num_consts);
+    random_crosst cross(rnd);
+    return run_match(os, opt, prog, rnd, pop_size, rounds, fitness, mutate,
+        cross, converter, preproc);
   }
   danger_learn_configt learn_config(prog);
   cegis_symex_learnt<danger_learn_configt> learn(opt, learn_config);
+  concurrent_learnt<cegis_symex_learnt<danger_learn_configt>,
+      cegis_symex_learnt<danger_learn_configt> > concurrent_learn;
   return run_parallel(os, opt, prog, learn, preproc);
 }
 }

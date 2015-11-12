@@ -6,7 +6,7 @@
 #include <cegis/danger/symex/verify/danger_verify_config.h>
 
 danger_verify_configt::danger_verify_configt(const danger_programt &program) :
-    original_program(program)
+    original_program(program), limit_ce(false), max_ce_width(0u)
 {
 }
 
@@ -19,6 +19,7 @@ void danger_verify_configt::process(const candidatet &candidate)
   program=original_program;
   quantifiers.clear();
   danger_insert_constraint(quantifiers, program);
+  if (limit_ce) danger_limit_ce(quantifiers, program, max_ce_width);
   danger_insert_candidate(program, candidate);
   program.gf.update();
 }
@@ -58,4 +59,10 @@ exprt::operandst danger_verify_configt::get_loop_guards() const
       [](const danger_programt::loopt &loop)
       { return loop.guard;});
   return loop_guards;
+}
+
+void danger_verify_configt::set_max_ce_width(const size_t size)
+{
+  limit_ce=true;
+  max_ce_width=size;
 }

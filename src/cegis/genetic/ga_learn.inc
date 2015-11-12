@@ -151,8 +151,8 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
     } else
     {
       if (!selection.can_cross()) return false;
-      cross(selection.get_parents(), selection.get_children());
-      for (const typename populationt::iterator &child : selection.get_children())
+      cross(selection.parents, selection.children);
+      for (const typename populationt::iterator &child : selection.children)
         if (set_fitness(*child)) return true;
     }
   }
