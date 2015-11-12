@@ -271,8 +271,6 @@ int run_genetic(mstreamt &os, const optionst &opt, const danger_programt &prog,
     dynamic_test_runnert test_runner(std::ref(src), std::ref(max_prog_sz));
     typedef lazy_fitnesst<dynamic_test_runnert> fitnesst;
     fitnesst fitness(test_runner);
-    //tournament_selectt select(rnd, pop_size, rounds);
-    match_selectt select(fitness.get_test_case_data(), rnd, pop_size, rounds);
     random_mutatet mutate(rnd, num_consts);
     random_crosst cross(rnd);
     return run_match(os, opt, prog, rnd, pop_size, rounds, fitness, mutate,
@@ -280,8 +278,8 @@ int run_genetic(mstreamt &os, const optionst &opt, const danger_programt &prog,
   }
   danger_learn_configt learn_config(prog);
   cegis_symex_learnt<danger_learn_configt> learn(opt, learn_config);
-  concurrent_learnt<cegis_symex_learnt<danger_learn_configt>,
-      cegis_symex_learnt<danger_learn_configt> > concurrent_learn;
+  /*concurrent_learnt<cegis_symex_learnt<danger_learn_configt>,
+   cegis_symex_learnt<danger_learn_configt> > concurrent_learn(learn, learn);*/
   return run_parallel(os, opt, prog, learn, preproc);
 }
 }

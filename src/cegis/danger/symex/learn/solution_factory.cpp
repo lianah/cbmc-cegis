@@ -6,6 +6,7 @@
 #include <goto-programs/goto_trace.h>
 #include <goto-programs/goto_functions.h>
 
+#include <cegis/value/program_individual_serialisation.h>
 #include <cegis/instructions/instruction_set_factory.h>
 #include <cegis/danger/meta/literals.h>
 #include <cegis/danger/meta/meta_variable_names.h>
@@ -133,9 +134,9 @@ public:
   {
   }
 
-  void operator()(const program_individualt::instructiont::opcodet opcode,
-      const program_individualt::instructiont::opst &ops)
+  void operator()(const program_individualt::instructiont &instruction)
   {
+    const program_individualt::instructiont::opcodet opcode=instruction.opcode;
     const instruction_sett::const_iterator instr_entry=instrset.find(opcode);
     assert(instrset.end() != instr_entry);
     goto_programt::instructionst &prog=get_prog(progs, prog_type, insidx);
@@ -151,6 +152,7 @@ public:
     }
     copy_instr.finalize();
     std::advance(first, -instr.size());
+    const program_individualt::instructiont::opst &ops=instruction.ops;
     const size_t empty_op=0u;
     const size_t op0=!ops.empty() ? ops.front() : empty_op;
     const size_t op1=ops.size() >= 2 ? ops.at(1) : empty_op;
@@ -163,16 +165,7 @@ public:
   void operator()(const exprt &prog_arary_member)
   {
     const struct_exprt &instr_rep=to_struct_expr(prog_arary_member);
-    const program_individualt::instructiont::opcodet opcode=get_const_value(
-        instr_rep.op0());
-    const program_individualt::instructiont::opcodet op0=get_const_value(
-        instr_rep.op1());
-    const program_individualt::instructiont::opcodet op1=get_const_value(
-        instr_rep.op2());
-    const program_individualt::instructiont::opcodet op2=get_const_value(
-        instr_rep.op3());
-    const program_individualt::instructiont::opst ops={ op0, op1, op2 };
-    operator()(opcode, ops);
+    operator()(to_program_individual_instruction(instr_rep));
     if (insidx % prog_size == 0) switch_prog();
   }
 
@@ -196,15 +189,8 @@ public:
 
   void operator()(const goto_trace_stept &step)
   {
-    if (goto_trace_stept::DECL != step.type) return;
-    const exprt &value=step.full_lhs_value;
-    if (ID_array != value.id()) return;
-    const typet &type=value.type().subtype();
-    if (ID_struct != type.id()) return;
-    const std::string &tname=id2string(to_struct_type(type).get_tag());
-    const char * const danger_tag=&DANGER_INSTRUCTION_TYPE_NAME[4];
-    if (std::string::npos == tname.find(danger_tag)) return;
-    for (const exprt &prog_array_member : value.operands())
+    if (!is_program_indivdual_decl(step)) return;
+    for (const exprt &prog_array_member : step.full_lhs_value.operands())
       read_instr(prog_array_member);
   }
 };
@@ -257,11 +243,20 @@ void create_danger_solution(danger_goto_solutiont &result,
   {
     extract.set_prog_size(program.size());
     for (const individualt::instructiont &instr : program)
-      extract(instr.opcode, instr.ops);
+      extract(instr);
   }
   danger_goto_solutiont::nondet_choicest &nondet=result.x0_choices;
   nondet.clear();
   const typet type=danger_meta_type(); // XXX: Currently single data type.
   for (const individualt::x0t::value_type &x0 : ind.x0)
     nondet.push_back(from_integer(x0, type));
+}
+
+void create_danger_solution(danger_goto_solutiont &result,
+    const danger_programt &prog, const program_individualt &ind,
+    const danger_variable_idst &ids)
+{
+  instruction_sett instr_set;
+  extract_instruction_set(instr_set, prog.gf);
+  create_danger_solution(result, prog, ind, instr_set, ids);
 }

@@ -51,7 +51,12 @@ const goto_functionst &danger_learn_configt::get_goto_functions() const
   return program.gf;
 }
 
-void danger_learn_configt::danger_learn_configt::convert(candidatet &candidate,
+const danger_programt &danger_learn_configt::get_danger_program() const
+{
+  return program;
+}
+
+void danger_learn_configt::convert(candidatet &candidate,
     const class goto_tracet &trace, const size_t max_solution_size)
 {
   candidate.danger_programs.clear();
@@ -63,6 +68,11 @@ void danger_learn_configt::show_candidate(messaget::mstreamt &os,
     const candidatet &candidate)
 {
   print_danger_program(os, program, candidate);
+}
+
+const danger_learn_configt::danger_variable_idst &danger_learn_configt::get_vars() const
+{
+  return var_ids;
 }
 
 size_t danger_learn_configt::get_num_vars() const

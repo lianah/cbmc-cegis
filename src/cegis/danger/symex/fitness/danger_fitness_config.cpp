@@ -27,9 +27,8 @@ void danger_fitness_configt::convert(candidatet &current_candidate,
 {
   danger_variable_idst ids;
   get_danger_variable_ids(original_program.st, ids);
-  const instruction_sett &instr_set=info_fac.get_instructions();
-  create_danger_solution(current_candidate, original_program, ind, instr_set,
-      ids);
+  const instruction_sett &instrs=info_fac.get_instructions();
+  create_danger_solution(current_candidate, original_program, ind, instrs, ids);
 }
 
 namespace

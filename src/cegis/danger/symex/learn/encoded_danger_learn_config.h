@@ -7,51 +7,25 @@
 
 \*******************************************************************/
 
-#ifndef CEGIS_DANGER_LEARN_CONFIG_H_
-#define CEGIS_DANGER_LEARN_CONFIG_H_
+#ifndef CEGIS_ENCODED_DANGER_LEARN_CONFIG_H_
+#define CEGIS_ENCODED_DANGER_LEARN_CONFIG_H_
 
-#include <deque>
+#include <cegis/value/program_individual.h>
 
-#include <util/message.h>
-
-#include <cegis/danger/options/danger_program.h>
-#include <cegis/danger/value/danger_goto_solution.h>
+#include <cegis/danger/symex/learn/danger_learn_config.h>
 
 /**
  * @brief
  *
  * @details
  */
-class danger_learn_configt
+class encoded_danger_learn_configt
 {
+  danger_learn_configt danger_learn_config;
 public:
-  /**
-   * @brief
-   *
-   * @details
-   */
-  typedef std::map<const irep_idt, size_t> danger_variable_idst;
-private:
-  const danger_programt &original_program;
-  danger_programt program;
-  danger_variable_idst var_ids;
-  size_t num_consts;
-public:
-  /**
-   * @brief Counterexample type for this CEGIS component.
-   *
-   * @details Counterexamples give a set of values used for the state variables.
-   */
-  typedef std::map<const irep_idt, exprt> counterexamplet;
-  typedef std::deque<counterexamplet> counterexamplest;
-
-  /**
-   * @brief Candidate solution type for this CEGIS component.
-   *
-   * @details Solutions are provided as a set of GOTO function bodies
-   * (goto_programt::instructionst) for function names.
-   */
-  typedef danger_goto_solutiont candidatet;
+  typedef danger_learn_configt::counterexamplet counterexamplet;
+  typedef danger_learn_configt::counterexamplest counterexamplest;
+  typedef program_individualt candidatet;
 
   /**
    * @brief
@@ -60,14 +34,14 @@ public:
    *
    * @param program
    */
-  danger_learn_configt(const danger_programt &program);
+  encoded_danger_learn_configt(const danger_programt &program);
 
   /**
    * @brief
    *
    * @details
    */
-  ~danger_learn_configt();
+  ~encoded_danger_learn_configt();
 
   /**
    * @brief
@@ -112,15 +86,6 @@ public:
    *
    * @details
    *
-   * @return
-   */
-  const danger_programt &get_danger_program() const;
-
-  /**
-   * @brief
-   *
-   * @details
-   *
    * @param current_candidate
    * @param trace
    * @param max_solution_size
@@ -145,15 +110,6 @@ public:
    *
    * @return
    */
-  const danger_variable_idst &get_vars() const;
-
-  /**
-   * @brief
-   *
-   * @details
-   *
-   * @return
-   */
   size_t get_num_vars() const;
 
   /**
@@ -166,4 +122,4 @@ public:
   size_t get_num_consts() const;
 };
 
-#endif /* CEGIS_DANGER_LEARN_CONFIG_H_ */
+#endif /* CEGIS_ENCODED_DANGER_LEARN_CONFIG_H_ */

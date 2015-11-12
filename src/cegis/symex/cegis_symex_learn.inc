@@ -3,7 +3,7 @@
 #include <cbmc/cbmc_solvers.h>
 #include <cbmc/bmc.h>
 
-#define CEGIS_SYMEX_DEFAULT_MIN_WORD_WIDTH 2u
+#define CEGIS_SYMEX_DEFAULT_MIN_WORD_WIDTH 4u
 
 template<class learn_configurationt>
 cegis_symex_learnt<learn_configurationt>::cegis_symex_learnt(
