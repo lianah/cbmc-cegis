@@ -74,17 +74,20 @@ safety_checkert::resultt cegis_symex_learnt<learn_configurationt>::run_bmc(
   return safety_checkert::UNSAFE;
 }
 
-template<class learn_configurationt>
-template<class itert>
-bool cegis_symex_learnt<learn_configurationt>::learn(itert first,
-    const itert &last)
-{
-  std::copy(first, last, std::back_inserter(counterexamples));
-  if (counterexamples.empty()) return true;
+#define CEGIS_LIMIT_WORDSIZE "cegis-limit-wordsize"
+// TODO: Detect automatically
+#define CEGIS_FULL_WORD_WIDTH 32u
 
-  const size_t full_width=32u;
-  for (const counterexamplet &ce : counterexamples)
-    for (const typename counterexamplet::value_type &assignment : ce)
+namespace
+{
+template<class counterexamplest>
+size_t calculate_word_width(const optionst &options,
+    const counterexamplest &ces, size_t word_width)
+{
+  if (!options.get_bool_option(CEGIS_LIMIT_WORDSIZE))
+    return CEGIS_FULL_WORD_WIDTH;
+  for (const typename counterexamplest::value_type &ce : ces)
+    for (const typename counterexamplest::value_type::value_type &assignment : ce)
     {
       const exprt &expr=assignment.second;
       if (ID_constant != expr.id()) continue;
@@ -93,23 +96,33 @@ bool cegis_symex_learnt<learn_configurationt>::learn(itert first,
       if (std::string::npos == first_one) continue;
       const size_t value_width=value.size() - first_one;
       if (value_width <= word_width) continue;
-      if (value_width > 16) word_width=32u;
+      // TODO: Make more flexible for other word widths
+      if (value_width > 16) word_width=CEGIS_FULL_WORD_WIDTH;
       else if (value_width > 8) word_width=16u;
       else if (value_width > 4) word_width=8u;
       else if (value_width > 2) word_width=4u;
     }
+  return word_width;
+}
+}
 
+template<class learn_configurationt>
+template<class itert>
+bool cegis_symex_learnt<learn_configurationt>::learn(itert first,
+    const itert &last)
+{
+  std::copy(first, last, std::back_inserter(counterexamples));
+  if (counterexamples.empty()) return true;
+
+  word_width=calculate_word_width(options, counterexamples, word_width);
   null_message_handlert msg;
   optionst o(options);
   o.set_option("unwinding-assertions", false);
-  std::string unwindset("__CPROVER_danger_execute.0:");
-  unwindset+=integer2string(max_solution_size + 1);
-  //learn_options.set_option("unwindset", unwindset);
   const symbol_tablet &st=config.get_symbol_table();
   const goto_functionst &gf=config.get_goto_functions();
   safety_checkert::resultt full_width_result=safety_checkert::ERROR;
   goto_tracet full_width_trace;
-  for (; word_width < full_width; word_width*=2)
+  for (; word_width < CEGIS_FULL_WORD_WIDTH; word_width*=2)
   {
     config.process(counterexamples, max_solution_size);
     config.set_word_width(word_width);
