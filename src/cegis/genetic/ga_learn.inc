@@ -6,7 +6,8 @@ ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::ga_learnt(
     const optionst &options, selectt &select, mutatet &mutate, crosst &cross,
     fitnesst &fitness, convertt &convert) :
     options(options), select(select), mutate(mutate), cross(cross), fitness(
-        fitness), convert(convert), is_population_initialised(false)
+        fitness), convert(convert), is_population_initialised(false), is_evolving(
+        true)
 {
 }
 
@@ -128,8 +129,7 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
   }
 
   typename selectt::selectiont selection;
-  bool evolving=true;
-  while (evolving)
+  while (is_evolving)
   {
     // XXX: Debug
     if (std::chrono::duration_cast < std::chrono::milliseconds
@@ -165,4 +165,11 @@ void ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::show_candidate(
     messaget::mstreamt &os) const
 {
   convert.show(os, current_candidate);
+}
+
+template<class selectt, class mutatet, class crosst, class fitnesst,
+    class convertt>
+void ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::stop()
+{
+  is_evolving=false;
 }

@@ -58,14 +58,75 @@ program_individualt to_program_individual(const danger_programt &prog,
   return individual;
 }
 
+#define VALUE "value"
+
+irept singleton_irep(const long long int value)
+{
+  irept result;
+  result.set(VALUE, value);
+  return result;
+}
+
+long long int get_value(const irept &singleton)
+{
+  return singleton.get_long_long(VALUE);
+}
+
+#define PROGRAMS "programs"
+#define OPCODE "opcode"
+#define X0 "x0"
+#define FITNESS "fitness"
+
 void serialise(irept &sdu, const program_individualt &individual)
 {
-  // TODO: Implement
-  assert(false);
+  irept programs;
+  irept::subt &program_list=programs.get_sub();
+  for (const program_individualt::programt &prog : individual.programs)
+  {
+    irept program;
+    irept::subt &instr_list=program.get_sub();
+    for (const program_individualt::instructiont &instr : prog)
+    {
+      irept instruction;
+      instruction.set(OPCODE, instr.opcode);
+      irept ops;
+      irept::subt &ops_list=ops.get_sub();
+      for (const program_individualt::instructiont::opt op : instr.ops)
+        ops_list.push_back(singleton_irep(op));
+      instr_list.push_back(instruction);
+    }
+    program_list.push_back(program);
+  }
+  sdu.set(PROGRAMS, programs);
+  irept x0;
+  irept::subt &x0_list=x0.get_sub();
+  for (const program_individualt::x0t::value_type value : individual.x0)
+    x0_list.push_back(singleton_irep(value));
+  sdu.set(X0, x0);
+  sdu.set(FITNESS, individual.fitness);
 }
 
 void deserialise(program_individualt &individual, const irept &sdu)
 {
-  // TODO: Implement
-  assert(false);
+  const irept::named_subt &named_sub=sdu.get_named_sub();
+  const irept::named_subt::const_iterator programs=named_sub.find(PROGRAMS);
+  assert(named_sub.end() != programs);
+  for (const irept &program : programs->second.get_sub())
+  {
+    program_individualt::programt prog;
+    for (const irept &instruction : program.get_sub())
+    {
+      program_individualt::instructiont instr;
+      instr.opcode=instruction.get_long_long(OPCODE);
+      for (const irept &op : instruction.get_sub())
+        instr.ops.push_back(get_value(op));
+      prog.push_back(instr);
+    }
+    individual.programs.push_back(prog);
+  }
+  const irept::named_subt::const_iterator x0=named_sub.find(X0);
+  assert(named_sub.end() != x0);
+  for (const irept &value : x0->second.get_sub())
+    individual.x0.push_back(get_value(value));
+  individual.fitness=sdu.get_long_long(FITNESS);
 }

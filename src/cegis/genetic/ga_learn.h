@@ -36,6 +36,7 @@ private:
   selectiont selection;
   candidatet current_candidate;
   bool is_population_initialised;
+  volatile bool is_evolving;
 
   bool set_fitness(typename selectt::individualt &ind);
 public:
@@ -119,6 +120,13 @@ public:
    * @param os The stream to output the candidate.
    */
   void show_candidate(messaget::mstreamt &os) const;
+
+  /**
+   * @brief
+   *
+   * @details
+   */
+  void stop();
 };
 
 #include "ga_learn.inc"
