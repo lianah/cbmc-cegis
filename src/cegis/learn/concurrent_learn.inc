@@ -35,7 +35,7 @@ template<class itert>
 bool concurrent_learnt<learner1t, learner2t>::learn(itert first,
     const itert &last)
 {
-  volatile bool symex_running=true;
+  bool symex_running=true;
   learner1.set_termination_condition([this, &symex_running]()
   {
     task_pool.join_some();
@@ -61,9 +61,10 @@ bool concurrent_learnt<learner1t, learner2t>::learn(itert first,
         irept sdu;
         irep_pipe.receive(sdu);
         typename learner2t::candidatet symex_candidate;
-        deserialise(decoded_candidate, sdu);
+        deserialiser(decoded_candidate, sdu);
         is_decoded_candidate=true;
       });
+  irep_pipe.close_write();
   const bool genetic_success=learner1.learn(first, last);
   if (symex_running) task_pool.cancel(symex_task);
   if (genetic_success && !symex_success) is_decoded_candidate=false;
@@ -75,7 +76,7 @@ void concurrent_learnt<learner1t, learner2t>::show_candidate(
     messaget::mstreamt &os) const
 {
   if (!is_decoded_candidate) learner1.show_candidate(os);
-  learner2.show_candidate(os, decoded_candidate);
+  learner1.show_candidate(os, decoded_candidate);
 }
 
 template<class learner1t, class learner2t>

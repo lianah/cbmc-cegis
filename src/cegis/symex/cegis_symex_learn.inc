@@ -157,13 +157,6 @@ void cegis_symex_learnt<preproct, learn_configurationt>::show_candidate(
 }
 
 template<class preproct, class learn_configurationt>
-void cegis_symex_learnt<preproct, learn_configurationt>::show_candidate(
-    messaget::mstreamt &os, const candidatet &candidate) const
-{
-  config.show_candidate(os, candidate);
-}
-
-template<class preproct, class learn_configurationt>
 void cegis_symex_learnt<preproct, learn_configurationt>::set_solution_size_range(
     const size_t min, const size_t max)
 {

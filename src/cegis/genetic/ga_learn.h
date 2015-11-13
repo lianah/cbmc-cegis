@@ -25,6 +25,7 @@ class ga_learnt
 public:
   typedef typename convertt::candidatet candidatet;
   typedef typename fitnesst::counterexamplet counterexamplet;
+  typedef typename fitnesst::counterexamplest counterexamplest;
   typedef typename selectt::populationt populationt;
   typedef typename selectt::selectiont selectiont;
 private:
@@ -108,6 +109,8 @@ public:
    * @param os The stream to output the candidate.
    */
   void show_candidate(messaget::mstreamt &os) const;
+
+  void show_candidate(messaget::mstreamt &os, const candidatet &candidate) const;
 
   /**
    * @brief

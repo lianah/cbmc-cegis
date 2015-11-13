@@ -155,7 +155,15 @@ template<class selectt, class mutatet, class crosst, class fitnesst,
 void ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::show_candidate(
     messaget::mstreamt &os) const
 {
-  convert.show(os, current_candidate);
+  show_candidate(os, current_candidate);
+}
+
+template<class selectt, class mutatet, class crosst, class fitnesst,
+    class convertt>
+void ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::show_candidate(
+    messaget::mstreamt &os, const candidatet &candidate) const
+{
+  convert.show(os, candidate);
 }
 
 template<class selectt, class mutatet, class crosst, class fitnesst,

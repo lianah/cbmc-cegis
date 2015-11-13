@@ -103,16 +103,6 @@ public:
    *
    * @details
    *
-   * @param os
-   * @param candidate
-   */
-  void show_candidate(messaget::mstreamt &os, const candidatet &candidate) const;
-
-  /**
-   * @brief
-   *
-   * @details
-   *
    * @param min
    * @param max
    */

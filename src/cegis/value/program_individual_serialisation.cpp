@@ -3,7 +3,10 @@
 #include <goto-programs/goto_trace.h>
 
 #include <cegis/danger/meta/literals.h>
+#include <cegis/danger/options/danger_program.h>
+#include <cegis/danger/symex/learn/add_variable_refs.h>
 #include <cegis/danger/symex/learn/read_x0.h>
+#include <cegis/danger/symex/learn/solution_factory.h>
 #include <cegis/value/program_individual_serialisation.h>
 
 bool is_program_indivdual_decl(const goto_trace_stept &step)
@@ -129,4 +132,24 @@ void deserialise(program_individualt &individual, const irept &sdu)
   for (const irept &value : x0->second.get_sub())
     individual.x0.push_back(get_value(value));
   individual.fitness=sdu.get_long_long(FITNESS);
+}
+
+individual_to_danger_solution_deserialisert::individual_to_danger_solution_deserialisert(
+    const danger_programt &prog) :
+    prog(prog)
+{
+}
+
+individual_to_danger_solution_deserialisert::~individual_to_danger_solution_deserialisert()
+{
+}
+
+void individual_to_danger_solution_deserialisert::operator ()(
+    danger_goto_solutiont &result, const irept &sdu) const
+{
+  program_individualt ind;
+  deserialise(ind, sdu);
+  danger_variable_idst ids;
+  get_danger_variable_ids(prog.st, ids);
+  create_danger_solution(result, prog, ind, ids);
 }

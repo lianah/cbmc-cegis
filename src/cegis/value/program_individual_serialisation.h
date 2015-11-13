@@ -69,4 +69,41 @@ void serialise(irept &sdu, const program_individualt &individual);
  */
 void deserialise(program_individualt &individual, const irept &sdu);
 
+/**
+ * @brief Deserialises and converts an individual.
+ *
+ * @details Deserialises an individual and converts it to a goto solution.
+ */
+class individual_to_danger_solution_deserialisert
+{
+  const danger_programt &prog;
+public:
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @param prog
+   * @param ids
+   */
+  individual_to_danger_solution_deserialisert(const danger_programt &prog);
+
+  /**
+   * @brief
+   *
+   * @details
+   */
+  ~individual_to_danger_solution_deserialisert();
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @param result
+   * @param sdu
+   */
+  void operator()(class danger_goto_solutiont &result, const irept &sdu) const;
+};
+
 #endif /* CEGIS_PROGRAM_INDIVIDUAL_SERIALISATION_H_ */
