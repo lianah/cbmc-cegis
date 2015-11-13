@@ -98,6 +98,14 @@ public:
    * @details Waits for all scheduled tasks to complete.
    */
   void join_all();
+
+  /**
+   * @brief Joins already terminated tasks.
+   *
+   * @details Joins termianted tasks and executes their handlers, but
+   * doesn't block.
+   */
+  void join_some();
 };
 
 #endif /* UTIL_TASK_POOL_H_ */

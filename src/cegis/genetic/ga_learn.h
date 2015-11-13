@@ -10,6 +10,8 @@ Author: Daniel Kroening, kroening@kroening.com
 #ifndef CEGIS_GENETIC_GA_LEARN_H_
 #define CEGIS_GENETIC_GA_LEARN_H_
 
+#include <functional>
+
 #include <cegis/danger/value/danger_goto_solution.h>
 
 /**
@@ -36,7 +38,7 @@ private:
   selectiont selection;
   candidatet current_candidate;
   bool is_population_initialised;
-  volatile bool is_evolving;
+  std::function<bool(void)> is_evolving;
 
   bool set_fitness(typename selectt::individualt &ind);
 public:
@@ -111,18 +113,20 @@ public:
    * @brief
    *
    * @details
+   *
+   * @param min
+   * @param max
    */
-  void stop();
+  void set_solution_size_range(size_t min, size_t max);
 
   /**
    * @brief
    *
    * @details
    *
-   * @param min
-   * @param max
+   * @param is_evolving
    */
-  void set_solution_size_range(size_t min, size_t max);
+  void set_termination_condition(std::function<bool(void)> is_evolving);
 };
 
 #include "ga_learn.inc"

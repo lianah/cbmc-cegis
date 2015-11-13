@@ -134,3 +134,12 @@ void task_poolt::join_all()
   NOT_SUPPORTED();
 #endif
 }
+
+void task_poolt::join_some()
+{
+#ifndef _WIN32
+  cleanup(task_ids, handlers);
+#else
+  NOT_SUPPORTED();
+#endif
+}

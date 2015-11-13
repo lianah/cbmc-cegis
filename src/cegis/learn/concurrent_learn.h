@@ -25,9 +25,10 @@ class concurrent_learnt
 {
 public:
   typedef typename learner1t::candidatet candidatet;
+  typedef typename learner2t::candidatet encoded_candidatet;
   typedef typename learner1t::counterexamplet counterexamplet;
   typedef typename learner1t::counterexamplest counterexamplest;
-  typedef std::function<void(irept &, const candidatet &)> serialisert;
+  typedef std::function<void(irept &, const encoded_candidatet &)> serialisert;
   typedef std::function<void(candidatet &, const irept &)> deserialisert;
 private:
   learner1t &learner1;
@@ -35,6 +36,8 @@ private:
   task_poolt task_pool;
   const serialisert serialiser;
   const deserialisert deserialiser;
+  bool is_decoded_candidate;
+  candidatet decoded_candidate;
 public:
   /**
    * @brief
@@ -55,6 +58,18 @@ public:
    * @details
    */
   ~concurrent_learnt();
+
+  template<class seedt>
+  void seed(seedt &seed);
+
+  const candidatet &next_candidate() const;
+
+  template<class itert>
+  bool learn(itert first, const itert &last);
+
+  void show_candidate(messaget::mstreamt &os) const;
+
+  void set_solution_size_range(size_t min, size_t max);
 };
 
 #include "concurrent_learn.inc"
