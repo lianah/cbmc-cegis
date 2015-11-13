@@ -85,20 +85,6 @@ public:
   /**
    * @brief Generates a candidate solution.
    *
-   * @details Generates a new candidate based on previously received counterexamples.
-   * This operation is useful when the set of counterexamples remains the same and only
-   * the maximum solution size has changed.
-   *
-   * @param max_solution_size The new maximum solution size.
-   *
-   * @return <code>true</code> if learning was successful, <code>false</code>
-   * if no new candidate could be generated.
-   */
-  bool learn(size_t max_solution_size);
-
-  /**
-   * @brief Generates a candidate solution.
-   *
    * @details Receives set of counterexample from the verification oracle
    * and adds it to its information base. Generates a new candidate
    * based on received counterexamples.
@@ -127,6 +113,16 @@ public:
    * @details
    */
   void stop();
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @param min
+   * @param max
+   */
+  void set_solution_size_range(size_t min, size_t max);
 };
 
 #include "ga_learn.inc"

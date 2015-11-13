@@ -5,39 +5,32 @@
 
 #define CEGIS_SYMEX_DEFAULT_MIN_WORD_WIDTH 4u
 
-template<class learn_configurationt>
-cegis_symex_learnt<learn_configurationt>::cegis_symex_learnt(
-    const optionst &options, learn_configurationt &config) :
-    options(options), config(config), word_width(
-    CEGIS_SYMEX_DEFAULT_MIN_WORD_WIDTH), max_solution_size(1u)
+template<class preproct, class learn_configurationt>
+cegis_symex_learnt<preproct, learn_configurationt>::cegis_symex_learnt(
+    const optionst &options, preproct &preproc, learn_configurationt &config) :
+    options(options), preproc(preproc), config(config), word_width(
+    CEGIS_SYMEX_DEFAULT_MIN_WORD_WIDTH), current_solution_size(1u), max_solution_size(
+        current_solution_size)
 {
 }
 
-template<class learn_configurationt>
-cegis_symex_learnt<learn_configurationt>::~cegis_symex_learnt()
+template<class preproct, class learn_configurationt>
+cegis_symex_learnt<preproct, learn_configurationt>::~cegis_symex_learnt()
 {
 }
 
-template<class learn_configurationt>
+template<class preproct, class learn_configurationt>
 template<class seedt>
-void cegis_symex_learnt<learn_configurationt>::seed(seedt &seed)
+void cegis_symex_learnt<preproct, learn_configurationt>::seed(seedt &seed)
 {
   seed(counterexamples);
 }
 
-template<class learn_configurationt>
-const typename cegis_symex_learnt<learn_configurationt>::candidatet &cegis_symex_learnt<
-    learn_configurationt>::next_candidate() const
+template<class preproct, class learn_configurationt>
+const typename cegis_symex_learnt<preproct, learn_configurationt>::candidatet &cegis_symex_learnt<
+    preproct, learn_configurationt>::next_candidate() const
 {
   return current_candidate;
-}
-
-template<class learn_configurationt>
-bool cegis_symex_learnt<learn_configurationt>::learn(
-    const size_t max_solution_size)
-{
-  this->max_solution_size=max_solution_size;
-  return learn(counterexamples.end(), counterexamples.end());
 }
 
 namespace
@@ -57,8 +50,8 @@ safety_checkert::resultt cegis_learn_run_bmc(goto_tracet &trace,
 }
 }
 
-template<class learn_configurationt>
-safety_checkert::resultt cegis_symex_learnt<learn_configurationt>::run_bmc(
+template<class preproct, class learn_configurationt>
+safety_checkert::resultt cegis_symex_learnt<preproct, learn_configurationt>::run_bmc(
     message_handlert &msg, const optionst &opt)
 {
   const symbol_tablet &st=config.get_symbol_table();
@@ -69,8 +62,8 @@ safety_checkert::resultt cegis_symex_learnt<learn_configurationt>::run_bmc(
   const safety_checkert::resultt bmc_result=bmc(config.get_goto_functions());
   if (safety_checkert::UNSAFE != bmc_result) return bmc_result;
   const goto_tracet &trace=bmc.safety_checkert::error_trace;
-  config.process(counterexamples, max_solution_size);
-  config.convert(current_candidate, trace, max_solution_size);
+  config.process(counterexamples, current_solution_size);
+  config.convert(current_candidate, trace, current_solution_size);
   return safety_checkert::UNSAFE;
 }
 
@@ -92,6 +85,7 @@ size_t calculate_word_width(const optionst &options,
       const exprt &expr=assignment.second;
       if (ID_constant != expr.id()) continue;
       const std::string &value=id2string(to_constant_expr(expr).get_value());
+      // TODO: Consider ID_signedbv and negative values
       const std::string::size_type first_one=value.find('1');
       if (std::string::npos == first_one) continue;
       const size_t value_width=value.size() - first_one;
@@ -106,14 +100,9 @@ size_t calculate_word_width(const optionst &options,
 }
 }
 
-template<class learn_configurationt>
-template<class itert>
-bool cegis_symex_learnt<learn_configurationt>::learn(itert first,
-    const itert &last)
+template<class preproct, class learn_configurationt>
+bool cegis_symex_learnt<preproct, learn_configurationt>::learn_at_current_size()
 {
-  std::copy(first, last, std::back_inserter(counterexamples));
-  if (counterexamples.empty()) return true;
-
   word_width=calculate_word_width(options, counterexamples, word_width);
   null_message_handlert msg;
   optionst o(options);
@@ -124,29 +113,54 @@ bool cegis_symex_learnt<learn_configurationt>::learn(itert first,
   goto_tracet full_width_trace;
   for (; word_width < CEGIS_FULL_WORD_WIDTH; word_width*=2)
   {
-    config.process(counterexamples, max_solution_size);
+    config.process(counterexamples, current_solution_size);
     config.set_word_width(word_width);
     const safety_checkert::resultt limited_result=run_bmc(msg, o);
     if (safety_checkert::UNSAFE == limited_result) return true;
     if (safety_checkert::ERROR == limited_result) return false;
     if (safety_checkert::ERROR == full_width_result)
     {
-      config.process(counterexamples, max_solution_size);
+      config.process(counterexamples, current_solution_size);
       full_width_result=cegis_learn_run_bmc(full_width_trace, st, gf, msg, o);
       if (safety_checkert::UNSAFE != full_width_result) return false;
     }
   }
-  config.process(counterexamples, max_solution_size);
+  config.process(counterexamples, current_solution_size);
   if (safety_checkert::ERROR == full_width_result) full_width_result=
       cegis_learn_run_bmc(full_width_trace, st, gf, msg, o);
   if (safety_checkert::UNSAFE != full_width_result) return false;
-  config.convert(current_candidate, full_width_trace, max_solution_size);
+  config.convert(current_candidate, full_width_trace, current_solution_size);
   return true;
 }
 
-template<class learn_configurationt>
-void cegis_symex_learnt<learn_configurationt>::show_candidate(
+template<class preproct, class learn_configurationt>
+template<class itert>
+bool cegis_symex_learnt<preproct, learn_configurationt>::learn(itert first,
+    const itert &last)
+{
+  std::copy(first, last, std::back_inserter(counterexamples));
+  if (counterexamples.empty()) return true;
+
+  for (; current_solution_size <= max_solution_size; ++current_solution_size)
+  {
+    preproc(current_solution_size);
+    if (learn_at_current_size()) return true;
+  }
+  return false;
+}
+
+template<class preproct, class learn_configurationt>
+void cegis_symex_learnt<preproct, learn_configurationt>::show_candidate(
     messaget::mstreamt &os) const
 {
   config.show_candidate(os, current_candidate);
+}
+
+template<class preproct, class learn_configurationt>
+void cegis_symex_learnt<preproct, learn_configurationt>::set_solution_size_range(
+    const size_t min, const size_t max)
+{
+  current_solution_size=std::max(current_solution_size, min);
+  current_solution_size=std::min(current_solution_size, max);
+  max_solution_size=max;
 }

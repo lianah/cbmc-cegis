@@ -45,13 +45,6 @@ bool is_genetic(const optionst &opt)
 }
 
 #define DANGER_MAX_SIZE "cegis-max-size"
-
-size_t get_max_prog_size(const optionst &options)
-{
-  if (is_genetic(options)) return -1;
-  return options.get_unsigned_int_option(DANGER_MAX_SIZE);
-}
-
 #define DANGER_STATISTICS "cegis-statistics"
 
 typedef messaget::mstreamt mstreamt;
@@ -63,7 +56,7 @@ int run_statistics(mstreamt &os, const optionst &options,
 {
   null_seedt seed;
   //danger_literals_seedt seed(prog);  // XXX: Benchmark performance
-  const size_t max_prog_size=get_max_prog_size(options);
+  const size_t max_prog_size=options.get_unsigned_int_option(DANGER_MAX_SIZE);
   if (!options.get_bool_option(DANGER_STATISTICS))
     return run_cegis(learn, verify, preproc, seed, max_prog_size, os);
   cegis_statistics_wrappert<learnt, verifyt, mstreamt> stat(learn, verify, os);
@@ -276,8 +269,8 @@ int run_genetic(mstreamt &os, const optionst &opt, const danger_programt &prog,
     return run_match(os, opt, prog, rnd, pop_size, rounds, fitness, mutate,
         cross, converter, preproc);
   }
-  danger_learn_configt learn_config(prog);
-  cegis_symex_learnt<danger_learn_configt> learn(opt, learn_config);
+  danger_learn_configt cfg(prog);
+  cegis_symex_learnt<preproct, danger_learn_configt> learn(opt, preproc, cfg);
   /*concurrent_learnt<cegis_symex_learnt<danger_learn_configt>,
    cegis_symex_learnt<danger_learn_configt> > concurrent_learn(learn, learn);*/
   return run_parallel(os, opt, prog, learn, preproc);

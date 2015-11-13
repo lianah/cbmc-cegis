@@ -34,20 +34,6 @@ const typename ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::candidat
   return current_candidate;
 }
 
-template<class selectt, class mutatet, class crosst, class fitnesst,
-    class convertt>
-bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(
-    const size_t max_solution_size)
-{
-  if (!is_population_initialised)
-  {
-    select.init(pop);
-    is_population_initialised=true;
-  }
-  std::vector<counterexamplet> empty;
-  return learn(empty.end(), empty.end());
-}
-
 namespace
 {
 bool roll_rate(const int rate)
@@ -98,6 +84,12 @@ template<class itert>
 bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
     const itert &last)
 {
+  if (!is_population_initialised)
+  {
+    select.init(pop);
+    is_population_initialised=true;
+  }
+
   for (; first != last; ++first)
     fitness.add_test_case(*first);
 
@@ -172,4 +164,12 @@ template<class selectt, class mutatet, class crosst, class fitnesst,
 void ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::stop()
 {
   is_evolving=false;
+}
+
+template<class selectt, class mutatet, class crosst, class fitnesst,
+    class convertt>
+void ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::set_solution_size_range(
+    const size_t min, const size_t max)
+{
+  // TODO: ga_learn currently gets this info directly from the options. Refactor!
 }
