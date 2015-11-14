@@ -40,8 +40,8 @@ size_t genetic_constant_strategy(danger_programt &prog, const size_t max_length)
   for (const constant_exprt &expr : literals)
   {
     // XXX: Debug
-    std::cout << "<id>" << const_index << "</id>" << std::endl;
-    std::cout << "<id>" << expr.to_string() << "</id>" << std::endl;
+    /*std::cout << "<id>" << const_index << "</id>" << std::endl;
+    std::cout << "<id>" << expr.to_string() << "</id>" << std::endl;*/
     // XXX: Debug
     const std::string base_name(get_name(const_index++));
     pos=declare_danger_variable(st, gf, pos, base_name, expr.type());

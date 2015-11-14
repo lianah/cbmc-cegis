@@ -9,13 +9,12 @@ size_t get_min_word_width(const exprt &expr)
   assert(ID_constant == expr.id());
   const std::string &value=id2string(to_constant_expr(expr).get_value());
   if (value.empty()) return MIN_WORD_WIDTH;
-  const bool is_signed=ID_signedbv == expr.type().id();
-  const bool is_neg=is_signed && value[0] == '1';
-  std::string::size_type first_sb=value.find(is_neg ? '0' : '1');
+  const bool is_neg_if_signed=value[0] == '1';
+  std::string::size_type first_sb=value.find(is_neg_if_signed ? '0' : '1');
   if (std::string::npos == first_sb) return MIN_WORD_WIDTH;
-  const size_t value_width=value.size() - first_sb + is_signed ? 1 : 0;
+  const size_t value_width=value.size() - first_sb + 1;
   // TODO: Make more flexible for other word widths
-  if (value_width > 16u) return value_width;
+  if (value_width > 16u) return value.size();
   if (value_width > 8u) return 16u;
   if (value_width > 4u) return 8u;
   if (value_width > 2u) return 4u;

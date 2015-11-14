@@ -78,6 +78,7 @@ long long int get_value(const irept &singleton)
 
 #define PROGRAMS "programs"
 #define OPCODE "opcode"
+#define OPS "ops"
 #define X0 "x0"
 #define FITNESS "fitness"
 
@@ -97,6 +98,7 @@ void serialise(irept &sdu, const program_individualt &individual)
       irept::subt &ops_list=ops.get_sub();
       for (const program_individualt::instructiont::opt op : instr.ops)
         ops_list.push_back(singleton_irep(op));
+      instruction.set(OPS, ops);
       instr_list.push_back(instruction);
     }
     program_list.push_back(program);
@@ -113,7 +115,8 @@ void serialise(irept &sdu, const program_individualt &individual)
 void deserialise(program_individualt &individual, const irept &sdu)
 {
   const irept::named_subt &named_sub=sdu.get_named_sub();
-  const irept::named_subt::const_iterator programs=named_sub.find(PROGRAMS);
+  typedef irept::named_subt::const_iterator const_iterator;
+  const const_iterator programs=named_sub.find(PROGRAMS);
   assert(named_sub.end() != programs);
   for (const irept &program : programs->second.get_sub())
   {
@@ -122,7 +125,10 @@ void deserialise(program_individualt &individual, const irept &sdu)
     {
       program_individualt::instructiont instr;
       instr.opcode=instruction.get_long_long(OPCODE);
-      for (const irept &op : instruction.get_sub())
+      const irept::named_subt &named_sub=instruction.get_named_sub();
+      const const_iterator ops=named_sub.find(OPS);
+      assert(named_sub.end() != ops);
+      for (const irept &op : ops->second.get_sub())
         instr.ops.push_back(get_value(op));
       prog.push_back(instr);
     }

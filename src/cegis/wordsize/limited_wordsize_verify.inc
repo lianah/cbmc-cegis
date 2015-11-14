@@ -3,13 +3,13 @@
 #include <cbmc/cbmc_solvers.h>
 #include <cbmc/bmc.h>
 
-#define MIN_WORD_WIDTH 2u
+#define CEGIS_DEFAULT_MIN_WORD_WIDTH 4u
 
 template<class verifyt>
 limited_wordsize_verifyt<verifyt>::limited_wordsize_verifyt(optionst &options,
     verifyt &verifier, const std::function<void(size_t)> set_wordsize) :
     options(options), verifier(verifier), set_wordsize(set_wordsize), is_success(
-        false), word_width(MIN_WORD_WIDTH)
+        false), word_width(CEGIS_DEFAULT_MIN_WORD_WIDTH)
 {
 }
 
@@ -40,6 +40,7 @@ void limited_wordsize_verifyt<verifyt>::verify_full(counterexamplest &ces,
 
 namespace
 {
+#define MAX_CONST_WIDTH "max-constant-width"
 #define WIDTH_OPT "cegis-word-width"
 }
 
@@ -49,6 +50,8 @@ void limited_wordsize_verifyt<verifyt>::verify(const candidatet &candidate)
   ces.clear();
   counterexamplest full_ces;
   const size_t full_width=32u;
+  const size_t max_const_width=options.get_unsigned_int_option(MAX_CONST_WIDTH);
+  word_width=std::max(max_const_width, word_width);
   for (; word_width < full_width; word_width*=2u)
   {
     set_wordsize(word_width);
@@ -62,8 +65,11 @@ void limited_wordsize_verifyt<verifyt>::verify(const candidatet &candidate)
       if (!verifier.has_counterexamples()) return;
     }
   }
-  if (full_ces.empty()) verify_full(ces, candidate);
-  else std::copy(full_ces.begin(), full_ces.end(), std::back_inserter(ces));
+  if (full_ces.empty())
+  {
+    options.set_option(WIDTH_OPT, static_cast<unsigned int>(full_width));
+    verify_full(ces, candidate);
+  } else std::copy(full_ces.begin(), full_ces.end(), std::back_inserter(ces));
 }
 
 template<class verifyt>

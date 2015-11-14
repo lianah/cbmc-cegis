@@ -5,22 +5,16 @@
 #include <cbmc/cbmc_solvers.h>
 #include <cbmc/bmc.h>
 
-// XXX: Debug
-#include <iostream>
-// XXX: Debug
-
 #define CONSTANT_WIDTH_OPTION "max-constant-width"
-#define CEGIS_SYMEX_DEFAULT_MIN_WORD_WIDTH 4u
+#define CEGIS_DEFAULT_MIN_WORD_WIDTH 4u
 
 template<class preproct, class learn_configurationt>
 cegis_symex_learnt<preproct, learn_configurationt>::cegis_symex_learnt(
     const optionst &options, preproct &preproc, learn_configurationt &config) :
     options(options), preproc(preproc), config(config), word_width(
-        std::max(CEGIS_SYMEX_DEFAULT_MIN_WORD_WIDTH,
-            options.get_unsigned_int_option(CONSTANT_WIDTH_OPTION))), current_solution_size(
-        1u), max_solution_size(current_solution_size)
+    CEGIS_DEFAULT_MIN_WORD_WIDTH), current_solution_size(1u), max_solution_size(
+        current_solution_size)
 {
-  std::cout << "<initial_word_width>" << word_width << "</initial_word_width>" << std::endl;
 }
 
 template<class preproct, class learn_configurationt>
@@ -81,27 +75,20 @@ namespace
 // TODO: Detect automatically
 #define FULL_WIDTH 32u
 #define CEGIS_LIMIT_WORDSIZE "cegis-limit-wordsize"
+#define WIDTH_OPT "cegis-word-width"
 
-template<class counterexamplest>
-size_t calculate_word_width(const optionst &options,
-    const counterexamplest &ces, size_t word_width)
+size_t calculate_word_width(const optionst &options)
 {
   if (!options.get_bool_option(CEGIS_LIMIT_WORDSIZE)) return FULL_WIDTH;
-  for (const typename counterexamplest::value_type &ce : ces)
-    for (const typename counterexamplest::value_type::value_type &a : ce)
-      word_width=std::max(word_width, get_min_word_width(a.second));
-  return word_width;
+  return options.get_unsigned_int_option(WIDTH_OPT);
 }
 }
 
 template<class preproct, class learn_configurationt>
 bool cegis_symex_learnt<preproct, learn_configurationt>::learn_at_current_size()
 {
-  word_width=calculate_word_width(options, counterexamples, word_width);
-  // XXX: Debug
-  std::cout << "<word_width>" << word_width << "</word_width>" << std::endl;
-  // XXX: Debug
-  null_message_handlert msg;
+  word_width=calculate_word_width(options);
+  null_message_handlert msg;  // XXX: Debug
   optionst o(options);
   o.set_option("unwinding-assertions", false);
   const symbol_tablet &st=config.get_symbol_table();
@@ -135,7 +122,7 @@ template<class itert>
 bool cegis_symex_learnt<preproct, learn_configurationt>::learn(itert first,
     const itert &last)
 {
-  std::copy(first, last, std::back_inserter(counterexamples));
+  add_counterexamples(first, last);
   if (counterexamples.empty()) return true;
 
   for (; current_solution_size <= max_solution_size; ++current_solution_size)
@@ -144,6 +131,20 @@ bool cegis_symex_learnt<preproct, learn_configurationt>::learn(itert first,
     if (learn_at_current_size()) return true;
   }
   return false;
+}
+
+template<class preproct, class learn_configurationt>
+template<class itert>
+void cegis_symex_learnt<preproct, learn_configurationt>::add_counterexamples(
+    itert first, const itert &last)
+{
+  counterexamplest &ces=counterexamples;
+  for (; first != last; ++first)
+  {
+    const counterexamplet &ce=*first;
+    assert(ces.end() == std::find(ces.begin(), ces.end(), ce));
+    ces.push_back(ce);
+  }
 }
 
 template<class preproct, class learn_configurationt>

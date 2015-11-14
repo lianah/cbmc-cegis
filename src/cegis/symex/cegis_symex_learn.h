@@ -90,6 +90,17 @@ public:
   bool learn(itert first, const itert &last);
 
   /**
+   * @brief Adds explicit counterexamples.
+   *
+   * @details Adds counterexamples to the learner without starting a new learn round.
+   *
+   * @param first The first iterator of the counterexample set.
+   * @param last The last iterator of the counterexample set.
+   */
+  template<class itert>
+  void add_counterexamples(itert first, const itert &last);
+
+  /**
    * @brief Displays the last candidate.
    *
    * @details Prints the last candidate generated using learn.

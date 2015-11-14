@@ -77,6 +77,13 @@ bool concurrent_learnt<learner1t, learner2t>::learn(itert first,
   if (symex_running) task_pool.cancel(symex_task);
   irep_pipe.close_read();
   if (genetic_success && !symex_success) is_decoded_candidate=false;
+  learner2.add_counterexamples(first, last);
+  // XXX: Debug
+  std::cout << "<genetic_success>" << genetic_success << "</genetic_success>"
+      << std::endl;
+  std::cout << "<symex_success>" << symex_success << "</symex_success>"
+      << std::endl;
+  // XXX: Debug
   return genetic_success || symex_success;
 }
 
@@ -84,8 +91,12 @@ template<class learner1t, class learner2t>
 void concurrent_learnt<learner1t, learner2t>::show_candidate(
     messaget::mstreamt &os) const
 {
-  if (is_decoded_candidate) learner1.show_candidate(os, decoded_candidate);
-  else learner1.show_candidate(os);
+  if (is_decoded_candidate)
+  {
+    std::cout << "<after_deserialise>" << std::endl; // XXX: Debug
+    learner1.show_candidate(os, decoded_candidate);
+    std::cout << "</after_deserialise>" << std::endl; // XXX: Debug
+  } else learner1.show_candidate(os);
 }
 
 template<class learner1t, class learner2t>

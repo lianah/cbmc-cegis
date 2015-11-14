@@ -1,5 +1,6 @@
 #include <algorithm>
 
+#include <cegis/wordsize/restrict_bv_size.h>
 #include <cegis/danger/symex/verify/insert_constraint.h>
 #include <cegis/danger/symex/verify/insert_candidate.h>
 #include <cegis/danger/symex/verify/extract_counterexample.h>
@@ -19,9 +20,10 @@ void danger_verify_configt::process(const candidatet &candidate)
   program=original_program;
   quantifiers.clear();
   danger_insert_constraint(quantifiers, program);
-  if (limit_ce) danger_limit_ce(quantifiers, program, max_ce_width);
   danger_insert_candidate(program, candidate);
-  program.gf.update();
+  goto_functionst &gf=program.gf;
+  if (limit_ce) restrict_bv_size(program.st, gf, max_ce_width);
+  gf.update();
 }
 
 const symbol_tablet &danger_verify_configt::get_symbol_table() const
