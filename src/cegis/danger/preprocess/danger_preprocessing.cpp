@@ -1,5 +1,7 @@
 #include <algorithm>
 
+#include <util/options.h>
+
 #include <goto-programs/goto_inline.h>
 
 #include <cegis/danger/preprocess/remove_loops_and_assertion.h>
@@ -7,9 +9,11 @@
 #include <cegis/danger/preprocess/add_invariants_and_temp_variables.h>
 #include <cegis/danger/preprocess/danger_preprocessing.h>
 
-danger_preprocessingt::danger_preprocessingt(const symbol_tablet &st,
-    const goto_functionst &gf, const constant_strategyt &constant_strategy) :
-    original_program(st, gf), constant_strategy(constant_strategy)
+danger_preprocessingt::danger_preprocessingt(optionst &options,
+    const symbol_tablet &st, const goto_functionst &gf,
+    const constant_strategyt &constant_strategy) :
+    options(options), original_program(st, gf), constant_strategy(
+        constant_strategy)
 {
 }
 
@@ -47,7 +51,8 @@ void danger_preprocessingt::operator ()()
 void danger_preprocessingt::operator ()(const size_t max_length)
 {
   current_program=original_program;
-  constant_strategy(current_program, max_length);
+  const unsigned int max_width=constant_strategy(current_program, max_length);
+  options.set_option("max-constant-width", max_width);
   store_x0_choices(current_program);
   add_danger_invariants_and_temp_variables(current_program, max_length);
 }

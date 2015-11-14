@@ -21,9 +21,11 @@
 template<class verifyt>
 class limited_wordsize_verifyt
 {
+  class optionst &options;
   verifyt &verifier;
   const std::function<void(size_t)> set_wordsize;
   bool is_success;
+  size_t word_width;
 public:
   typedef typename verifyt::candidatet candidatet;
   typedef typename verifyt::counterexamplet counterexamplet;
@@ -31,16 +33,18 @@ public:
   typedef typename counterexamplest::const_iterator const_iterator;
 private:
   counterexamplest ces;
+  void verify_full(counterexamplest &ces, const candidatet &candidate);
 public:
   /**
    * @brief
    *
    * @details
    *
+   * @param options
    * @param verifier
    * @param set_wordsize
    */
-  limited_wordsize_verifyt(verifyt &verifier,
+  limited_wordsize_verifyt(optionst &options, verifyt &verifier,
       std::function<void(size_t)> set_wordsize);
 
   /**

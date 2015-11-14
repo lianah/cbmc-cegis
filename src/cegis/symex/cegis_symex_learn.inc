@@ -5,15 +5,22 @@
 #include <cbmc/cbmc_solvers.h>
 #include <cbmc/bmc.h>
 
+// XXX: Debug
+#include <iostream>
+// XXX: Debug
+
+#define CONSTANT_WIDTH_OPTION "max-constant-width"
 #define CEGIS_SYMEX_DEFAULT_MIN_WORD_WIDTH 4u
 
 template<class preproct, class learn_configurationt>
 cegis_symex_learnt<preproct, learn_configurationt>::cegis_symex_learnt(
     const optionst &options, preproct &preproc, learn_configurationt &config) :
     options(options), preproc(preproc), config(config), word_width(
-    CEGIS_SYMEX_DEFAULT_MIN_WORD_WIDTH), current_solution_size(1u), max_solution_size(
-        current_solution_size)
+        std::max(CEGIS_SYMEX_DEFAULT_MIN_WORD_WIDTH,
+            options.get_unsigned_int_option(CONSTANT_WIDTH_OPTION))), current_solution_size(
+        1u), max_solution_size(current_solution_size)
 {
+  std::cout << "<initial_word_width>" << word_width << "</initial_word_width>" << std::endl;
 }
 
 template<class preproct, class learn_configurationt>
@@ -82,7 +89,7 @@ size_t calculate_word_width(const optionst &options,
   if (!options.get_bool_option(CEGIS_LIMIT_WORDSIZE)) return FULL_WIDTH;
   for (const typename counterexamplest::value_type &ce : ces)
     for (const typename counterexamplest::value_type::value_type &a : ce)
-      word_width=std::max(word_width, get_min_word_width(a.second, FULL_WIDTH));
+      word_width=std::max(word_width, get_min_word_width(a.second));
   return word_width;
 }
 }
@@ -91,6 +98,9 @@ template<class preproct, class learn_configurationt>
 bool cegis_symex_learnt<preproct, learn_configurationt>::learn_at_current_size()
 {
   word_width=calculate_word_width(options, counterexamples, word_width);
+  // XXX: Debug
+  std::cout << "<word_width>" << word_width << "</word_width>" << std::endl;
+  // XXX: Debug
   null_message_handlert msg;
   optionst o(options);
   o.set_option("unwinding-assertions", false);

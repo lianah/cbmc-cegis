@@ -3,6 +3,7 @@
 #include <util/arith_tools.h>
 #include <util/bv_arithmetic.h>
 #include <util/namespace_utils.h>
+#include <util/constant_width.h>
 
 #include <cegis/danger/options/danger_program.h>
 #include <cegis/danger/util/danger_program_helper.h>
@@ -73,27 +74,10 @@ public:
     prog.assertion.visit(op);
   }
 };
-
-class add_constantt
-{
-  danger_programt &program;
-public:
-  add_constantt(danger_programt &program) :
-      program(program)
-  {
-  }
-
-  void operator()(const constant_exprt &expr) const
-  {
-    add_danger_constant(program, expr);
-    // XXX: Add negation of every constant?
-    // if (!expr.is_zero()) add_danger_constant(program, unary_minus_exprt(expr));
-  }
-};
 }
 
 std::vector<constant_exprt> collect_literal_constants(
-    const class danger_programt &program)
+    const danger_programt &program)
 {
   const compare_constantt compare(program);
   constant_sett constants(compare);
@@ -103,10 +87,17 @@ std::vector<constant_exprt> collect_literal_constants(
   return std::vector<constant_exprt>(constants.begin(), constants.end());
 }
 
-void literals_constant_strategy(danger_programt &program,
+size_t literals_constant_strategy(danger_programt &program,
     const size_t max_length)
 {
   const std::vector<constant_exprt> lit(collect_literal_constants(program));
-  const add_constantt add_constant(program);
-  std::for_each(lit.begin(), lit.end(), add_constant);
+  size_t max_word_width=0u;
+  for (const constant_exprt &expr : lit)
+  {
+    add_danger_constant(program, expr);
+    // XXX: Add negation of every constant?
+    // if (!expr.is_zero()) add_danger_constant(program, unary_minus_exprt(expr));
+    max_word_width=std::max(max_word_width, get_min_word_width(expr));
+  }
+  return max_word_width;
 }

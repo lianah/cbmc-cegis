@@ -22,6 +22,6 @@ Author: Daniel Kroening, kroening@kroening.com
  *
  * @return
  */
-size_t get_min_word_width(const class exprt &expr, size_t full_width);
+size_t get_min_word_width(const class exprt &expr);
 
 #endif /* UTIL_CONSTANT_WIDTH_H_ */

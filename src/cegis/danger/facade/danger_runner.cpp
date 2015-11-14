@@ -68,13 +68,13 @@ int run_statistics(mstreamt &os, const optionst &options,
 #define CEGIS_LIMIT_WORDSIZE "cegis-limit-wordsize"
 
 template<class learnert, class verifiert, class preproct>
-int run_limited(mstreamt &os, const optionst &options,
-    const danger_programt &prog, danger_verify_configt &config, learnert &learn,
-    verifiert &verify, preproct &preproc)
+int run_limited(mstreamt &os, optionst &options, const danger_programt &prog,
+    danger_verify_configt &config, learnert &learn, verifiert &verify,
+    preproct &preproc)
 {
   if (!options.get_bool_option(CEGIS_LIMIT_WORDSIZE))
     return run_statistics(os, options, prog, learn, verify, preproc);
-  limited_wordsize_verifyt<verifiert> limited_verify(verify,
+  limited_wordsize_verifyt<verifiert> limited_verify(options, verify,
       [&config](const size_t width)
       { config.set_max_ce_width(width);});
   return run_statistics(os, options, prog, learn, limited_verify, preproc);
@@ -83,8 +83,8 @@ int run_limited(mstreamt &os, const optionst &options,
 #define DANGER_PARALLEL_VERIFY "cegis-parallel-verify"
 
 template<class learnert, class preproct>
-int run_parallel(mstreamt &os, const optionst &options,
-    const danger_programt &prog, learnert &learn, preproct &preproc)
+int run_parallel(mstreamt &os, optionst &options, const danger_programt &prog,
+    learnert &learn, preproct &preproc)
 {
   danger_verify_configt config(prog);
   if (options.get_bool_option(DANGER_PARALLEL_VERIFY))
@@ -211,7 +211,7 @@ public:
 
 template<class fitnesst, class mutatet, class crosst, class convertert,
     class preproct, class symex_learnt>
-int run_match(mstreamt &os, const optionst &opt, const danger_programt &prog,
+int run_match(mstreamt &os, optionst &opt, const danger_programt &prog,
     random_individualt &rnd, instruction_set_info_factoryt &info_fac,
     const size_t pop_size, const size_t rounds, fitnesst &fitness,
     mutatet &mutate, crosst &cross, convertert &converter, preproct &preproc,
@@ -239,7 +239,7 @@ int run_match(mstreamt &os, const optionst &opt, const danger_programt &prog,
 }
 
 template<class preproct>
-int run_genetic_and_symex(mstreamt &os, const optionst &opt,
+int run_genetic_and_symex(mstreamt &os, optionst &opt,
     const danger_programt &prog, preproct &preproc)
 {
   if (!is_genetic(opt))
@@ -288,14 +288,14 @@ int run_genetic_and_symex(mstreamt &os, const optionst &opt,
 }
 }
 
-int run_danger(const optionst &options, mstreamt &result,
-    const symbol_tablet &st, const goto_functionst &gf)
+int run_danger(optionst &options, mstreamt &result, const symbol_tablet &st,
+    const goto_functionst &gf)
 {
   srand(options.get_unsigned_int_option("cegis-seed"));
   const bool is_gen=is_genetic(options);
   const constant_strategyt str=
       is_gen ? genetic_constant_strategy : default_constant_strategy;
-  danger_preprocessingt preproc(st, gf, str);
+  danger_preprocessingt preproc(options, st, gf, str);
   const danger_programt &prog=preproc.get_danger_program();
   genetic_preprocessingt<danger_preprocessingt> gen_preproc(options, preproc);
   return run_genetic_and_symex(result, options, prog, gen_preproc);
