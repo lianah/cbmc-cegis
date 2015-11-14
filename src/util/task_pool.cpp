@@ -53,6 +53,14 @@ void cleanup(task_poolt::task_idst &task_ids, task_poolt::handlerst &handlers)
   NOT_SUPPORTED();
 #endif
 }
+
+bool erase_if_managed(task_poolt::task_idst &ids, const task_poolt::task_idt id)
+{
+  const task_poolt::task_idst::iterator task_id=ids.find(id);
+  if (ids.end() == task_id) return false;
+  ids.erase(task_id);
+  return true;
+}
 }
 
 #define FORK_ERROR "Fork system call failed."
@@ -72,6 +80,7 @@ task_poolt::task_idt task_poolt::schedule(const taskt &task)
     task_ids.insert(child_pid);
     return child_pid;
   }
+  setpgid(child_pid, 0);
   try
   {
     exit(task());
@@ -93,11 +102,25 @@ task_poolt::task_idt task_poolt::schedule(const taskt &task,
   return id;
 }
 
+#define MAX_WAIT 5u
+
 void task_poolt::cancel(const task_idt id)
 {
 #ifndef _WIN32
-  kill(id, SIGTERM);
-  join(id);
+  if (!erase_if_managed(task_ids, id)) return;
+  int status;
+  size_t wait_count=0;
+  do
+  {
+    if (wait_count) usleep(20000);
+    kill(id, SIGTERM);
+  } while (waitpid(id, &status, WNOHANG) && ++wait_count < MAX_WAIT);
+  if (wait_count >= MAX_WAIT)
+  {
+    kill(id, SIGKILL);
+    waitpid(id, &status, 0);
+  }
+  execute_and_remove(handlers, id, status);
 #else
   NOT_SUPPORTED();
 #endif
@@ -105,13 +128,11 @@ void task_poolt::cancel(const task_idt id)
 
 void task_poolt::join(const task_idt id)
 {
-  const task_idst::iterator task_id=task_ids.find(id);
-  if (task_ids.end() == task_id) return;
 #ifndef _WIN32
+  if (!erase_if_managed(task_ids, id)) return;
   int status;
   waitpid(id, &status, 0);
   execute_and_remove(handlers, id, status);
-  task_ids.erase(task_id);
 #else
   NOT_SUPPORTED();
 #endif

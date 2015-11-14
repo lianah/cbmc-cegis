@@ -77,6 +77,7 @@ void deserialise(program_individualt &individual, const irept &sdu);
 class individual_to_danger_solution_deserialisert
 {
   const danger_programt &prog;
+  class instruction_set_info_factoryt &info_fac;
 public:
   /**
    * @brief
@@ -84,9 +85,10 @@ public:
    * @details
    *
    * @param prog
-   * @param ids
+   * @param info_fac
    */
-  individual_to_danger_solution_deserialisert(const danger_programt &prog);
+  individual_to_danger_solution_deserialisert(const danger_programt &prog,
+      instruction_set_info_factoryt &info_fac);
 
   /**
    * @brief

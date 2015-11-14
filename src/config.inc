@@ -7,7 +7,7 @@ BUILD_ENV = AUTO
 #CXXFLAGS = -Wall -O2 -g0 -U __STRICT_ANSI__
 #CXXFLAGS = -O2 -g0 -pg -finline-limit=4
 #LINKFLAGS= -pg
-#CXXFLAGS = -O0 -g3
+CXXFLAGS = -O0 -g3
 
 # If GLPK is available; this is used by goto-instrument and musketeer.
 #LIB_GLPK = -lglpk 

@@ -42,17 +42,25 @@ bool concurrent_learnt<learner1t, learner2t>::learn(itert first,
     return symex_running;
   });
   bool symex_success=false;
-  irep_pipet irep_pipe(true);
+  irep_pipet irep_pipe;
   const task_poolt::task_idt symex_task=task_pool.schedule(
-      [this, first, last, irep_pipe]() mutable
+      [this, first, last, &irep_pipe]() mutable
       {
         irep_pipe.close_read();
-        const bool result=learner2.learn(first, last);
-        if (!result) return EXIT_FAILURE;
-        irept sdu;
-        serialiser(sdu, learner2.next_candidate());
-        irep_pipe.send(sdu);
-        return EXIT_SUCCESS;
+        try
+        {
+          const bool result=learner2.learn(first, last);
+          if (!result) return EXIT_FAILURE;
+          irept sdu;
+          serialiser(sdu, learner2.next_candidate());
+          irep_pipe.send(sdu);
+          irep_pipe.close_write();
+          return EXIT_SUCCESS;
+        } catch(...)
+        {
+          irep_pipe.close_write();
+          return EXIT_FAILURE;
+        }
       }, [this, &symex_running, &symex_success, &irep_pipe](const int status)
       {
         if (EXIT_SUCCESS != status) return;
@@ -67,6 +75,7 @@ bool concurrent_learnt<learner1t, learner2t>::learn(itert first,
   irep_pipe.close_write();
   const bool genetic_success=learner1.learn(first, last);
   if (symex_running) task_pool.cancel(symex_task);
+  irep_pipe.close_read();
   if (genetic_success && !symex_success) is_decoded_candidate=false;
   return genetic_success || symex_success;
 }
@@ -75,8 +84,8 @@ template<class learner1t, class learner2t>
 void concurrent_learnt<learner1t, learner2t>::show_candidate(
     messaget::mstreamt &os) const
 {
-  if (!is_decoded_candidate) learner1.show_candidate(os);
-  learner1.show_candidate(os, decoded_candidate);
+  if (is_decoded_candidate) learner1.show_candidate(os, decoded_candidate);
+  else learner1.show_candidate(os);
 }
 
 template<class learner1t, class learner2t>

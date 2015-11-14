@@ -1,3 +1,5 @@
+#include <util/constant_width.h>
+
 #include <goto-programs/safety_checker.h>
 
 #include <cbmc/cbmc_solvers.h>
@@ -67,35 +69,20 @@ safety_checkert::resultt cegis_symex_learnt<preproct, learn_configurationt>::run
   return safety_checkert::UNSAFE;
 }
 
-#define CEGIS_LIMIT_WORDSIZE "cegis-limit-wordsize"
-// TODO: Detect automatically
-#define CEGIS_FULL_WORD_WIDTH 32u
-
 namespace
 {
+// TODO: Detect automatically
+#define FULL_WIDTH 32u
+#define CEGIS_LIMIT_WORDSIZE "cegis-limit-wordsize"
+
 template<class counterexamplest>
 size_t calculate_word_width(const optionst &options,
     const counterexamplest &ces, size_t word_width)
 {
-  if (!options.get_bool_option(CEGIS_LIMIT_WORDSIZE))
-    return CEGIS_FULL_WORD_WIDTH;
+  if (!options.get_bool_option(CEGIS_LIMIT_WORDSIZE)) return FULL_WIDTH;
   for (const typename counterexamplest::value_type &ce : ces)
-    for (const typename counterexamplest::value_type::value_type &assignment : ce)
-    {
-      const exprt &expr=assignment.second;
-      if (ID_constant != expr.id()) continue;
-      const std::string &value=id2string(to_constant_expr(expr).get_value());
-      // TODO: Consider ID_signedbv and negative values
-      const std::string::size_type first_one=value.find('1');
-      if (std::string::npos == first_one) continue;
-      const size_t value_width=value.size() - first_one;
-      if (value_width <= word_width) continue;
-      // TODO: Make more flexible for other word widths
-      if (value_width > 16) word_width=CEGIS_FULL_WORD_WIDTH;
-      else if (value_width > 8) word_width=16u;
-      else if (value_width > 4) word_width=8u;
-      else if (value_width > 2) word_width=4u;
-    }
+    for (const typename counterexamplest::value_type::value_type &a : ce)
+      word_width=std::max(word_width, get_min_word_width(a.second, FULL_WIDTH));
   return word_width;
 }
 }
@@ -111,7 +98,7 @@ bool cegis_symex_learnt<preproct, learn_configurationt>::learn_at_current_size()
   const goto_functionst &gf=config.get_goto_functions();
   safety_checkert::resultt full_width_result=safety_checkert::ERROR;
   goto_tracet full_width_trace;
-  for (; word_width < CEGIS_FULL_WORD_WIDTH; word_width*=2)
+  for (; word_width < FULL_WIDTH; word_width*=2)
   {
     config.process(counterexamples, current_solution_size);
     config.set_word_width(word_width);

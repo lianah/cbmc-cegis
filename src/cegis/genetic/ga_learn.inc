@@ -127,7 +127,7 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
         > (clockt::now() - program_startup) > std::chrono::minutes(5))
       return false;
     // XXX: Debug
-    selection=select.select(pop);
+    /*selection=select.select(pop);
     if (should_mutate(options))
     {
       if (!selection.can_mutate()) return false;
@@ -145,7 +145,7 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
       cross(selection.parents, selection.children);
       for (const typename populationt::iterator &child : selection.children)
         if (set_fitness(*child)) return true;
-    }
+    }*/
   }
   return false;
 }

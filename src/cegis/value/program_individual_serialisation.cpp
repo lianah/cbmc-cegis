@@ -7,6 +7,7 @@
 #include <cegis/danger/symex/learn/add_variable_refs.h>
 #include <cegis/danger/symex/learn/read_x0.h>
 #include <cegis/danger/symex/learn/solution_factory.h>
+#include <cegis/genetic/instruction_set_info_factory.h>
 #include <cegis/value/program_individual_serialisation.h>
 
 bool is_program_indivdual_decl(const goto_trace_stept &step)
@@ -135,8 +136,8 @@ void deserialise(program_individualt &individual, const irept &sdu)
 }
 
 individual_to_danger_solution_deserialisert::individual_to_danger_solution_deserialisert(
-    const danger_programt &prog) :
-    prog(prog)
+    const danger_programt &prog, instruction_set_info_factoryt &info_fac) :
+    prog(prog), info_fac(info_fac)
 {
 }
 
@@ -151,5 +152,6 @@ void individual_to_danger_solution_deserialisert::operator ()(
   deserialise(ind, sdu);
   danger_variable_idst ids;
   get_danger_variable_ids(prog.st, ids);
-  create_danger_solution(result, prog, ind, ids);
+  const instruction_sett &instrs=info_fac.get_instructions();
+  create_danger_solution(result, prog, ind, instrs, ids);
 }

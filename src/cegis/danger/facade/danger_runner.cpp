@@ -212,11 +212,12 @@ public:
 template<class fitnesst, class mutatet, class crosst, class convertert,
     class preproct, class symex_learnt>
 int run_match(mstreamt &os, const optionst &opt, const danger_programt &prog,
-    random_individualt &rnd, const size_t pop_size, const size_t rounds,
-    fitnesst &fitness, mutatet &mutate, crosst &cross, convertert &converter,
-    preproct &preproc, symex_learnt &symex_learn)
+    random_individualt &rnd, instruction_set_info_factoryt &info_fac,
+    const size_t pop_size, const size_t rounds, fitnesst &fitness,
+    mutatet &mutate, crosst &cross, convertert &converter, preproct &preproc,
+    symex_learnt &symex_learn)
 {
-  const individual_to_danger_solution_deserialisert deserialiser(prog);
+  const individual_to_danger_solution_deserialisert deser(prog, info_fac);
   if (opt.get_bool_option(CEGIS_MATCH_SELECT))
   {
     match_selectt select(fitness.get_test_case_data(), rnd, pop_size, rounds);
@@ -224,7 +225,7 @@ int run_match(mstreamt &os, const optionst &opt, const danger_programt &prog,
         danger_fitness_configt> ga_learnt;
     ga_learnt ga_learn(opt, select, mutate, cross, fitness, converter);
     concurrent_learnt<ga_learnt, symex_learnt> learn(ga_learn, symex_learn,
-        serialise, std::ref(deserialiser));
+        serialise, std::ref(deser));
     return run_parallel(os, opt, prog, learn, preproc);
   }
   tournament_selectt select(rnd, pop_size, rounds);
@@ -232,7 +233,7 @@ int run_match(mstreamt &os, const optionst &opt, const danger_programt &prog,
       danger_fitness_configt> ga_learnt;
   ga_learnt ga_learn(opt, select, mutate, cross, fitness, converter);
   concurrent_learnt<ga_learnt, symex_learnt> learn(ga_learn, symex_learn,
-      serialise, std::ref(deserialiser));
+      serialise, std::ref(deser));
   return run_parallel(os, opt, prog, learn, preproc);
 
 }
@@ -282,8 +283,8 @@ int run_genetic_and_symex(mstreamt &os, const optionst &opt,
   fitnesst fitness(test_runner);
   random_mutatet mutate(rnd, num_consts);
   random_crosst cross(rnd);
-  return run_match(os, opt, prog, rnd, pop_size, rounds, fitness, mutate, cross,
-      converter, preproc, learn);
+  return run_match(os, opt, prog, rnd, info_fac, pop_size, rounds, fitness,
+      mutate, cross, converter, preproc, learn);
 }
 }
 
