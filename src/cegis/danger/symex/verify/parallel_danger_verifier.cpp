@@ -25,7 +25,7 @@ void parallel_danger_verifiert::verify(const candidatet &candidate)
   config.process(candidate);
   parallel_danger_verify_poolt pool(all_ces, options, config, candidate);
   pool.schedule(parallel_danger_verify_taskt::FULL);
-  //pool.schedule(parallel_danger_verify_taskt::RANKING);
+  pool.schedule(parallel_danger_verify_taskt::RANKING);
   pool.schedule(parallel_danger_verify_taskt::ASSERTION);
   is_failure=!pool.join();
 }

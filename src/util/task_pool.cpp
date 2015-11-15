@@ -112,9 +112,9 @@ void task_poolt::cancel(const task_idt id)
   size_t wait_count=0;
   do
   {
-    if (wait_count) usleep(20000);
     kill(id, SIGTERM);
-  } while (waitpid(id, &status, WNOHANG) && ++wait_count < MAX_WAIT);
+    usleep(20000);
+  } while (!waitpid(id, &status, WNOHANG) && ++wait_count < MAX_WAIT);
   if (wait_count >= MAX_WAIT)
   {
     kill(id, SIGKILL);

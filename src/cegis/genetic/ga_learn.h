@@ -130,6 +130,15 @@ public:
    * @param is_evolving
    */
   void set_termination_condition(std::function<bool(void)> is_evolving);
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @param ind
+   */
+  void add_paragon(typename selectt::individualt ind);
 };
 
 #include "ga_learn.inc"

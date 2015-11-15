@@ -77,13 +77,13 @@ time_pointt program_startup=clockt::now();
 //size_t count=0;
 }
 // XXX: Debug
+
 template<class selectt, class mutatet, class crosst, class fitnesst,
     class convertt>
 template<class itert>
 bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
     const itert &last)
 {
-  // XXX: Debug
   if (!is_population_initialised)
   {
     select.init(pop);
@@ -181,4 +181,27 @@ void ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::set_solution_size_
     const size_t min, const size_t max)
 {
   // TODO: ga_learn currently gets this info directly from the options. Refactor!
+}
+
+template<class selectt, class mutatet, class crosst, class fitnesst,
+    class convertt>
+void ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::add_paragon(
+    typename selectt::individualt ind)
+{
+  const size_t num_sacrifices=std::max(size_t(1u), pop.size() / 200);
+  const size_t rounds=10u;
+  typename populationt::iterator sacrifice=pop.end();
+  for (size_t s=0; s < num_sacrifices; ++s)
+  {
+    for (size_t round=0; round < rounds; ++round)
+    {
+      typename populationt::iterator candidate=pop.begin();
+      std::advance(candidate, rand() % pop.size());
+      if (pop.end() == sacrifice || sacrifice->fitness < candidate->fitness)
+        sacrifice=candidate;
+    }
+    *sacrifice=ind;
+    set_fitness(*sacrifice);
+    assert(sacrifice->fitness == fitness.get_target_fitness());
+  }
 }

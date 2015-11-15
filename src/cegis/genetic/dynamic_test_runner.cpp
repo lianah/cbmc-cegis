@@ -69,15 +69,13 @@ void write_file(const char * const path, const std::string &content)
 #define OPEN_LIB_FAILED "Opening fitness test library failed."
 #define LOAD_FUNC_FAILED "Loading fitness test function failed."
 
-const temporary_filet source_file(SOURCE_FILE_PREFIX, SOURCE_FILE_SUFFIX);
-
 void prepare_library(dynamic_test_runnert::lib_handlet &handle,
     dynamic_test_runnert::fitness_testert &fitness_tester,
     const std::function<std::string(void)> &source_code_provider,
     const temporary_filet &library_file)
 {
   if (fitness_tester) return;
-  //const temporary_filet source_file(SOURCE_FILE_PREFIX, SOURCE_FILE_SUFFIX);
+  const temporary_filet source_file(SOURCE_FILE_PREFIX, SOURCE_FILE_SUFFIX);
   const std::string source_file_name(source_file());
   std::string source;
   implement_deserialise(source);

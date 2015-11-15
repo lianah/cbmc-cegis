@@ -225,7 +225,7 @@ int run_match(mstreamt &os, optionst &opt, const danger_programt &prog,
         danger_fitness_configt> ga_learnt;
     ga_learnt ga_learn(opt, select, mutate, cross, fitness, converter);
     concurrent_learnt<ga_learnt, symex_learnt> learn(ga_learn, symex_learn,
-        serialise, std::ref(deser));
+        serialise, std::ref(deser), deserialise);
     // XXX: Debug
     //return run_parallel(os, opt, prog, ga_learn, preproc);
     // XXX: Debug
@@ -236,7 +236,7 @@ int run_match(mstreamt &os, optionst &opt, const danger_programt &prog,
       danger_fitness_configt> ga_learnt;
   ga_learnt ga_learn(opt, select, mutate, cross, fitness, converter);
   concurrent_learnt<ga_learnt, symex_learnt> learn(ga_learn, symex_learn,
-      serialise, std::ref(deser));
+      serialise, std::ref(deser), deserialise);
   return run_parallel(os, opt, prog, learn, preproc);
 
 }

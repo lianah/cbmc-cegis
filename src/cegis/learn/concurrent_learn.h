@@ -30,12 +30,14 @@ public:
   typedef typename learner1t::counterexamplest counterexamplest;
   typedef std::function<void(irept &, const encoded_candidatet &)> serialisert;
   typedef std::function<void(candidatet &, const irept &)> deserialisert;
+  typedef std::function<void(encoded_candidatet &, const irept &)> encoded_deserialisert;
 private:
   learner1t &learner1;
   learner2t &learner2;
   task_poolt task_pool;
   const serialisert serialiser;
   const deserialisert deserialiser;
+  const encoded_deserialisert encoded_deserialiser;
   bool is_decoded_candidate;
   candidatet decoded_candidate;
 public:
@@ -48,9 +50,11 @@ public:
    * @param learner2
    * @param serialiser
    * @param deserialiser
+   * @param encoded_deserialiser
    */
   concurrent_learnt(learner1t &learner1, learner2t &learner2,
-      serialisert serialiser, deserialisert deserialiser);
+      serialisert serialiser, deserialisert deserialiser,
+      encoded_deserialisert encoded_deserialiser);
 
   /**
    * @brief
