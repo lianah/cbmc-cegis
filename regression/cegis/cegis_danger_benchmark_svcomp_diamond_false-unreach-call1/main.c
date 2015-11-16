@@ -1,8 +1,6 @@
 int main(void) {
-  unsigned int x;
+  unsigned int x=0;
   unsigned int y;
-
-  x = 0;
 
   while (x < 99) {
     if (y % 2 == 0) {

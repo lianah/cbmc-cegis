@@ -13,8 +13,6 @@ int main(void) {
     y++;
   }
 
-  y=y;
-
   while (x != y) {
     lockstate = 1;
     x = y;
