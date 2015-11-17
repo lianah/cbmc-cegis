@@ -1,3 +1,5 @@
+#include <util/arith_tools.h>
+#include <util/bv_arithmetic.h>
 #include <util/constant_width.h>
 #include <util/mp_arith.h>
 
@@ -38,18 +40,22 @@ size_t genetic_constant_strategy(danger_programt &prog, const size_t max_length)
   size_t const_index=0u;
   // XXX: Literals strategy, benchmark performance
   /*for (const constant_exprt &expr : literals)
-  {
-    // XXX: Debug
-    std::cout << "<id>" << const_index << "</id>" << std::endl;
-    std::cout << "<value>" << expr.to_string() << "</value>" << std::endl;
-    // XXX: Debug
-    const std::string base_name(get_name(const_index++));
-    pos=declare_danger_variable(st, gf, pos, base_name, expr.type());
-    pos=assign_danger_variable(st, gf, pos, base_name, expr);
-    max_word_width=std::max(max_word_width, get_min_word_width(expr));
-  }*/
+   {
+   // XXX: Debug
+   std::cout << "<id>" << const_index << "</id>" << std::endl;
+   std::cout << "<value>" << expr.to_string() << "</value>" << std::endl;
+   // XXX: Debug
+   const std::string base_name(get_name(const_index++));
+   pos=declare_danger_variable(st, gf, pos, base_name, expr.type());
+   pos=assign_danger_variable(st, gf, pos, base_name, expr);
+   max_word_width=std::max(max_word_width, get_min_word_width(expr));
+   }*/
   // XXX: 0/1 constant strategy, benchmark performance
-  for (const constant_exprt &expr : literals)
+  const typet type(danger_meta_type());
+  const bv_spect spec(type);
+  const std::vector<constant_exprt> def={ from_integer(0u, type), from_integer(
+      1u, type), from_integer(spec.max_value().to_ulong(), type) };
+  for (const constant_exprt &expr : def)
   {
     // XXX: Debug
     std::cout << "<id>" << const_index << "</id>" << std::endl;

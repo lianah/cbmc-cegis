@@ -3,10 +3,6 @@
 #include <cbmc/cbmc_solvers.h>
 #include <cbmc/bmc.h>
 
-// XXX: Debug
-#include <iostream>
-// XXX: Debug
-
 template<class verify_configurationt>
 cegis_symex_verifyt<verify_configurationt>::cegis_symex_verifyt(
     const optionst &options, verify_configurationt &config) :
@@ -35,12 +31,6 @@ void cegis_symex_verifyt<verify_configurationt>::verify(
   null_message_handlert msg;
   cbmc_solverst solvers(options, st, msg);
   const std::unique_ptr<cbmc_solverst::solvert> solver=solvers.get_solver();
-  // XXX: Debug
-  std::cout << "<cegis_symex_verify>" << std::endl;
-  const namespacet ns(st);
-  gf.output(ns, std::cout);
-  std::cout << "</cegis_symex_verify>" << std::endl;
-  // XXX: Debug
   bmct bmc(options, st, msg, solver->prop_conv());
   const safety_checkert::resultt result=bmc(gf);
   const goto_tracet &trace=bmc.safety_checkert::error_trace;

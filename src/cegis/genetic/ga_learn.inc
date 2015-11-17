@@ -73,6 +73,7 @@ namespace
 typedef std::chrono::high_resolution_clock clockt;
 typedef clockt::time_point time_pointt;
 time_pointt program_startup=clockt::now();
+size_t counter=0;
 }
 // XXX: Debug
 
