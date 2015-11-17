@@ -88,7 +88,7 @@ template<class preproct, class learn_configurationt>
 bool cegis_symex_learnt<preproct, learn_configurationt>::learn_at_current_size()
 {
   word_width=calculate_word_width(options);
-  null_message_handlert msg;  // XXX: Debug
+  null_message_handlert msg;
   optionst o(options);
   o.set_option("unwinding-assertions", false);
   const symbol_tablet &st=config.get_symbol_table();

@@ -127,4 +127,27 @@ void erase_target(goto_programt &body, const goto_programt::targett &target);
  */
 void restrict_bv_size(class danger_programt &prog, size_t width_in_bits);
 
+/**
+ * @brief
+ *
+ * @details
+ *
+ * @param body
+ * @param target
+ */
+goto_programt::targett insert_before_preserve_labels(goto_programt &body,
+    const goto_programt::targett &target);
+
+/**
+ * @brief
+ *
+ * @details
+ *
+ * @param body
+ * @param from
+ * @param to
+ */
+void move_labels(goto_programt &body, const goto_programt::targett &from,
+    const goto_programt::targett &to);
+
 #endif /* CEGIS_DANGER_PROGRAM_HELPER_H_ */

@@ -79,7 +79,8 @@ goto_programt::targett add_ce_loop(danger_programt &prog, const size_t ces_size)
   goto_programt::targett loop_head=pos;
   (++loop_head)->labels.push_back(X_LABEL);
   goto_programt &body=get_danger_body(gf);
-  pos=body.insert_before(prog.danger_range.end);
+  pos=insert_before_preserve_labels(body, prog.danger_range.end);
+  //pos=body.insert_before(prog.danger_range.end);
   pos->type=goto_program_instruction_typet::ASSIGN;
   pos->source_location=default_danger_source_location();
   const symbol_exprt index(get_index(st));
@@ -89,6 +90,7 @@ goto_programt::targett add_ce_loop(danger_programt &prog, const size_t ces_size)
   pos=body.insert_after(pos);
   pos->type=goto_program_instruction_typet::GOTO;
   pos->source_location=default_danger_source_location();
+  pos->function=goto_functionst::entry_point();
   pos->targets.push_back(loop_head);
   pos->loop_number=0u;
   //const constant_exprt num_ces(from_integer(ces_size, size_type));

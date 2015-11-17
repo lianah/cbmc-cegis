@@ -165,3 +165,19 @@ void restrict_bv_size(danger_programt &prog, const size_t width_in_bits)
     restrict_bv_size(loop.guard, width_in_bits);
   restrict_bv_size(prog.assertion, width_in_bits);
 }
+
+goto_programt::targett insert_before_preserve_labels(goto_programt &body,
+    const goto_programt::targett &target)
+{
+  const goto_programt::targett result=body.insert_before(target);
+  move_labels(body, target, result);
+  return result;
+}
+
+void move_labels(goto_programt &body, const goto_programt::targett &from,
+    const goto_programt::targett &to)
+{
+  for (goto_programt::instructiont &instr : body.instructions)
+    for (goto_programt::targett &target : instr.targets)
+      if (from == target) target=to;
+}

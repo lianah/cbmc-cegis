@@ -226,9 +226,6 @@ int run_match(mstreamt &os, optionst &opt, const danger_programt &prog,
     ga_learnt ga_learn(opt, select, mutate, cross, fitness, converter);
     concurrent_learnt<ga_learnt, symex_learnt> learn(ga_learn, symex_learn,
         serialise, std::ref(deser), deserialise);
-    // XXX: Debug
-    //return run_parallel(os, opt, prog, ga_learn, preproc);
-    // XXX: Debug
     return run_parallel(os, opt, prog, learn, preproc);
   }
   tournament_selectt select(rnd, pop_size, rounds);

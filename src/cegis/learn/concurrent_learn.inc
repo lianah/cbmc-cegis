@@ -32,27 +32,11 @@ const typename concurrent_learnt<learner1t, learner2t>::candidatet &concurrent_l
   return learner1.next_candidate();
 }
 
-// XXX: Debug
-size_t symex_start=3u;
-// XXX: Debug
-
 template<class learner1t, class learner2t>
 template<class itert>
 bool concurrent_learnt<learner1t, learner2t>::learn(itert first,
     const itert &last)
 {
-  // XXX: Debug
-  itert ce=first;
-  for (itert ce=first; ce !=last; ++ce)
-  {
-    std::cout << "<ce>" << std::endl;
-    for (const typename counterexamplet::value_type &ass : *ce)
-    {
-      std::cout << "<first>" << ass.first << "</first><second>" << ass.second << std::endl;
-    }
-    std::cout << "</ce>" << std::endl;
-  }
-  // XXX: Debug
   bool symex_running=true;
   learner1.set_termination_condition([this, &symex_running]()
   {
@@ -95,23 +79,10 @@ bool concurrent_learnt<learner1t, learner2t>::learn(itert first,
       });
   irep_pipe.close_write();
   const bool genetic_success=learner1.learn(first, last);
-  // XXX: Debug
-  if (symex_start)
-  {
-    --symex_start;
-    task_pool.join_all();
-  }
-  // XXX: Debug
   if (symex_running) task_pool.cancel(symex_task);
   irep_pipe.close_read();
   if (genetic_success && !symex_success) is_decoded_candidate=false;
   learner2.add_counterexamples(first, last);
-  // XXX: Debug
-  std::cout << "<genetic_success>" << std::boolalpha << genetic_success
-      << "</genetic_success>" << std::endl;
-  std::cout << "<symex_success>" << std::boolalpha << symex_success
-      << "</symex_success>" << std::endl;
-  // XXX: Debug
   return genetic_success || symex_success;
 }
 

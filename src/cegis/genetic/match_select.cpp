@@ -79,6 +79,13 @@ size_t get_match_fitness(const match_selectt::test_case_datat &data,
     if (*fv != *mv) match_value+=2; // Excessive?
   return match_value;
 }
+
+// XXX: Debug
+size_t parent_fitness_sum=0;
+size_t parent_max_fitness=0;
+size_t parent_min_fitness=999999;
+size_t cross_count=0;
+// XXX: Debug
 }
 
 match_selectt::selectiont match_selectt::select(populationt &pop)
