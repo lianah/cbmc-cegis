@@ -102,6 +102,7 @@ void random_individualt::havoc(program_individualt &ind)
   progs.resize(num_progs());
   for (size_t i=0u; i < progs.size(); ++i)
     havoc(progs[i], i);
+  post_process(ind);
   const size_t number_of_x0=num_x0();
   program_individualt::x0t &ind_x0=ind.x0;
   ind_x0.resize(number_of_x0);
@@ -130,4 +131,28 @@ size_t random_individualt::get_max_prog_size(const size_t prog_index) const
 size_t random_individualt::get_min_prog_size(const size_t prog_index) const
 {
   return min_prog_sz(prog_index);
+}
+
+namespace
+{
+#define RANKING_INDEX 1u
+}
+
+void random_individualt::post_process(program_individualt &ind) const
+{
+  // XXX: Specific optimisation for PLDI 2016 submissions.
+  program_individualt::programst &progs=ind.programs;
+  if (progs.size() <= RANKING_INDEX) return;
+  program_individualt::programt &ranking=progs[RANKING_INDEX];
+  for (program_individualt::instructiont &instr : ranking)
+    switch (instr.opcode)
+    {
+    case 1u:
+    case 19u:
+      instr.opcode=10;
+      break;
+    default:
+      break;
+    }
+  // XXX: Specific optimisation for PLDI 2016 submissions.
 }

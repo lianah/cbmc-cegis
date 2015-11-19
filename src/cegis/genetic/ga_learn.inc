@@ -56,6 +56,9 @@ template<class selectt, class mutatet, class crosst, class fitnesst,
 bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::set_fitness(
     typename selectt::individualt &ind)
 {
+  // XXX: Specific optimisation for PLDI 2016 submissions.
+  mutate.post_process(ind);
+  // XXX: Specific optimisation for PLDI 2016 submissions.
   fitness.set_fitness(ind);
   typedef typename selectt::individualt::fitnesst target_fitnesst;
   const target_fitnesst target_fitness=fitness.get_target_fitness();
@@ -73,7 +76,6 @@ namespace
 typedef std::chrono::high_resolution_clock clockt;
 typedef clockt::time_point time_pointt;
 time_pointt program_startup=clockt::now();
-size_t counter=0;
 }
 // XXX: Debug
 
@@ -102,11 +104,6 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
   typename selectt::selectiont selection;
   while (!is_evolving || is_evolving())
   {
-    // XXX: Debug
-    if (std::chrono::duration_cast < std::chrono::milliseconds
-        > (clockt::now() - program_startup) > std::chrono::minutes(5))
-      return false;
-    // XXX: Debug
     selection=select.select(pop);
     if (should_mutate(options))
     {

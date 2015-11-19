@@ -70,3 +70,8 @@ void random_mutatet::havoc(individualt &ind) const
 {
   random.havoc(ind);
 }
+
+void random_mutatet::post_process(program_individualt &ind) const
+{
+  random.post_process(ind);
+}

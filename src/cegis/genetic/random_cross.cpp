@@ -32,9 +32,6 @@ void random_crosst::operator ()(const individualst &parents,
     const individualst &children)
 {
   assert(parents.size() >= 2 && children.size() >= 2);
-  const size_t prog_limit=parents.front()->programs.size();
-  const size_t target_prog_index=random.rand() % prog_limit;
-
   const populationt::value_type &father=*parents.front();
   const populationt::value_type &mother=*parents[1u];
   populationt::value_type &son=*children.front();
@@ -50,6 +47,9 @@ void random_crosst::operator ()(const individualst &parents,
   std::copy(m_x0.begin(), m_x0.begin() + x0_offset, d_x0.begin());
   std::copy(f_x0.begin() + x0_offset, f_x0.end(), d_x0.begin() + x0_offset);
 
+  const size_t prog_limit=parents.front()->programs.size();
+  const size_t target_prog_index=random.rand() % prog_limit;
+  // XXX: Use two two prog_indexes?
   const programt &f_prog=father.programs[target_prog_index];
   const programt &m_prog=mother.programs[target_prog_index];
   programt &s_prog=son.programs[target_prog_index];

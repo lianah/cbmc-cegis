@@ -179,6 +179,15 @@ public:
    * @return
    */
   size_t get_min_prog_size(size_t prog_index) const;
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @param ind
+   */
+  void post_process(program_individualt &ind) const;
 };
 
 #endif /* CEGIS_GENETIC_RANDOM_INDIVIDUAL_H_ */
