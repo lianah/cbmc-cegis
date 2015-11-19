@@ -39,7 +39,7 @@ size_t genetic_constant_strategy(danger_programt &prog, const size_t max_length)
   size_t max_word_width=0u;
   size_t const_index=0u;
   // XXX: Literals strategy, benchmark performance
-  /*for (const constant_exprt &expr : literals)
+  for (const constant_exprt &expr : literals)
    {
    // XXX: Debug
    std::cout << "<id>" << const_index << "</id>" << std::endl;
@@ -49,13 +49,15 @@ size_t genetic_constant_strategy(danger_programt &prog, const size_t max_length)
    pos=declare_danger_variable(st, gf, pos, base_name, expr.type());
    pos=assign_danger_variable(st, gf, pos, base_name, expr);
    max_word_width=std::max(max_word_width, get_min_word_width(expr));
-   }*/
+   }
   // XXX: 0/1 constant strategy, benchmark performance
-  const typet type(danger_meta_type());
+  /*const typet type(danger_meta_type());
   const bv_spect spec(type);
   const std::vector<constant_exprt> def={ from_integer(0u, type), from_integer(
-      1u, type), from_integer(spec.max_value().to_ulong(), type) };
-  for (const constant_exprt &expr : def)
+      1u, type), from_integer(spec.max_value().to_ulong(), type) };*/
+  /*const std::vector<constant_exprt> def={ from_integer(0u, type), from_integer(
+   1u, type) };*/
+  /*for (const constant_exprt &expr : def)
   {
     // XXX: Debug
     std::cout << "<id>" << const_index << "</id>" << std::endl;
@@ -65,7 +67,7 @@ size_t genetic_constant_strategy(danger_programt &prog, const size_t max_length)
     pos=declare_danger_variable(st, gf, pos, base_name, expr.type());
     pos=assign_danger_variable(st, gf, pos, base_name, expr);
     max_word_width=std::max(max_word_width, get_min_word_width(expr));
-  }
+  }*/
   return max_word_width;
   /*typet type=danger_meta_type(); // XXX: Currently single data type
    type.set(ID_C_constant, true);
