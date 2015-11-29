@@ -32,6 +32,10 @@ const typename concurrent_learnt<learner1t, learner2t>::candidatet &concurrent_l
   return learner1.next_candidate();
 }
 
+// XXX: Debug
+//size_t symex_count=2u;
+// XXX: Debug
+
 template<class learner1t, class learner2t>
 template<class itert>
 bool concurrent_learnt<learner1t, learner2t>::learn(itert first,
@@ -79,6 +83,13 @@ bool concurrent_learnt<learner1t, learner2t>::learn(itert first,
       });
   irep_pipe.close_write();
   const bool genetic_success=learner1.learn(first, last);
+  // XXX: Debug
+  /*if (symex_count)
+  {
+    --symex_count;
+    task_pool.join_all();
+  }*/
+  // XXX: Debug
   if (symex_running) task_pool.cancel(symex_task);
   irep_pipe.close_read();
   if (genetic_success && !symex_success) is_decoded_candidate=false;

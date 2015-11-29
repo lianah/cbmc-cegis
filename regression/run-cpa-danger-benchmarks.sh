@@ -16,7 +16,7 @@ for benchmark in ${benchmark_dir}/*; do
     echo -e "#define __CPROVER_assert(cond, name) if(!(cond)) ERROR: return (-1)\n" >${tool_file}
     cat ${file} >>${tool_file}
     start_time=$(date +%s.%N)
-    timeout --kill-after=10 ${timeout_time} ${tool} -preprocess -predicateAnalysis -disable-java-assertions -heap 10000m ${tool_file} >${out_file} 2>&1
+    timeout --kill-after=10 ${timeout_time} ${tool} -preprocess -sv-comp15 -timelimit ${timeout_time} -disable-java-assertions -heap 10000m -setprop spec.singlePathMatching=false -setprop parser.transformTokensToLines=true ${tool_file} >${out_file} 2>&1
     end_time=$(date +%s.%N)
     duration=$(echo "${end_time} - ${start_time}" | bc)
     rm ${tool_file}
