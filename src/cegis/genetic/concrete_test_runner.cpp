@@ -75,6 +75,10 @@ void prepare_executable(bool &executable_compiled,
   executable_compiled=true;
 }
 
+#ifdef _WIN32
+#define NOT_SUPPORTED() assert(!"task_poolt not supported on Windows.")
+#endif
+
 class conrete_test_runner_taskt
 {
   concrete_test_runnert::individualt &ind;
@@ -88,15 +92,23 @@ public:
 
   int operator()() const
   {
+#ifndef _WIN32
     const int result=system(command.c_str());
     if (!WIFEXITED(result)) return EXIT_FAILURE;
     return WEXITSTATUS(result);
+#else
+    NOT_SUPPORTED();
+#endif
   }
 
   void operator()(const int status) const
   {
+#ifndef _WIN32
     if (!WIFEXITED(status)) return;
     if (EXIT_SUCCESS == WEXITSTATUS(status)) ++ind.fitness;
+#else
+    NOT_SUPPORTED();
+#endif
   }
 };
 

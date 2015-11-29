@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <dlfcn.h>
 #include <fstream>
 
@@ -61,8 +62,12 @@ void write_file(const char * const path, const std::string &content)
 
 #define SOURCE_FILE_PREFIX "concrete_test"
 #define SOURCE_FILE_SUFFIX ".c"
+#ifndef _WIN32
 //#define COMPILE_COMMAND "gcc -std=c99 -g0 -O2 -shared -rdynamic -fPIC "
 #define COMPILE_COMMAND "gcc -std=c99 -g3 -O0 -shared -rdynamic -fPIC "
+#else
+#define COMPILE_COMMAND "gcc -std=c99 -g0 -O2 -shared "
+#endif
 #define ARTIFACT_SEPARATOR " -o "
 #define FUNC "__CPROVER_cegis_test_fitness"
 #define COMPLING_FAILED "Compiling test runner failed."

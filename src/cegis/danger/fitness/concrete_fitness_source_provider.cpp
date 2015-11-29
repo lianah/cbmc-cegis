@@ -187,7 +187,8 @@ bool handle_ce_loop(const std::string &line, std::stringstream &ss)
 bool handle_internals(const std::string &line)
 {
   if (contains(line, "ARRAY_OF(")) return true;
-  return "    __CPROVER_dead_object = NULL;" == line
+  return "    __CPROVER_malloc_size = 0u;" == line
+      || "    __CPROVER_dead_object = NULL;" == line
       || "    __CPROVER_deallocated = NULL;" == line
       || "    __CPROVER_malloc_is_new_array = 0 != 0;" == line
       || "    __CPROVER_malloc_object = NULL;" == line
