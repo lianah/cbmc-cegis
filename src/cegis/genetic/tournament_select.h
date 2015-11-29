@@ -10,10 +10,7 @@
 #ifndef CEGIS_GENETIC_TOURNAMENT_SELECT_H_
 #define CEGIS_GENETIC_TOURNAMENT_SELECT_H_
 
-#include <map>
-
 #include <cegis/value/program_individual.h>
-#include <cegis/genetic/instruction_set_info_factory.h>
 
 /**
  * @brief
@@ -22,7 +19,6 @@
  */
 class tournament_selectt
 {
-private:
   class random_individualt &random;
   const size_t pop_size;
   const size_t rounds;
@@ -40,8 +36,6 @@ public:
     bool can_cross() const;
     populationt::value_type &mutation_lhs();
     const populationt::value_type &mutation_rhs() const;
-    const individualst &get_parents() const;
-    const individualst &get_children() const;
   };
 
   /**

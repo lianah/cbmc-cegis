@@ -1,12 +1,13 @@
 #include <algorithm>
 
+#include <cegis/wordsize/restrict_bv_size.h>
 #include <cegis/danger/symex/verify/insert_constraint.h>
 #include <cegis/danger/symex/verify/insert_candidate.h>
 #include <cegis/danger/symex/verify/extract_counterexample.h>
 #include <cegis/danger/symex/verify/danger_verify_config.h>
 
 danger_verify_configt::danger_verify_configt(const danger_programt &program) :
-    original_program(program)
+    original_program(program), limit_ce(false), max_ce_width(0u)
 {
 }
 
@@ -20,7 +21,9 @@ void danger_verify_configt::process(const candidatet &candidate)
   quantifiers.clear();
   danger_insert_constraint(quantifiers, program);
   danger_insert_candidate(program, candidate);
-  program.gf.update();
+  goto_functionst &gf=program.gf;
+  if (limit_ce) restrict_bv_size(program.st, gf, max_ce_width);
+  gf.update();
 }
 
 const symbol_tablet &danger_verify_configt::get_symbol_table() const
@@ -58,4 +61,10 @@ exprt::operandst danger_verify_configt::get_loop_guards() const
       [](const danger_programt::loopt &loop)
       { return loop.guard;});
   return loop_guards;
+}
+
+void danger_verify_configt::set_max_ce_width(const size_t size)
+{
+  limit_ce=true;
+  max_ce_width=size;
 }

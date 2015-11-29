@@ -120,7 +120,7 @@ public:
    *
    * @return
    */
-  program_individualt::nondet_choices::value_type x0() const;
+  program_individualt::x0t::value_type x0() const;
 
   /**
    * @brief
@@ -129,7 +129,7 @@ public:
    *
    * @return
    */
-  program_individualt::nondet_choices::value_type constant() const;
+  program_individualt::x0t::value_type constant() const;
 
   /**
    * @brief
@@ -168,6 +168,26 @@ public:
    * @return
    */
   size_t get_max_prog_size(size_t prog_index) const;
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @param prog_index
+   *
+   * @return
+   */
+  size_t get_min_prog_size(size_t prog_index) const;
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @param ind
+   */
+  void post_process(program_individualt &ind) const;
 };
 
 #endif /* CEGIS_GENETIC_RANDOM_INDIVIDUAL_H_ */

@@ -36,7 +36,7 @@ std::vector<constant_exprt> collect_literal_constants(
  *
  * @return
  */
-void literals_constant_strategy(danger_programt &program,
+size_t literals_constant_strategy(danger_programt &program,
     const size_t max_length);
 
 #endif /* CEGIS_DANGER_LITERALS_CONSTANT_STRATEGY_H_ */

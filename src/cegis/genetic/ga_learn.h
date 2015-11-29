@@ -10,6 +10,8 @@ Author: Daniel Kroening, kroening@kroening.com
 #ifndef CEGIS_GENETIC_GA_LEARN_H_
 #define CEGIS_GENETIC_GA_LEARN_H_
 
+#include <functional>
+
 #include <cegis/danger/value/danger_goto_solution.h>
 
 /**
@@ -23,6 +25,7 @@ class ga_learnt
 public:
   typedef typename convertt::candidatet candidatet;
   typedef typename fitnesst::counterexamplet counterexamplet;
+  typedef typename fitnesst::counterexamplest counterexamplest;
   typedef typename selectt::populationt populationt;
   typedef typename selectt::selectiont selectiont;
 private:
@@ -36,6 +39,7 @@ private:
   selectiont selection;
   candidatet current_candidate;
   bool is_population_initialised;
+  std::function<bool(void)> is_evolving;
 
   bool set_fitness(typename selectt::individualt &ind);
 public:
@@ -84,20 +88,6 @@ public:
   /**
    * @brief Generates a candidate solution.
    *
-   * @details Generates a new candidate based on previously received counterexamples.
-   * This operation is useful when the set of counterexamples remains the same and only
-   * the maximum solution size has changed.
-   *
-   * @param max_solution_size The new maximum solution size.
-   *
-   * @return <code>true</code> if learning was successful, <code>false</code>
-   * if no new candidate could be generated.
-   */
-  bool learn(size_t max_solution_size);
-
-  /**
-   * @brief Generates a candidate solution.
-   *
    * @details Receives set of counterexample from the verification oracle
    * and adds it to its information base. Generates a new candidate
    * based on received counterexamples.
@@ -119,6 +109,36 @@ public:
    * @param os The stream to output the candidate.
    */
   void show_candidate(messaget::mstreamt &os) const;
+
+  void show_candidate(messaget::mstreamt &os, const candidatet &candidate) const;
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @param min
+   * @param max
+   */
+  void set_solution_size_range(size_t min, size_t max);
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @param is_evolving
+   */
+  void set_termination_condition(std::function<bool(void)> is_evolving);
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @param ind
+   */
+  void add_paragon(typename selectt::individualt ind);
 };
 
 #include "ga_learn.inc"

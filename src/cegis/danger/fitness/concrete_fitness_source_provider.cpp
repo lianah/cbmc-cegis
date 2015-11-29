@@ -106,6 +106,11 @@ void replace_danger_execute_size(std::string &line)
   line+="_size);\n";
 }
 
+void replace_return_values(std::string &line)
+{
+  substitute(line, "#return_value", "__return_value");
+}
+
 void fix_cprover_names(std::string &line)
 {
   substitute(line, "$$", "__");
@@ -218,6 +223,7 @@ std::string &post_process(std::string &source, std::stringstream &ss)
     replace_assume(line);
     fix_cprover_names(line);
     replace_danger_execute_size(line);
+    replace_return_values(line);
     source+=line;
     source+='\n';
   }

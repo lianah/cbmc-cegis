@@ -148,7 +148,7 @@ void concrete_test_runnert::run_test(individualt &ind,
         command+=" 0";
     }
   }
-  for (const individualt::nondet_choices::value_type &x0 : ind.x0)
+  for (const individualt::x0t::value_type &x0 : ind.x0)
   {
     command+=" ";
     command+=integer2string(static_cast<unsigned int>(x0));

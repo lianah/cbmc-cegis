@@ -36,45 +36,18 @@ public:
 
     opcodet opcode;
     opst ops;
-
-    /*instructiont();
-    instructiont(const instructiont &other);
-    ~instructiont();
-    instructiont &operator=(const instructiont &other);*/
-
-    /**
-     * @brief
-     *
-     * @details
-     *
-     * @param n
-     *
-     * @return
-     */
-    opst::value_type &operator[](opst::size_type n);
-
-    /**
-     * @brief
-     *
-     * @details
-     *
-     * @param n
-     *
-     * @return
-     */
-    const opst::value_type &operator[](opst::size_type n) const;
   };
 
   typedef std::vector<instructiont> programt;
   typedef std::vector<programt> programst;
-  typedef std::vector<unsigned int> nondet_choices;
+  typedef std::vector<unsigned int> x0t;
   typedef size_t fitnesst;
 
   programst programs;
-  nondet_choices x0;
+  x0t x0;
   fitnesst fitness;
 };
 
-typedef std::deque<program_individualt> program_populationt;
+typedef std::vector<program_individualt> program_populationt;
 
 #endif /* CEGIS_GENETIC_INDIVIDUAL_H_ */

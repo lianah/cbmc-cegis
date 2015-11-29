@@ -94,6 +94,9 @@ public:
 
   void process(const candidatet &candidate)
   {
+    // XXX: Debug
+    //force_assertion_satisfaction(gf, config.get_number_of_loops());
+    // XXX: Debug
     force_invariant_and_guard_satisfaction(gf, config.get_number_of_loops());
   }
 

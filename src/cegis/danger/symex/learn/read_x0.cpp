@@ -1,7 +1,10 @@
 #include <algorithm>
 
+#include <util/bv_arithmetic.h>
+
 #include <goto-programs/goto_trace.h>
 
+#include <cegis/value/program_individual.h>
 #include <cegis/danger/value/danger_goto_solution.h>
 #include <cegis/danger/options/danger_program.h>
 #include <cegis/danger/util/danger_program_helper.h>
@@ -53,4 +56,18 @@ void danger_read_x0(danger_goto_solutiont &result, const danger_programt &prog,
   const goto_programt::targetst &x0=prog.x0_choices;
   const extract_x0_choice extract(result, trace);
   std::for_each(x0.begin(), x0.end(), extract);
+}
+
+void danger_read_x0(program_individualt &ind, const danger_programt &prog,
+    const goto_tracet &trace)
+{
+  danger_goto_solutiont tmp;
+  danger_read_x0(tmp, prog, trace);
+  program_individualt::x0t &x0=ind.x0;
+  for (const danger_goto_solutiont::nondet_choicest::value_type &choice : tmp.x0_choices)
+  {
+    const bv_arithmetict arith(choice);
+    const mp_integer::ullong_t value=arith.to_integer().to_ulong();
+    x0.push_back(static_cast<program_individualt::x0t::value_type>(value));
+  }
 }

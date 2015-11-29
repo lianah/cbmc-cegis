@@ -25,7 +25,6 @@ class cegis_statistics_wrappert
   learnt &learner;
   verifyt &verifier;
   mstreamt &os;
-  size_t max_solution_size;
   size_t num_ces;
   typedef std::chrono::milliseconds millisecondst;
   millisecondst learner_time;
@@ -59,8 +58,6 @@ public:
 
   const candidatet &next_candidate() const;
 
-  bool learn(size_t max_solution_size);
-
   template<class itert>
   bool learn(itert first, const itert &last);
 
@@ -75,6 +72,8 @@ public:
   bool has_counterexamples() const;
 
   bool success() const;
+
+  void set_solution_size_range(size_t min, size_t max);
 };
 
 #include "cegis_statistics_wrapper.inc"

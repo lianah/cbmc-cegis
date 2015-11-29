@@ -22,10 +22,10 @@ void __CPROVER_danger_execute(struct __CPROVER_danger_instructiont *program,
   {
 #define opcode program[i].opcode
     __CPROVER_assume(opcode <= __CPROVER_danger_max_instruction);
-#define op0_id program[i].op0
-#define op1_id program[i].op1
-#define op2_id program[i].op2
-#define max_op_index (__CPROVER_danger_number_of_vars + i)
+    const unsigned int op0_id=program[i].op0;
+    const unsigned int op1_id=program[i].op1;
+    const unsigned int op2_id=program[i].op2;
+    const unsigned int max_op_index=__CPROVER_danger_number_of_vars + i;
     __CPROVER_assume(op0_id < max_op_index && op1_id < max_op_index && op2_id < max_op_index
         && (op0_id >= __CPROVER_danger_number_of_consts || op1_id >= __CPROVER_danger_number_of_consts  || op2_id >= __CPROVER_danger_number_of_consts)
         && (opcode > 5u || op0_id <= op1_id) && (opcode < 21u || !op1_id)

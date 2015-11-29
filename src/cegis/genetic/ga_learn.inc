@@ -33,20 +33,6 @@ const typename ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::candidat
   return current_candidate;
 }
 
-template<class selectt, class mutatet, class crosst, class fitnesst,
-    class convertt>
-bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(
-    const size_t max_solution_size)
-{
-  if (!is_population_initialised)
-  {
-    select.init(pop);
-    is_population_initialised=true;
-  }
-  std::vector<counterexamplet> empty;
-  return learn(empty.end(), empty.end());
-}
-
 namespace
 {
 bool roll_rate(const int rate)
@@ -70,6 +56,9 @@ template<class selectt, class mutatet, class crosst, class fitnesst,
 bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::set_fitness(
     typename selectt::individualt &ind)
 {
+  // XXX: Specific optimisation for PLDI 2016 submissions.
+  mutate.post_process(ind);
+  // XXX: Specific optimisation for PLDI 2016 submissions.
   fitness.set_fitness(ind);
   typedef typename selectt::individualt::fitnesst target_fitnesst;
   const target_fitnesst target_fitness=fitness.get_target_fitness();
@@ -87,8 +76,6 @@ namespace
 typedef std::chrono::high_resolution_clock clockt;
 typedef clockt::time_point time_pointt;
 time_pointt program_startup=clockt::now();
-
-//size_t count=0;
 }
 // XXX: Debug
 
@@ -98,30 +85,16 @@ template<class itert>
 bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
     const itert &last)
 {
+  if (!is_population_initialised)
+  {
+    select.init(pop);
+    is_population_initialised=true;
+  }
+
   for (; first != last; ++first)
     fitness.add_test_case(*first);
 
-  // XXX: Debug
-  /*std::cout << "<target>" << fitness.get_target_fitness() << "</target>"
-   << std::endl;*/
-  // XXX: Debug
   const typename selectt::populationt::iterator it=fitness.init(pop);
-  // XXX: Debug
-  /*size_t max_fitness=0;
-   size_t min_fitness=fitness.get_target_fitness();
-   size_t fitness_sum=0;
-   for (const typename selectt::populationt::value_type &ind : pop)
-   {
-   const typename selectt::populationt::value_type::fitnesst f=ind.fitness;
-   max_fitness=std::max(max_fitness, f);
-   min_fitness=std::min(min_fitness, f);
-   fitness_sum+=f;
-   }
-   std::cout << "<max_fitness>" << max_fitness << "</max_fitness>" << std::endl;
-   std::cout << "<min_fitness>" << min_fitness << "</min_fitness>" << std::endl;
-   std::cout << "<avg_fitness>" << ((double) fitness_sum / (double) pop.size())
-   << "</avg_fitness>" << std::endl;*/
-  // XXX: Debug
   if (pop.end() != it)
   {
     convert.convert(current_candidate, *it);
@@ -129,13 +102,8 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
   }
 
   typename selectt::selectiont selection;
-  bool evolving=true;
-  while (evolving)
+  while (!is_evolving || is_evolving())
   {
-    // XXX: Debug
-    if (std::chrono::duration_cast<std::chrono::milliseconds>(clockt::now() - program_startup) > std::chrono::minutes(15))
-      return false;
-    // XXX: Debug
     selection=select.select(pop);
     if (should_mutate(options))
     {
@@ -151,8 +119,8 @@ bool ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::learn(itert first,
     } else
     {
       if (!selection.can_cross()) return false;
-      cross(selection.get_parents(), selection.get_children());
-      for (const typename populationt::iterator &child : selection.get_children())
+      cross(selection.parents, selection.children);
+      for (const typename populationt::iterator &child : selection.children)
         if (set_fitness(*child)) return true;
     }
   }
@@ -164,5 +132,52 @@ template<class selectt, class mutatet, class crosst, class fitnesst,
 void ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::show_candidate(
     messaget::mstreamt &os) const
 {
-  convert.show(os, current_candidate);
+  show_candidate(os, current_candidate);
+}
+
+template<class selectt, class mutatet, class crosst, class fitnesst,
+    class convertt>
+void ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::show_candidate(
+    messaget::mstreamt &os, const candidatet &candidate) const
+{
+  convert.show(os, candidate);
+}
+
+template<class selectt, class mutatet, class crosst, class fitnesst,
+    class convertt>
+void ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::set_termination_condition(
+    const std::function<bool(void)> is_evolving)
+{
+  this->is_evolving=is_evolving;
+}
+
+template<class selectt, class mutatet, class crosst, class fitnesst,
+    class convertt>
+void ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::set_solution_size_range(
+    const size_t min, const size_t max)
+{
+  // TODO: ga_learn currently gets this info directly from the options. Refactor!
+}
+
+template<class selectt, class mutatet, class crosst, class fitnesst,
+    class convertt>
+void ga_learnt<selectt, mutatet, crosst, fitnesst, convertt>::add_paragon(
+    typename selectt::individualt ind)
+{
+  const size_t num_sacrifices=std::max(size_t(1u), pop.size() / 200);
+  const size_t rounds=10u;
+  typename populationt::iterator sacrifice=pop.end();
+  for (size_t s=0; s < num_sacrifices; ++s)
+  {
+    for (size_t round=0; round < rounds; ++round)
+    {
+      typename populationt::iterator candidate=pop.begin();
+      std::advance(candidate, rand() % pop.size());
+      if (pop.end() == sacrifice || sacrifice->fitness < candidate->fitness)
+        sacrifice=candidate;
+    }
+    *sacrifice=ind;
+    set_fitness(*sacrifice);
+    assert(sacrifice->fitness == fitness.get_target_fitness());
+  }
 }

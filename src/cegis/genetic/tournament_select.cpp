@@ -4,10 +4,6 @@
 #include <cegis/genetic/random_individual.h>
 #include <cegis/genetic/tournament_select.h>
 
-// XXX: Debug
-//#include <iostream>
-// XXX: Debug
-
 #define MUTATION_OPS 2u
 
 bool tournament_selectt::selectiont::can_mutate() const
@@ -31,16 +27,6 @@ tournament_selectt::individualt &tournament_selectt::selectiont::mutation_lhs()
 const tournament_selectt::individualt &tournament_selectt::selectiont::mutation_rhs() const
 {
   return *parents.front();
-}
-
-const tournament_selectt::individualst &tournament_selectt::selectiont::get_parents() const
-{
-  return parents;
-}
-
-const tournament_selectt::individualst &tournament_selectt::selectiont::get_children() const
-{
-  return children;
 }
 
 tournament_selectt::tournament_selectt(random_individualt &random,
@@ -111,13 +97,6 @@ public:
     selection.children.push_back(daughter);
   }
 };
-
-// XXX: Debug
-/*size_t parent_fitness_sum=0;
-size_t parent_max_fitness=0;
-size_t parent_min_fitness=999999;
-size_t cross_count=0;*/
-// XXX: Debug
 }
 
 tournament_selectt::selectiont tournament_selectt::select(populationt &pop)
@@ -131,29 +110,5 @@ tournament_selectt::selectiont tournament_selectt::select(populationt &pop)
   }
   tournament_selectt::selectiont selection;
   arena.select(selection);
-  // XXX: Debug
-  /*const size_t ff=selection.parents[0]->fitness;
-  parent_max_fitness=std::max(parent_max_fitness, ff);
-  parent_min_fitness=std::min(parent_min_fitness, ff);
-  parent_fitness_sum+=ff;
-  const size_t mf=selection.parents[1]->fitness;
-  parent_max_fitness=std::max(parent_max_fitness, mf);
-  parent_min_fitness=std::min(parent_min_fitness, mf);
-  parent_fitness_sum+=mf;
-  if (++cross_count % 10000 == 0)
-  {
-    std::cout << "<parent_max_fitness>" << parent_max_fitness
-        << "</parent_max_fitness>" << std::endl;
-    std::cout << "<parent_min_fitness>" << parent_min_fitness
-        << "</parent_min_fitness>" << std::endl;
-    std::cout << "<parent_avg_fitness>"
-        << ((double) parent_fitness_sum / (double) cross_count) / 2.0
-        << "</parent_avg_fitness>" << std::endl;
-    parent_fitness_sum=0u;
-    parent_max_fitness=0u;
-    parent_min_fitness=999999u;
-    cross_count=0;
-  }*/
-  // XXX: Debug
   return selection;
 }

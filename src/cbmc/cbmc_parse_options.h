@@ -34,8 +34,8 @@ class optionst;
   "(xml-ui)(xml-interface)(vcd):" \
   "(smt1)(smt2)(fpa)(cvc3)(cvc4)(boolector)(yices)(z3)(opensmt)(mathsat)" \
   "(cegis)(cegis-seed):(cegis-root):(cegis-targets):(cegis-min-prog-size):(cegis-max-prog-size):(cegis-skolem):(cegis-ranking):" \
-  "(cegis-max-size):(cegis-statistics)(cegis-genetic)(cegis-genetic-rounds):(cegis-genetic-popsize):" \
-  "(cegis-genetic-mutation-rate):(cegis-genetic-replace-rate):(cegis-parallel-verify)(danger)" \
+  "(cegis-max-size):(cegis-statistics)(cegis-genetic)(cegis-genetic-rounds):(cegis-genetic-popsize):(cegis-match-select)" \
+  "(cegis-genetic-mutation-rate):(cegis-genetic-replace-rate):(cegis-limit-wordsize)(cegis-parallel-verify)(danger)" \
   "(no-sat-preprocessor)" \
   "(no-pretty-names)(beautify)" \
   "(floatbv)(fixedbv)" \

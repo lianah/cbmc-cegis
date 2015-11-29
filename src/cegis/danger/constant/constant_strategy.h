@@ -22,7 +22,7 @@ Author: Daniel Kroening, kroening@kroening.com
  *
  * @return
  */
-typedef void (*constant_strategyt)(class danger_programt &program,
+typedef size_t (*constant_strategyt)(class danger_programt &program,
     const size_t max_length);
 
 #endif /* CEGIS_DANGER_CONSTANT_STRATEGY_H_ */

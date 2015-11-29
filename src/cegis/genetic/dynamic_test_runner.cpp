@@ -63,8 +63,8 @@ void write_file(const char * const path, const std::string &content)
 #define SOURCE_FILE_PREFIX "concrete_test"
 #define SOURCE_FILE_SUFFIX ".c"
 #ifndef _WIN32
-//#define COMPILE_COMMAND "gcc -std=c99 -g0 -O2 -shared -rdynamic -fPIC "
-#define COMPILE_COMMAND "gcc -std=c99 -g3 -O0 -shared -rdynamic -fPIC "
+#define COMPILE_COMMAND "gcc -std=c99 -g0 -O2 -shared -rdynamic -fPIC "
+//#define COMPILE_COMMAND "gcc -std=c99 -g3 -O0 -shared -rdynamic -fPIC "
 #else
 #define COMPILE_COMMAND "gcc -std=c99 -g0 -O2 -shared "
 #endif
@@ -115,7 +115,8 @@ void prepare_library(dynamic_test_runnert::lib_handlet &handle,
 }
 }
 
-void dynamic_test_runnert::run_test(individualt &ind, const counterexamplet &ce)
+void dynamic_test_runnert::run_test(individualt &ind, const counterexamplet &ce,
+    const std::function<void(bool)> on_complete)
 {
   prepare_library(handle, fitness_tester, source_code_provider, shared_library);
   std::deque<unsigned int> args;
@@ -146,7 +147,7 @@ void dynamic_test_runnert::run_test(individualt &ind, const counterexamplet &ce)
         args.push_back(0u);
     }
   }
-  for (const individualt::nondet_choices::value_type &x0 : ind.x0)
+  for (const individualt::x0t::value_type &x0 : ind.x0)
     args.push_back(static_cast<unsigned int>(x0));
 
   const int argc=args.size();
@@ -154,7 +155,7 @@ void dynamic_test_runnert::run_test(individualt &ind, const counterexamplet &ce)
   for (int i=0; i < argc; ++i)
     argv[i]=args[i];
 
-  if (EXIT_SUCCESS == fitness_tester(argv)) ++ind.fitness;
+  on_complete(EXIT_SUCCESS == fitness_tester(argv));
 }
 
 void dynamic_test_runnert::join()

@@ -13,6 +13,8 @@
 #include <cegis/value/program_individual.h>
 #include <util/expr.h>
 
+typedef std::map<const program_individualt *, std::list<bool> > test_case_datat;
+
 /**
  * @brief
  *
@@ -29,7 +31,7 @@ public:
 private:
   test_runnert &test_runner;
   counterexamplest counterexamples;
-  std::map<individualt *, size_t> executed_test_cases;
+  test_case_datat test_case_data;
 
   populationt::iterator find_candidate(populationt &pop);
 public:
@@ -93,6 +95,15 @@ public:
    * @details
    */
   individualt::fitnesst get_target_fitness() const;
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @return
+   */
+  const test_case_datat &get_test_case_data() const;
 };
 
 #include "lazy_fitness.inc"

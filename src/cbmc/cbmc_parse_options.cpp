@@ -427,6 +427,9 @@ void cbmc_parse_optionst::get_command_line_options(optionst &options)
       max_prog_size=string2integer(cmdline.get_value("cegis-max-size")).to_ulong();
     options.set_option("cegis-max-size", max_prog_size);
     options.set_option("cegis-parallel-verify", cmdline.isset("cegis-parallel-verify"));
+    options.set_option("cegis-limit-wordsize", cmdline.isset("cegis-limit-wordsize"));
+    options.set_option("cegis-match-select", true);
+    //options.set_option("cegis-match-select", cmdline.isset("cegis-match-select"));
     options.set_option("cegis-statistics", cmdline.isset("cegis-statistics"));
     options.set_option("cegis-genetic", cmdline.isset("cegis-genetic"));
     unsigned int genetic_rounds=10u;
@@ -567,7 +570,8 @@ int cbmc_parse_optionst::doit()
     return 7;
 
   if(cmdline.isset("danger"))
-    return run_danger(options, result(), symbol_table, goto_functions);
+    try{return run_danger(options, result(), symbol_table, goto_functions);}
+  catch(const char *ex){std::cout << "<ex>" << ex << "</ex>" << std::endl; throw;}
 
   // do actual BMC
   return do_bmc(bmc, goto_functions);

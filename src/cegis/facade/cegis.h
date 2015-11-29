@@ -31,22 +31,19 @@ int run_cegis(learnt &learn, oraclet &oracle, preproct &preproc, seedt &seed, si
 {
   preproc();
   const size_t min_size=preproc.get_min_solution_size();
-  for (size_t max_solution_length=min_size; max_solution_length <= max_size ; ++max_solution_length)
+  preproc(min_size);
+  learn.set_solution_size_range(min_size, max_size);
+  learn.seed(seed);
+  do
   {
-    preproc(max_solution_length);
-    learn.seed(seed);
-    learn.learn(max_solution_length);
-    do
-    {
-      const typename learnt::candidatet &candidate=learn.next_candidate();
-      oracle.verify(candidate);
-    } while (oracle.has_counterexamples()
-          && learn.learn(oracle.counterexamples_begin(), oracle.counterexamples_end()));
-    if (oracle.success())
-    {
-      learn.show_candidate(os);
-      return 0;
-    }
+    const typename learnt::candidatet &candidate=learn.next_candidate();
+    oracle.verify(candidate);
+  } while (oracle.has_counterexamples()
+        && learn.learn(oracle.counterexamples_begin(), oracle.counterexamples_end()));
+  if (oracle.success())
+  {
+    learn.show_candidate(os);
+    return 0;
   }
   return 10;
 }

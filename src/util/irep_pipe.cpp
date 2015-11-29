@@ -11,14 +11,14 @@
 
 namespace
 {
-const char IREP_PIPE[]="irep_pipe";
+#define IREP_PIPE "irep_pipe"
 
 void open_pipe(int filedes[2])
 {
 #ifndef _WIN32
   if (pipe(filedes))
   {
-    perror(IREP_PIPE);
+    perror(IREP_PIPE " open");
     throw std::runtime_error("Error creating pipe.");
   }
 #endif
@@ -97,7 +97,7 @@ void irep_pipet::send(const irept &sdu) const
     const ssize_t result=write(fd[1u], offset + written, size - written);
     if (result == -1)
     {
-      perror(IREP_PIPE);
+      perror(IREP_PIPE " write");
       throw std::runtime_error("Error writing pipe.");
     }
     written+=result;
@@ -124,7 +124,7 @@ void irep_pipet::receive(irept &sdu) const
     const ssize_t result=read(fd[0u], buffer, sizeof(buffer));
     if (result == -1)
     {
-      perror(IREP_PIPE);
+      perror(IREP_PIPE " read");
       throw std::runtime_error("Error reading pipe.");
     }
     if (result > 0) data.append(buffer, result);

@@ -24,13 +24,14 @@
  */
 class danger_learn_configt
 {
+public:
   /**
    * @brief
    *
    * @details
    */
   typedef std::map<const irep_idt, size_t> danger_variable_idst;
-
+private:
   const danger_programt &original_program;
   danger_programt program;
   danger_variable_idst var_ids;
@@ -84,6 +85,15 @@ public:
    *
    * @details
    *
+   * @param word_width_in_bits
+   */
+  void set_word_width(size_t word_width_in_bits);
+
+  /**
+   * @brief
+   *
+   * @details
+   *
    * @return
    */
   const symbol_tablet &get_symbol_table() const;
@@ -96,6 +106,15 @@ public:
    * @return
    */
   const goto_functionst &get_goto_functions() const;
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @return
+   */
+  const danger_programt &get_danger_program() const;
 
   /**
    * @brief
@@ -118,6 +137,15 @@ public:
    * @param candidate
    */
   void show_candidate(messaget::mstreamt &os, const candidatet &candidate);
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @return
+   */
+  const danger_variable_idst &get_vars() const;
 
   /**
    * @brief

@@ -91,11 +91,11 @@ std::string get_prefix(const size_t num_vars, const size_t num_consts,
   prefix+=integer2string(num_vars);
   prefix+="\n#define __CPROVER_danger_number_of_consts ";
   prefix+=integer2string(num_consts);
-  prefix+="\n#define __CPROVER_danger_number_of_ops ";
-  prefix+=integer2string(num_vars + max_solution_size - 1);
-  prefix+="\n#define __CPROVER_danger_max_solution_size ";
+  prefix+="u\n#define __CPROVER_danger_number_of_ops ";
+  prefix+=integer2string(num_vars + max_solution_size);
+  prefix+="u\n#define __CPROVER_danger_max_solution_size ";
   prefix+=integer2string(max_solution_size);
-  return prefix+='\n';
+  return prefix+="u\n";
 }
 }
 

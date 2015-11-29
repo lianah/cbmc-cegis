@@ -3,8 +3,8 @@ typedef std::chrono::high_resolution_clock clockt;
 template<class learnt, class verifyt, class mstreamt>
 cegis_statistics_wrappert<learnt, verifyt, mstreamt>::cegis_statistics_wrappert(
     learnt &learner, verifyt &verifier, mstreamt &os) :
-    learner(learner), verifier(verifier), os(os), max_solution_size(1), num_ces(
-        0), learner_time(0), verifier_time(0), start_time(clockt::now())
+    learner(learner), verifier(verifier), os(os), num_ces(0), learner_time(0), verifier_time(
+        0), start_time(clockt::now())
 {
 }
 
@@ -27,14 +27,6 @@ const typename cegis_statistics_wrappert<learnt, verifyt, mstreamt>::candidatet 
   return learner.next_candidate();
 }
 
-template<class learnt, class verifyt, class mstreamt>
-bool cegis_statistics_wrappert<learnt, verifyt, mstreamt>::learn(
-    size_t max_solution_size)
-{
-  this->max_solution_size=max_solution_size;
-  return learner.learn(max_solution_size);
-}
-
 typedef clockt::time_point time_pointt;
 
 template<class learnt, class verifyt, class mstreamt>
@@ -46,7 +38,7 @@ bool cegis_statistics_wrappert<learnt, verifyt, mstreamt>::learn(itert first,
   time_pointt before=clockt::now();
   const bool result=learner.learn(first, last);
   time_pointt after=clockt::now();
-  learner_time+=std::chrono::duration_cast<millisecondst>(after - before);
+  learner_time+=std::chrono::duration_cast < millisecondst > (after - before);
   return result;
 }
 
@@ -55,13 +47,16 @@ void cegis_statistics_wrappert<learnt, verifyt, mstreamt>::show_candidate(
     messaget::mstreamt &os) const
 {
   os << "<stats>" << messaget::endl;
-  os << "  <max_solution_size>" << max_solution_size << "</max_solution_size>" << messaget::endl;
   os << "  <num_ces>" << num_ces << "</num_ces>" << messaget::endl;
-  os << "  <learning_time>" << learner_time.count() << "</learning_time>" << messaget::endl;
-  os << "  <verifying_time>" << verifier_time.count() << "</verifying_time>" << messaget::endl;
+  os << "  <learning_time>" << learner_time.count() << "</learning_time>"
+      << messaget::endl;
+  os << "  <verifying_time>" << verifier_time.count() << "</verifying_time>"
+      << messaget::endl;
   const time_pointt now=clockt::now();
-  const millisecondst full_time(std::chrono::duration_cast<millisecondst>(now - start_time));
-  os << "  <full_time>" << full_time.count() << "</full_time>" << messaget::endl;
+  const millisecondst full_time(
+      std::chrono::duration_cast < millisecondst > (now - start_time));
+  os << "  <full_time>" << full_time.count() << "</full_time>"
+      << messaget::endl;
   os << "  <candidate>" << messaget::endl;
   learner.show_candidate(os);
   os << "  </candidate>" << messaget::endl;
@@ -75,7 +70,7 @@ void cegis_statistics_wrappert<learnt, verifyt, mstreamt>::verify(
   time_pointt before=clockt::now();
   verifier.verify(candidate);
   time_pointt after=clockt::now();
-  verifier_time+=std::chrono::duration_cast<millisecondst>(after - before);
+  verifier_time+=std::chrono::duration_cast < millisecondst > (after - before);
 }
 
 template<class learnt, class verifyt, class mstreamt>
@@ -102,4 +97,11 @@ template<class learnt, class verifyt, class mstreamt>
 bool cegis_statistics_wrappert<learnt, verifyt, mstreamt>::success() const
 {
   return verifier.success();
+}
+
+template<class learnt, class verifyt, class mstreamt>
+void cegis_statistics_wrappert<learnt, verifyt, mstreamt>::set_solution_size_range(
+    const size_t min, const size_t max)
+{
+  learner.set_solution_size_range(min, max);
 }

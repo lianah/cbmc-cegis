@@ -60,6 +60,15 @@ public:
    * @param lhs
    */
   void havoc(individualt &ind) const;
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @param ind
+   */
+  void post_process(program_individualt &ind) const;
 };
 
 #endif /* CEGIS_GENETIC_RANDOM_MUTATE_H_ */

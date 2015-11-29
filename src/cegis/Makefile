@@ -12,15 +12,15 @@ SRC = danger/util/danger_program_helper.cpp danger/util/copy_instructions.cpp \
       danger/symex/learn/replace_operators.cpp danger/symex/learn/solution_factory.cpp \
       danger/symex/learn/read_x0.cpp danger/symex/learn/add_x0_placeholders.cpp \
       danger/symex/learn/danger_learn_config.cpp danger/symex/learn/danger_body_provider.cpp \
+      danger/symex/learn/encoded_danger_learn_config.cpp \
       danger/symex/verify/insert_candidate.cpp danger/symex/verify/insert_constraint.cpp \
       danger/symex/verify/extract_counterexample.cpp danger/symex/verify/restrict_counterexamples.cpp \
       danger/symex/verify/danger_verify_config.cpp danger/symex/verify/parallel_danger_verifier.cpp \
-      danger/symex/verify/parallel_danger_verify_task.cpp \
-      danger/symex/fitness/danger_fitness_config.cpp \
-      seed/null_seed.cpp seed/literals_seed.cpp value/program_individual.cpp \
-      genetic/tournament_select.cpp genetic/instruction_set_info_factory.cpp \
-      genetic/random_mutate.cpp genetic/random_cross.cpp genetic/random_individual.cpp \
-      genetic/genetic_constant_strategy.cpp instructions/instruction_set_factory.cpp \
+      danger/symex/verify/parallel_danger_verify_task.cpp danger/symex/fitness/danger_fitness_config.cpp \
+      wordsize/restrict_bv_size.cpp value/program_individual_serialisation.cpp \
+      seed/null_seed.cpp seed/literals_seed.cpp genetic/tournament_select.cpp genetic/match_select.cpp \
+      genetic/instruction_set_info_factory.cpp genetic/random_mutate.cpp genetic/random_cross.cpp \
+      genetic/random_individual.cpp genetic/genetic_constant_strategy.cpp instructions/instruction_set_factory.cpp \
       genetic/concrete_test_runner.cpp genetic/dynamic_test_runner.cpp \
       ../goto-instrument/dump_c.cpp ../goto-instrument/goto_program2code.cpp
 

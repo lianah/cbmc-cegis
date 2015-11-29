@@ -63,8 +63,10 @@ public:
    *
    * @param ind
    * @param ce
+   * @param on_complete
    */
-  void run_test(individualt &ind, const counterexamplet &ce);
+  void run_test(individualt &ind, const counterexamplet &ce,
+      std::function<void(bool)> on_complete);
 
   /**
    * @brief

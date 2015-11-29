@@ -1,5 +1,6 @@
 int main(void) {
-  unsigned int x, y;
+  unsigned int x;
+  unsigned int y;
 
   x = 0;
   y = 1;
