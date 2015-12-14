@@ -68,7 +68,17 @@ TODOs:
 * move counterexamples before init stage (right after declaration) in GOTO-learn
 * synth-learn-config: no x0 choices to be read from trace
 * FIXME: verifier CEX does not respect assume?
-
+* shakira transformers - make them destructive
+  * need to be able to say if (is_null(x->next)) 
+* [DONE] shakira code - remove extra headers
+* fix: loop normalization code too specific (iterate over body)
+  * checkout: ./analyses/natural_loops.h
+* handle post-loop instructions: move assertion post body loop:
+  	 x = NONDET
+	 Ix = 
+	 Gx = 
+	 [post-loop]
+	 Ax = 
 
 =====================================================
 
