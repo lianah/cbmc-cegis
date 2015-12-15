@@ -87,15 +87,15 @@ void bmct::error_trace()
   switch(ui)
   {
   case ui_message_handlert::PLAIN:
-    std::cout << "\n" << "Counterexample:" << "\n";
-    show_goto_trace(std::cout, ns, goto_trace);
+    result() << "\n" << "Counterexample:" << "\n";
+    show_goto_trace(result(), ns, goto_trace);
     break;
   
   case ui_message_handlert::XML_UI:
     {
       xmlt xml;
       convert(ns, goto_trace, xml);
-      std::cout << xml << "\n";
+      result() << xml << "\n";
     }
     break;
   
@@ -110,7 +110,7 @@ void bmct::error_trace()
     convert(ns, goto_trace, cex_graph);
 
     if(graphml=="-")
-      write_graphml(cex_graph, std::cout);
+      write_graphml(cex_graph, result());
     else
     {
       std::ofstream out(graphml.c_str());
