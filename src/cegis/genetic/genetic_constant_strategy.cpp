@@ -33,7 +33,7 @@ size_t genetic_constant_strategy(danger_programt &prog, const size_t max_length)
 {
   symbol_tablet &st=prog.st;
   goto_functionst &gf=prog.gf;
-  goto_programt::targett pos=prog.danger_range.begin;
+  goto_programt::targett pos=prog.invariant_range.begin;
   const std::vector<constant_exprt> literals(collect_literal_constants(prog));
   size_t max_word_width=0u;
   size_t const_index=0u;

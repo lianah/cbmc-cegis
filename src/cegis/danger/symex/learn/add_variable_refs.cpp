@@ -85,7 +85,7 @@ void link_user_program_variables(danger_programt &prog,
   danger_variable_idst to_instrument(var_ids);
   goto_programt &body=get_danger_body(prog.gf);
   goto_programt::instructionst &instrs=body.instructions;
-  const goto_programt::targett end=prog.danger_range.end;
+  const goto_programt::targett end=prog.invariant_range.end;
   const symbol_tablet &st=prog.st;
   for (goto_programt::targett it=instrs.begin(); it != end; ++it)
   {
@@ -110,7 +110,7 @@ void link_user_program_variables(danger_programt &prog,
       break;
     }
   }
-  const goto_programt::targett range_begin(prog.danger_range.begin);
+  const goto_programt::targett range_begin(prog.invariant_range.begin);
   goto_programt::targett pos=pred(range_begin);
   danger_variable_idst::const_iterator it;
   for (it=to_instrument.begin(); it != to_instrument.end(); ++it)
@@ -170,7 +170,7 @@ void link_skolem(danger_programt &prog, const size_t num_user_vars,
     const size_t user_vars, const size_t max_solution_size,
     const danger_programt::loopt &loop)
 {
-  const goto_programt::targetst &sklm=loop.meta_variables.Sx;
+  const goto_programt::targetst &sklm=loop.danger_meta_variables.Sx;
   if (sklm.empty()) return;
   const symbol_tablet &st=prog.st;
   goto_programt &body=get_danger_body(prog.gf);
@@ -207,13 +207,14 @@ public:
 
   void operator()(const danger_programt::loopt &loop) const
   {
-    const danger_programt::meta_vars_positionst &meta=loop.meta_variables;
+    const invariant_programt::meta_vars_positionst &im=loop.meta_variables;
+    const danger_programt::danger_meta_vars_positionst &dm=loop.danger_meta_variables;
     const link_single_resultt inv(prog.st, prog.gf, user_vars, max_size);
-    inv(meta.Dx);
-    inv(meta.Dx_prime);
+    inv(im.Ix);
+    inv(im.Ix_prime);
     const link_single_resultt &link_ranking=inv; // XXX: Lexicographical ranking?
-    std::for_each(meta.Rx.begin(), meta.Rx.end(), link_ranking);
-    std::for_each(meta.Rx_prime.begin(), meta.Rx_prime.end(), link_ranking);
+    std::for_each(dm.Rx.begin(), dm.Rx.end(), link_ranking);
+    std::for_each(dm.Rx_prime.begin(), dm.Rx_prime.end(), link_ranking);
     link_skolem(prog, user_vars, user_vars, max_size, loop);
   }
 };
@@ -224,7 +225,7 @@ void link_meta_variables(danger_programt &prog, const size_t user_vars,
   const symbol_tablet &st=prog.st;
   goto_functionst &gf=prog.gf;
   const link_single_resultt single(st, gf, user_vars, max_solution_size);
-  single(prog.Dx0);
+  single(prog.Ix0);
   const danger_programt::loopst &loops=prog.loops;
   const link_meta_variablest link(prog, user_vars, max_solution_size);
   std::for_each(loops.begin(), loops.end(), link);

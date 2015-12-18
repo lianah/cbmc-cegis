@@ -133,22 +133,23 @@ public:
   void operator()(const candidatet::danger_programt &solution)
   {
     const danger_programt::loopt &loop=loops.at(loop_id);
-    const danger_programt::meta_vars_positionst &vars=loop.meta_variables;
-    insert_program(body, vars.Dx, solution.invariant);
-    const irep_idt &Dx=get_affected_variable(*vars.Dx);
-    const irep_idt &Dx_prime=get_affected_variable(*vars.Dx_prime);
-    insert_program(body, vars.Dx_prime, solution.invariant, Dx, Dx_prime);
-    if (!vars.Rx.empty() && !vars.Rx_prime.empty())
+    const invariant_programt::meta_vars_positionst &im=loop.meta_variables;
+    const danger_programt::danger_meta_vars_positionst &dm=loop.danger_meta_variables;
+    insert_program(body, im.Ix, solution.invariant);
+    const irep_idt &Dx=get_affected_variable(*im.Ix);
+    const irep_idt &Dx_prime=get_affected_variable(*im.Ix_prime);
+    insert_program(body, im.Ix_prime, solution.invariant, Dx, Dx_prime);
+    if (!dm.Rx.empty() && !dm.Rx_prime.empty())
     {
-      const goto_programt::targett Rx=*vars.Rx.rbegin();
-      insert_program(body, *vars.Rx.rbegin(), solution.ranking);
+      const goto_programt::targett Rx=*dm.Rx.rbegin();
+      insert_program(body, *dm.Rx.rbegin(), solution.ranking);
       const irep_idt &Rx_n=get_affected_variable(*Rx);
-      const goto_programt::targett Rx_prime=*vars.Rx_prime.rbegin();
+      const goto_programt::targett Rx_prime=*dm.Rx_prime.rbegin();
       const irep_idt &Rx_pn=get_affected_variable(*Rx_prime);
       insert_program(body, Rx_prime, solution.ranking, Rx_n, Rx_pn); // XXX: Lexicographical ranking?
     }
-    if (!vars.Sx.empty())
-      insert_program(body, *vars.Sx.rbegin(), solution.skolem);
+    if (!dm.Sx.empty())
+      insert_program(body, *dm.Sx.rbegin(), solution.skolem);
   }
 };
 
@@ -160,7 +161,7 @@ void insert_programs(danger_programt &prog, const candidatet &candidate)
   const goto_programt::instructionst &first_inv=progs.begin()->invariant;
   const std::string D0x(get_danger_meta_name(get_Dx(0)));
   const std::string Dx0(get_danger_meta_name(get_Dx0()));
-  insert_program(body, prog.Dx0, first_inv, D0x, Dx0);
+  insert_program(body, prog.Ix0, first_inv, D0x, Dx0);
   const insert_danger_programt insert(prog, body);
   std::for_each(progs.begin(), progs.end(), insert);
 }

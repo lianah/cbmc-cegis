@@ -32,7 +32,7 @@ void store_x0_choices_for_range(danger_programt &program,
 
 void store_x0_choices(danger_programt &program)
 {
-  goto_programt::targett begin=program.danger_range.begin;
+  goto_programt::targett begin=program.invariant_range.begin;
   goto_programt::targett end;
   typedef danger_programt::loopst loopst;
   const loopst &loops=program.loops;
@@ -42,6 +42,6 @@ void store_x0_choices(danger_programt &program)
     store_x0_choices_for_range(program, begin, end);
     begin=it->body.end;
   }
-  end=program.danger_range.end;
+  end=program.invariant_range.end;
   store_x0_choices_for_range(program, begin, end);
 }

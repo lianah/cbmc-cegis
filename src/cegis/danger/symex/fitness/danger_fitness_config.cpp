@@ -36,9 +36,9 @@ namespace
 void fix_quantifiers(const danger_programt &org_prog, danger_programt &new_prog,
     goto_programt::targetst &quantifiers)
 {
-  goto_programt::const_targett org_off=org_prog.loops.front().meta_variables.Dx;
+  goto_programt::const_targett org_off=org_prog.loops.front().meta_variables.Ix;
   --org_off;
-  goto_programt::targett new_off=new_prog.loops.front().meta_variables.Dx;
+  goto_programt::targett new_off=new_prog.loops.front().meta_variables.Ix;
   --new_off;
   goto_programt::targett::difference_type diff;
   for (goto_programt::targett &q : quantifiers)

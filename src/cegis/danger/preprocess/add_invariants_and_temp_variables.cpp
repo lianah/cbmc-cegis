@@ -19,7 +19,7 @@ void create_tmp_variables(danger_programt &program,
   symbol_tablet &st=program.st;
   goto_functionst &gf=program.gf;
   goto_programt &body=get_danger_body(gf);
-  goto_programt::targett insert_after=program.danger_range.begin;
+  goto_programt::targett insert_after=program.invariant_range.begin;
   --insert_after;
   //const goto_programt::targett first(insert_after);
   const typet type(danger_meta_type());
@@ -27,7 +27,7 @@ void create_tmp_variables(danger_programt &program,
   {
     const std::string base_name(get_tmp(i));
     insert_after=declare_danger_variable(st, gf, insert_after, base_name, type);
-    if (i == 0) move_labels(body, program.danger_range.begin, insert_after);
+    if (i == 0) move_labels(body, program.invariant_range.begin, insert_after);
   }
 }
 
@@ -37,7 +37,7 @@ void createDx0(danger_programt &prog)
   assert(!loops.empty() && "At least one loop required.");
   const typet type(danger_meta_type());
   const danger_programt::loopt &first=*loops.begin();
-  goto_programt::targett &meta=prog.Dx0;
+  goto_programt::targett &meta=prog.Ix0;
   goto_programt::targett pos=first.body.begin;
   meta=declare_danger_variable(prog.st, prog.gf, --pos, get_Dx0(), type);
   move_labels(get_danger_body(prog.gf), first.body.begin, meta);
@@ -49,12 +49,12 @@ class create_skolem_meta_variablest
   goto_functionst &gf;
   const size_t loop_id;
   const typet type;
-  danger_programt::meta_vars_positionst &meta;
+  danger_programt::danger_meta_vars_positionst &meta;
   goto_programt::targett pos;
   size_t skid;
 public:
   create_skolem_meta_variablest(symbol_tablet &st, goto_functionst &gf,
-      const size_t loop_id, danger_programt::meta_vars_positionst &meta,
+      const size_t loop_id, danger_programt::danger_meta_vars_positionst &meta,
       const goto_programt::targett &pos) :
       st(st), gf(gf), loop_id(loop_id), type(danger_meta_type()), meta(meta), pos(
           pos), skid(0)
@@ -87,33 +87,34 @@ public:
   void operator()(danger_programt::loopt &loop)
   {
     const typet type(danger_meta_type());
-    danger_programt::meta_vars_positionst &meta=loop.meta_variables;
+    invariant_programt::meta_vars_positionst &im=loop.meta_variables;
+    danger_programt::danger_meta_vars_positionst &dm=loop.danger_meta_variables;
     goto_programt::targett pos=loop.body.begin;
     const std::string inv(get_Dx(loop_id));
-    meta.Dx=declare_danger_variable(st, gf, --pos, inv, type);
+    im.Ix=declare_danger_variable(st, gf, --pos, inv, type);
     goto_programt &body=get_danger_body(gf);
-    move_labels(body, loop.body.begin, meta.Dx);
+    move_labels(body, loop.body.begin, im.Ix);
     const std::string guard(get_Gx(loop_id));
-    meta.Gx=declare_danger_variable(st, gf, meta.Dx, guard, type);
-    pos=assign_danger_variable(st, gf, meta.Gx, guard, loop.guard);
+    im.Gx=declare_danger_variable(st, gf, im.Ix, guard, type);
+    pos=assign_danger_variable(st, gf, im.Gx, guard, loop.guard);
     const size_t ranking_count=1; // XXX: Lexicographical ranking?
     for (size_t i=0; i < ranking_count; ++i)
     {
       pos=declare_danger_variable(st, gf, pos, get_Rx(loop_id, i), type);
-      meta.Rx.push_back(pos);
+      dm.Rx.push_back(pos);
     }
     const goto_programt::targetst &sklm=loop.skolem_choices;
-    const create_skolem_meta_variablest create_sklm(st, gf, loop_id, meta, pos);
+    const create_skolem_meta_variablest create_sklm(st, gf, loop_id, dm, pos);
     std::for_each(sklm.begin(), sklm.end(), create_sklm);
     pos=loop.body.end;
     const std::string x_prime(get_Dx_prime(loop_id));
-    meta.Dx_prime=declare_danger_variable(st, gf, --pos, x_prime, type);
-    move_labels(body, loop.body.end, meta.Dx_prime);
-    pos=meta.Dx_prime;
+    im.Ix_prime=declare_danger_variable(st, gf, --pos, x_prime, type);
+    move_labels(body, loop.body.end, im.Ix_prime);
+    pos=im.Ix_prime;
     for (size_t i=0; i < ranking_count; ++i)
     {
       pos=declare_danger_variable(st, gf, pos, get_Rx_prime(loop_id, i), type);
-      meta.Rx_prime.push_back(pos);
+      dm.Rx_prime.push_back(pos);
     }
     ++loop_id;
   }

@@ -71,7 +71,7 @@ goto_programt::targett add_ce_loop(danger_programt &prog, const size_t ces_size)
 {
   symbol_tablet &st=prog.st;
   goto_functionst &gf=prog.gf;
-  goto_programt::targett pos=prog.danger_range.begin;
+  goto_programt::targett pos=prog.invariant_range.begin;
   const typet size_type(unsigned_int_type());
   pos=declare_danger_variable(st, gf, --pos, X_INDEX, size_type);
   const constant_exprt first_index(from_integer(0, size_type));
@@ -79,7 +79,7 @@ goto_programt::targett add_ce_loop(danger_programt &prog, const size_t ces_size)
   goto_programt::targett loop_head=pos;
   (++loop_head)->labels.push_back(X_LABEL);
   goto_programt &body=get_danger_body(gf);
-  pos=insert_before_preserve_labels(body, prog.danger_range.end);
+  pos=insert_before_preserve_labels(body, prog.invariant_range.end);
   //pos=body.insert_before(prog.danger_range.end);
   pos->type=goto_program_instruction_typet::ASSIGN;
   pos->source_location=default_danger_source_location();
@@ -122,7 +122,7 @@ public:
   {
     const danger_programt::loopst &loops=prog.loops;
     assert(!loops.empty());
-    pos=loops.begin()->meta_variables.Dx;
+    pos=loops.begin()->meta_variables.Ix;
     ++pos;
     pos=get_danger_body(gf).insert_after(pos);
     pos->type=goto_program_instruction_typet::GOTO;
@@ -158,7 +158,7 @@ void assign_ce_values(danger_programt &prog, const counterexamplet &ce,
 
 void create_constraints(danger_programt &prog)
 {
-  goto_programt::targett pos=prog.danger_range.end;
+  goto_programt::targett pos=prog.invariant_range.end;
   std::advance(pos, -3);
   goto_programt &body=get_danger_body(prog.gf);
   pos=body.insert_after(pos);
@@ -189,7 +189,7 @@ void danger_add_learned_counterexamples(danger_programt &prog,
   std::for_each(ces.begin(), ces.end(), create_values);
   symbol_tablet &st=prog.st;
   goto_functionst &gf=prog.gf;
-  goto_programt::targett pos=prog.danger_range.begin;
+  goto_programt::targett pos=prog.invariant_range.begin;
   declare_x_arrays(st, gf, --pos, vals);
   const goto_programt::targett loop_end=add_ce_loop(prog, ces.size());
   assign_ce_values(prog, prototype, ces_count);

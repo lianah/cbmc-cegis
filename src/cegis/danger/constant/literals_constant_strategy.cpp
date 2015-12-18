@@ -83,7 +83,7 @@ std::vector<constant_exprt> collect_literal_constants(
   const compare_constantt compare(program);
   constant_sett constants(compare);
   const constant_expr_visitort visitor(program, constants);
-  const danger_programt::program_ranget &range=program.danger_range;
+  const danger_programt::program_ranget &range=program.invariant_range;
   std::for_each(range.begin, range.end, visitor);
   return std::vector<constant_exprt>(constants.begin(), constants.end());
 }

@@ -81,12 +81,13 @@ public:
   {
     const symbol_tablet &st=prog.st;
     goto_functionst &gf=prog.gf;
-    const danger_programt::meta_vars_positionst &meta=loop.meta_variables;
-    pos=add_program(prog, pos, max_solution_size, meta.Dx);
-    const std::string dx_prog_name=get_prog_name(st, meta.Dx);
-    execute(st, gf, max_solution_size, meta.Dx_prime, dx_prog_name);
-    const goto_programt::targetst &rx=meta.Rx;
-    const goto_programt::targetst &rx_prime=meta.Rx_prime;
+    const invariant_programt::meta_vars_positionst &im=loop.meta_variables;
+    const danger_programt::danger_meta_vars_positionst &dm=loop.danger_meta_variables;
+    pos=add_program(prog, pos, max_solution_size, im.Ix);
+    const std::string dx_prog_name=get_prog_name(st, im.Ix);
+    execute(st, gf, max_solution_size, im.Ix_prime, dx_prog_name);
+    const goto_programt::targetst &rx=dm.Rx;
+    const goto_programt::targetst &rx_prime=dm.Rx_prime;
     if (!rx.empty() && !rx_prime.empty())
     {
       const goto_programt::targett rx_prog=*rx.rbegin();
@@ -94,7 +95,7 @@ public:
       const std::string rx_prog_name=get_prog_name(st, rx_prog);
       execute(st, gf, max_solution_size, *rx_prime.rbegin(), rx_prog_name);
     }
-    const goto_programt::targetst &sx=meta.Sx;
+    const goto_programt::targetst &sx=dm.Sx;
     if (!sx.empty())
       pos=add_program(prog, pos, max_solution_size, *sx.rbegin());
   }
@@ -106,11 +107,11 @@ void danger_add_programs_to_learn(danger_programt &prog,
 {
   const danger_programt::loopst &loops=prog.loops;
   if (loops.empty()) return;
-  goto_programt::targett pos=prog.danger_range.begin;
+  goto_programt::targett pos=prog.invariant_range.begin;
   const declare_programst declare_progs(prog, max_solution_size, --pos);
   std::for_each(loops.begin(), loops.end(), declare_progs);
   const danger_programt::loopt first_loop=*loops.begin();
   const symbol_tablet &st=prog.st;
-  const std::string D0=get_prog_name(st, first_loop.meta_variables.Dx);
-  execute(st, prog.gf, max_solution_size, prog.Dx0, D0);
+  const std::string D0=get_prog_name(st, first_loop.meta_variables.Ix);
+  execute(st, prog.gf, max_solution_size, prog.Ix0, D0);
 }

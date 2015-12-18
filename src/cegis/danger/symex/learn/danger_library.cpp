@@ -78,7 +78,7 @@ goto_programt::targett init_array(const symbol_tablet &st, goto_programt &body,
 void set_init_values(danger_programt &prog)
 {
   goto_programt &body=get_danger_body(prog.gf);
-  goto_programt::targett pos=prog.danger_range.begin;
+  goto_programt::targett pos=prog.invariant_range.begin;
   const symbol_tablet &st=prog.st;
   pos=init_array(st, body, DANGER_OPS, --pos);
   pos=init_array(st, body, DANGER_RESULT_OPS, pos);

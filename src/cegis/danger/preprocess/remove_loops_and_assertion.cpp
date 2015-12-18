@@ -13,7 +13,7 @@ bool handle_assertion_removal(danger_programt &program,
   const namespacet ns(program.st);
   assert(program.assertion.id().empty());
   program.assertion=instr.guard;
-  goto_programt::targett &end=program.danger_range.end;
+  goto_programt::targett &end=program.invariant_range.end;
   end=target;
   --end;
   goto_programt::targett &last_loop_end=program.loops.back().body.end;
@@ -58,7 +58,7 @@ void danger_remove_loops_and_assertion(danger_programt &program)
 {
   goto_programt &body=get_danger_body(program.gf);
   goto_programt::instructionst &instrs=body.instructions;
-  program.danger_range.begin=instrs.begin();
+  program.invariant_range.begin=instrs.begin();
   for (goto_programt::targett it=instrs.begin(); it != instrs.end(); ++it)
   {
     if (handle_assertion_removal(program, instrs, it)) break;

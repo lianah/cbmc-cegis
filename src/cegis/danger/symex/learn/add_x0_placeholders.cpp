@@ -39,7 +39,7 @@ public:
     std::string
     base_name(DANGER_X0_PLACEHOLDER_PREFIX);
     base_name+=id2string(x0_name);
-    goto_programt::targett pos=prog.danger_range.begin;
+    goto_programt::targett pos=prog.invariant_range.begin;
     const typet &type=get_type(target);
     declare_danger_variable(st, gf, --pos, base_name, type);
     const std::string full_name(get_danger_meta_name (base_name));

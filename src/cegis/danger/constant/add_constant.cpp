@@ -67,7 +67,7 @@ namespace
 void add_danger_constant(danger_programt &prog, const std::string &name,
     const exprt &value, typet type)
 {
-  goto_programt::targett pos=prog.danger_range.begin;
+  goto_programt::targett pos=prog.invariant_range.begin;
   while (is_builtin(pos))
     ++pos;
   type.set(ID_C_constant, true);
@@ -82,7 +82,7 @@ void add_danger_constant(danger_programt &prog, const std::string &name,
 void add_danger_constant(danger_programt &prog, const std::string &name,
     const exprt &value)
 {
-  goto_programt::targett pos=prog.danger_range.begin;
+  goto_programt::targett pos=prog.invariant_range.begin;
   while (is_builtin(pos))
     ++pos;
   typet type=value.type();

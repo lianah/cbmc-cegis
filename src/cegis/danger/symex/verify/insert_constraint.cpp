@@ -77,8 +77,8 @@ void collect_counterexample_variables(danger_symbol_set &vars,
   const counterexample_variable_collectort collector(vars);
   const symbol_tablet &st=program.st;
   std::for_each(st.symbols.begin(), st.symbols.end(), collector);
-  const goto_programt::targett Dx=program.loops.front().meta_variables.Dx;
-  std::for_each(program.danger_range.begin, Dx, collector);
+  const goto_programt::targett Ix=program.loops.front().meta_variables.Ix;
+  std::for_each(program.invariant_range.begin, Ix, collector);
 }
 
 class quantifyt
@@ -113,14 +113,14 @@ void add_universal_quantifier(goto_programt::targetst &quantifiers,
 {
   danger_symbol_set vars(&compare_symbol);
   collect_counterexample_variables(vars, program);
-  goto_programt::targett Dx=program.loops.front().meta_variables.Dx;
-  const quantifyt quantify(quantifiers, --Dx, program);
+  goto_programt::targett Ix=program.loops.front().meta_variables.Ix;
+  const quantifyt quantify(quantifiers, --Ix, program);
   std::for_each(vars.begin(), vars.end(), quantify);
 }
 
 void add_final_assertion(danger_programt &program)
 {
-  goto_programt::targett pos=program.danger_range.end;
+  goto_programt::targett pos=program.invariant_range.end;
   pos=get_danger_body(program.gf).insert_after(--pos);
   pos->type=goto_program_instruction_typet::ASSERT;
   pos->source_location=default_danger_source_location();

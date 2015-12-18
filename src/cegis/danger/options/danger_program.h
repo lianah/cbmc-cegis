@@ -10,14 +10,14 @@
 #ifndef CEGIS_DANGER_PROGRAM_H_
 #define CEGIS_DANGER_PROGRAM_H_
 
-#include <goto-programs/goto_functions.h>
+#include <cegis/invariant/options/invariant_program.h>
 
 /**
  * @brief
  *
  * @details
  */
-class danger_programt
+class danger_programt: public invariant_programt
 {
 public:
   /**
@@ -25,24 +25,10 @@ public:
    *
    * @details
    */
-  struct program_ranget
+  struct danger_meta_vars_positionst
   {
-    goto_programt::targett begin;
-    goto_programt::targett end;
-  };
-
-  /**
-   * @brief
-   *
-   * @details
-   */
-  struct meta_vars_positionst
-  {
-    goto_programt::targett Dx;
-    goto_programt::targett Gx;
     goto_programt::targetst Rx;
     goto_programt::targetst Sx;
-    goto_programt::targett Dx_prime;
     goto_programt::targetst Rx_prime;
   };
 
@@ -51,29 +37,15 @@ public:
    *
    * @details
    */
-  struct loopt
+  struct loopt: public invariant_loopt
   {
-    exprt guard;
-    program_ranget body;
     goto_programt::targetst skolem_choices;
-    meta_vars_positionst meta_variables;
+    danger_meta_vars_positionst danger_meta_variables;
   };
   typedef std::vector<loopt> loopst;
 
-  symbol_tablet st;
-  goto_functionst gf;
   loopst loops;
   goto_programt::targetst x0_choices;
-  /**
-   * @brief The range in the program relevant for danger analysis.
-   *
-   * @details Spans from the original beginning of the analysed program up to the
-   * danger assertion.
-   */
-  program_ranget danger_range;
-  exprt assertion;
-  goto_programt::targett Dx0;
-  goto_programt::targett Ax;
 
   /**
    * @brief
