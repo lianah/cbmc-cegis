@@ -6,11 +6,10 @@
 
 #include <cegis/cegis-util/constant_width.h>
 
-#include <cegis/danger/options/danger_program.h>
-#include <cegis/danger/util/danger_program_helper.h>
+#include <cegis/invariant/options/invariant_program.h>
+#include <cegis/invariant/constant/add_constant.h>
+#include <cegis/invariant/constant/literals_constant_strategy.h>
 #include <cegis/danger/instrument/meta_variables.h>
-#include <cegis/danger/constant/add_constant.h>
-#include <cegis/danger/constant/literals_constant_strategy.h>
 
 namespace
 {
@@ -18,7 +17,7 @@ class compare_constantt
 {
   const namespacet ns;
 public:
-  compare_constantt(const danger_programt &program) :
+  compare_constantt(const invariant_programt &program) :
       ns(program.st)
   {
   }
@@ -61,15 +60,16 @@ public:
     instr.code.visit(*this);
   }
 
-  void operator()(const danger_programt::loopt &loop)
+  void operator()(const invariant_programt::invariant_loopt *loop)
   {
-    loop.guard.visit(*this);
+    loop->guard.visit(*this);
   }
 
-  constant_expr_visitort(const danger_programt &prog, constant_sett &constants) :
+  constant_expr_visitort(const invariant_programt &prog,
+      constant_sett &constants) :
       ns(prog.st), type(danger_meta_type()), constants(constants)
   {
-    const danger_programt::loopst &loops=prog.loops;
+    const invariant_programt::invariant_loopst loops=prog.get_loops();
     constant_expr_visitort &op=*this;
     std::for_each(loops.begin(), loops.end(), op);
     prog.assertion.visit(op);
@@ -78,17 +78,17 @@ public:
 }
 
 std::vector<constant_exprt> collect_literal_constants(
-    const danger_programt &program)
+    const invariant_programt &program)
 {
   const compare_constantt compare(program);
   constant_sett constants(compare);
   const constant_expr_visitort visitor(program, constants);
-  const danger_programt::program_ranget &range=program.invariant_range;
+  const invariant_programt::program_ranget &range=program.invariant_range;
   std::for_each(range.begin, range.end, visitor);
   return std::vector<constant_exprt>(constants.begin(), constants.end());
 }
 
-size_t literals_constant_strategy(danger_programt &program,
+size_t literals_constant_strategy(invariant_programt &program,
     const size_t max_length)
 {
   const std::vector<constant_exprt> lit(collect_literal_constants(program));

@@ -2,8 +2,6 @@
 #include <signal.h>
 #include <sys/signal.h>
 #include <sys/wait.h>
-#else
-typedef unsigned int pid_t;
 #endif
 
 #include <algorithm>
@@ -13,7 +11,7 @@ typedef unsigned int pid_t;
 
 #include <util/irep.h>
 
-#include "task_pool.h"
+#include <cegis/cegis-util/task_pool.h>
 
 task_poolt::task_poolt()
 {

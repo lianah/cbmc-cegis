@@ -4,7 +4,7 @@
 #include <goto-programs/goto_functions.h>
 
 #include <cegis/danger/meta/literals.h>
-#include <cegis/danger/util/copy_instructions.h>
+#include <cegis/invariant/util/copy_instructions.h>
 #include <cegis/danger/util/danger_program_helper.h>
 #include <cegis/danger/symex/learn/instruction_set_factory.h>
 

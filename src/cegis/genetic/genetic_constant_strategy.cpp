@@ -4,16 +4,16 @@
 
 #include <cegis/cegis-util/constant_width.h>
 
+#include <cegis/invariant/constant/literals_constant_strategy.h>
 #include <cegis/danger/options/danger_program.h>
 #include <cegis/danger/instrument/meta_variables.h>
-#include <cegis/danger/constant/literals_constant_strategy.h>
 #include <cegis/genetic/genetic_constant_strategy.h>
 #include <cegis/genetic/genetic_constant_strategy.h>
 
 namespace
 {
 #if 0
-const char NONDET_CONSTANT_PREFIX[]="DANGER_CONSTANT_NONDET_";
+const char NONDET_CONSTANT_PREFIX[]="INVARIANT_CONSTANT_NONDET_";
 std::string get_ndt_name(size_t index)
 {
   std::string name(NONDET_CONSTANT_PREFIX);
@@ -21,7 +21,7 @@ std::string get_ndt_name(size_t index)
 }
 #endif
 
-const char CONSTANT_PREFIX[]="DANGER_CONSTANT_";
+const char CONSTANT_PREFIX[]="INVARIANT_CONSTANT_";
 std::string get_name(size_t index)
 {
   std::string name(CONSTANT_PREFIX);
@@ -29,7 +29,8 @@ std::string get_name(size_t index)
 }
 }
 
-size_t genetic_constant_strategy(danger_programt &prog, const size_t max_length)
+size_t genetic_constant_strategy(invariant_programt &prog,
+    const size_t max_length)
 {
   symbol_tablet &st=prog.st;
   goto_functionst &gf=prog.gf;
@@ -45,6 +46,7 @@ size_t genetic_constant_strategy(danger_programt &prog, const size_t max_length)
     pos=assign_danger_variable(st, gf, pos, base_name, expr);
     max_word_width=std::max(max_word_width, get_min_word_width(expr));
   }
+
   // XXX: 0/1 constant strategy, benchmark performance
   /*const typet type(danger_meta_type());
    const bv_spect spec(type);

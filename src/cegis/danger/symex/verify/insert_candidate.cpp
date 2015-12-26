@@ -1,11 +1,11 @@
 #include <algorithm>
 
+#include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/danger/meta/literals.h>
 #include <cegis/danger/meta/meta_variable_names.h>
 #include <cegis/danger/value/danger_goto_solution.h>
 #include <cegis/danger/options/danger_program.h>
-#include <cegis/danger/util/copy_instructions.h>
-#include <cegis/danger/util/danger_program_helper.h>
+#include <cegis/invariant/util/copy_instructions.h>
 #include <cegis/danger/instrument/meta_variables.h>
 #include <cegis/danger/symex/verify/insert_candidate.h>
 
@@ -157,7 +157,7 @@ void insert_programs(danger_programt &prog, const candidatet &candidate)
 {
   const candidatet::danger_programst &progs=candidate.danger_programs;
   if (progs.empty()) return;
-  goto_programt &body=get_danger_body(prog.gf);
+  goto_programt &body=get_entry_body(prog.gf);
   const goto_programt::instructionst &first_inv=progs.begin()->invariant;
   const std::string D0x(get_danger_meta_name(get_Dx(0)));
   const std::string Dx0(get_danger_meta_name(get_Dx0()));

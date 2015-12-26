@@ -25,8 +25,8 @@
 #include <cegis/value/program_individual_serialisation.h>
 #include <cegis/wordsize/limited_wordsize_verify.h>
 
-#include <cegis/danger/constant/constant_strategy.h>
-#include <cegis/danger/constant/default_constant_strategy.h>
+#include <cegis/invariant/constant/constant_strategy.h>
+#include <cegis/invariant/constant/default_constant_strategy.h>
 #include <cegis/danger/fitness/concrete_fitness_source_provider.h>
 #include <cegis/danger/instrument/meta_variables.h>
 #include <cegis/danger/preprocess/danger_preprocessing.h>

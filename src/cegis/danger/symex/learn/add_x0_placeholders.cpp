@@ -1,7 +1,7 @@
 #include <algorithm>
 
+#include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/danger/options/danger_program.h>
-#include <cegis/danger/util/danger_program_helper.h>
 #include <cegis/danger/meta/literals.h>
 #include <cegis/danger/instrument/meta_variables.h>
 #include <cegis/danger/symex/learn/add_x0_placeholders.h>

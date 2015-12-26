@@ -1,6 +1,6 @@
 #include <algorithm>
 
-#include <cegis/danger/util/copy_instructions.h>
+#include <cegis/invariant/util/copy_instructions.h>
 
 copy_instructionst::copy_instructionst()
 {
@@ -123,13 +123,7 @@ public:
 };
 }
 
-void danger_remove_skips(goto_programt::instructionst &instrs)
-{
-  skip_removert op(instrs);
-  op(instrs.begin(), instrs.end());
-}
-
-void danger_make_presentable(goto_programt::instructionst &instrs)
+void invariant_make_presentable(goto_programt::instructionst &instrs)
 {
   const goto_programt::targett &begin=instrs.begin();
   goto_programt::targett last=instrs.end();

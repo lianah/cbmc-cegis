@@ -4,8 +4,8 @@
 
 #include <goto-programs/goto_functions.h>
 
+#include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/danger/meta/literals.h>
-#include <cegis/danger/util/danger_program_helper.h>
 #include <cegis/danger/instrument/meta_variables.h>
 
 namespace
@@ -26,7 +26,7 @@ goto_programt::targett declare_danger_variable(symbol_tablet &st,
   const std::string symbol_name(get_danger_meta_name(base_name));
   create_danger_symbol(st, symbol_name, type);
   const symbol_exprt symbol(symbol_name, type);
-  const goto_programt::targett decl=get_danger_body(gf).insert_after(pos);
+  const goto_programt::targett decl=get_entry_body(gf).insert_after(pos);
   decl->type=goto_program_instruction_typet::DECL;
   decl->code=code_declt(symbol);
   decl->source_location=default_danger_source_location();
@@ -56,7 +56,7 @@ goto_programt::targett danger_assign(const symbol_tablet &st,
     goto_functionst &gf, const goto_programt::targett &insert_after_pos,
     const exprt &lhs, const exprt &rhs)
 {
-  goto_programt &body=get_danger_body(gf);
+  goto_programt &body=get_entry_body(gf);
   goto_programt::targett assign=body.insert_after(insert_after_pos);
   assign->type=goto_program_instruction_typet::ASSIGN;
   assign->source_location=default_danger_source_location();

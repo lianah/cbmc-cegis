@@ -1,17 +1,17 @@
 #include <util/arith_tools.h>
 #include <util/bv_arithmetic.h>
 
+#include <cegis/invariant/constant/add_constant.h>
+#include <cegis/invariant/constant/literals_constant_strategy.h>
+#include <cegis/invariant/constant/default_constant_strategy.h>
 #include <cegis/danger/instrument/meta_variables.h>
-#include <cegis/danger/constant/add_constant.h>
-#include <cegis/danger/constant/literals_constant_strategy.h>
-#include <cegis/danger/constant/default_constant_strategy.h>
 
 namespace
 {
-//const char NONDET_PREFIX[]="DANGER_CONSTANT_NONDET_";
+//const char NONDET_PREFIX[]="INVARIANT_CONSTANT_NONDET_";
 }
 
-size_t default_constant_strategy(danger_programt &program,
+size_t default_constant_strategy(invariant_programt &program,
     const size_t max_length)
 {
   const typet type(danger_meta_type());

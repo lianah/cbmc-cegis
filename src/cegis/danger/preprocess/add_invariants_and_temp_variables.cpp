@@ -1,7 +1,7 @@
 #include <algorithm>
 
+#include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/danger/options/danger_program.h>
-#include <cegis/danger/util/danger_program_helper.h>
 #include <cegis/danger/meta/meta_variable_names.h>
 #include <cegis/danger/instrument/meta_variables.h>
 
@@ -18,7 +18,7 @@ void create_tmp_variables(danger_programt &program,
   if (!need_temp_variables(max_program_length)) return;
   symbol_tablet &st=program.st;
   goto_functionst &gf=program.gf;
-  goto_programt &body=get_danger_body(gf);
+  goto_programt &body=get_entry_body(gf);
   goto_programt::targett insert_after=program.invariant_range.begin;
   --insert_after;
   //const goto_programt::targett first(insert_after);
@@ -40,7 +40,7 @@ void createDx0(danger_programt &prog)
   goto_programt::targett &meta=prog.Ix0;
   goto_programt::targett pos=first.body.begin;
   meta=declare_danger_variable(prog.st, prog.gf, --pos, get_Dx0(), type);
-  move_labels(get_danger_body(prog.gf), first.body.begin, meta);
+  move_labels(get_entry_body(prog.gf), first.body.begin, meta);
 }
 
 class create_skolem_meta_variablest
@@ -92,7 +92,7 @@ public:
     goto_programt::targett pos=loop.body.begin;
     const std::string inv(get_Dx(loop_id));
     im.Ix=declare_danger_variable(st, gf, --pos, inv, type);
-    goto_programt &body=get_danger_body(gf);
+    goto_programt &body=get_entry_body(gf);
     move_labels(body, loop.body.begin, im.Ix);
     const std::string guard(get_Gx(loop_id));
     im.Gx=declare_danger_variable(st, gf, im.Ix, guard, type);

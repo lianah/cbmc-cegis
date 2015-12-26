@@ -5,10 +5,10 @@
 #include <ansi-c/c_types.h>
 #include <ansi-c/cprover_library.h>
 
+#include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/danger/meta/literals.h>
 #include <cegis/danger/options/danger_program.h>
 #include <cegis/danger/instrument/meta_variables.h>
-#include <cegis/danger/util/danger_program_helper.h>
 
 namespace
 {
@@ -77,7 +77,7 @@ goto_programt::targett init_array(const symbol_tablet &st, goto_programt &body,
 
 void set_init_values(danger_programt &prog)
 {
-  goto_programt &body=get_danger_body(prog.gf);
+  goto_programt &body=get_entry_body(prog.gf);
   goto_programt::targett pos=prog.invariant_range.begin;
   const symbol_tablet &st=prog.st;
   pos=init_array(st, body, DANGER_OPS, --pos);

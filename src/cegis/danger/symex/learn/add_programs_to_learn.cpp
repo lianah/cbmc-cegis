@@ -4,8 +4,8 @@
 
 #include <util/arith_tools.h>
 
+#include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/danger/options/danger_program.h>
-#include <cegis/danger/util/danger_program_helper.h>
 #include <cegis/danger/instrument/meta_variables.h>
 
 namespace
@@ -24,7 +24,7 @@ void execute(const symbol_tablet &st, goto_functionst &gf,
     const size_t max_solution_size, const goto_programt::targett &decl,
     const std::string &prog_base_name)
 {
-  goto_programt &body=get_danger_body(gf);
+  goto_programt &body=get_entry_body(gf);
   goto_programt::targett pos=decl;
   goto_programt::targett execution=body.insert_after(++pos);
   execution->type=goto_program_instruction_typet::FUNCTION_CALL;

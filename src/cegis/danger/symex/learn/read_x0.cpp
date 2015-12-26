@@ -5,9 +5,9 @@
 #include <goto-programs/goto_trace.h>
 
 #include <cegis/value/program_individual.h>
+#include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/danger/value/danger_goto_solution.h>
 #include <cegis/danger/options/danger_program.h>
-#include <cegis/danger/util/danger_program_helper.h>
 #include <cegis/danger/meta/literals.h>
 #include <cegis/danger/instrument/meta_variables.h>
 #include <cegis/danger/symex/learn/read_x0.h>

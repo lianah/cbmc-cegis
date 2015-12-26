@@ -3,21 +3,21 @@
 #include <util/cprover_prefix.h>
 #include <util/expr_util.h>
 
+#include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/danger/constraint/danger_constraint_factory.h>
 #include <cegis/danger/options/danger_program.h>
-#include <cegis/danger/util/danger_program_helper.h>
 #include <cegis/danger/instrument/meta_variables.h>
 #include <cegis/danger/symex/verify/insert_constraint.h>
 
 namespace
 {
-#define DANGER_CONSTANT_PREFIX "DANGER_CONSTANT_"
+#define INVARIANT_CONSTANT_PREFIX "INVARIANT_CONSTANT_"
 
 bool is_meta(const irep_idt &id, const typet &type)
 {
   if (ID_code == type.id()) return true;
   const std::string &name=id2string(id);
-  if (std::string::npos != name.find(DANGER_CONSTANT_PREFIX)) return true;
+  if (std::string::npos != name.find(INVARIANT_CONSTANT_PREFIX)) return true;
   if (std::string::npos != name.find("#return_value")) return true;
   return std::string::npos != name.find(CPROVER_PREFIX);
 }
@@ -89,7 +89,7 @@ class quantifyt
 public:
   quantifyt(goto_programt::targetst &quantifiers,
       const goto_programt::targett &pos, danger_programt &program) :
-      quantifiers(quantifiers), pos(pos), body(get_danger_body(program.gf))
+      quantifiers(quantifiers), pos(pos), body(get_entry_body(program.gf))
   {
   }
 
@@ -121,7 +121,7 @@ void add_universal_quantifier(goto_programt::targetst &quantifiers,
 void add_final_assertion(danger_programt &program)
 {
   goto_programt::targett pos=program.invariant_range.end;
-  pos=get_danger_body(program.gf).insert_after(--pos);
+  pos=get_entry_body(program.gf).insert_after(--pos);
   pos->type=goto_program_instruction_typet::ASSERT;
   pos->source_location=default_danger_source_location();
   pos->guard=create_danger_constraint(program.loops.size());
@@ -147,7 +147,7 @@ void danger_limit_ce(const goto_programt::targetst &quantifiers,
     danger_programt &program, size_t width)
 {
   const symbol_tablet &st=program.st;
-  goto_programt &body=get_danger_body(program.gf);
+  goto_programt &body=get_entry_body(program.gf);
   for (const goto_programt::targett &quantifier : quantifiers)
   {
     const irep_idt &var=get_affected_variable(*quantifier);

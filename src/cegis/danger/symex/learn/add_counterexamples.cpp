@@ -4,9 +4,9 @@
 
 #include <util/arith_tools.h>
 
+#include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/danger/meta/literals.h>
 #include <cegis/danger/options/danger_program.h>
-#include <cegis/danger/util/danger_program_helper.h>
 #include <cegis/danger/constraint/danger_constraint_factory.h>
 #include <cegis/danger/instrument/meta_variables.h>
 #include <cegis/danger/symex/learn/add_counterexamples.h>
@@ -78,7 +78,7 @@ goto_programt::targett add_ce_loop(danger_programt &prog, const size_t ces_size)
   pos=assign_danger_variable(st, gf, pos, X_INDEX, first_index);
   goto_programt::targett loop_head=pos;
   (++loop_head)->labels.push_back(X_LABEL);
-  goto_programt &body=get_danger_body(gf);
+  goto_programt &body=get_entry_body(gf);
   pos=insert_before_preserve_labels(body, prog.invariant_range.end);
   //pos=body.insert_before(prog.danger_range.end);
   pos->type=goto_program_instruction_typet::ASSIGN;
@@ -124,7 +124,7 @@ public:
     assert(!loops.empty());
     pos=loops.begin()->meta_variables.Ix;
     ++pos;
-    pos=get_danger_body(gf).insert_after(pos);
+    pos=get_entry_body(gf).insert_after(pos);
     pos->type=goto_program_instruction_typet::GOTO;
     pos->source_location=default_danger_source_location();
     add_x0_case(ces_size);
@@ -160,7 +160,7 @@ void create_constraints(danger_programt &prog)
 {
   goto_programt::targett pos=prog.invariant_range.end;
   std::advance(pos, -3);
-  goto_programt &body=get_danger_body(prog.gf);
+  goto_programt &body=get_entry_body(prog.gf);
   pos=body.insert_after(pos);
   pos->type=goto_program_instruction_typet::ASSUME;
   pos->source_location=default_danger_source_location();
@@ -170,7 +170,7 @@ void create_constraints(danger_programt &prog)
 void add_final_assertion(danger_programt &prog,
     const goto_programt::targett &loop_end)
 {
-  goto_programt &body=get_danger_body(prog.gf);
+  goto_programt &body=get_entry_body(prog.gf);
   goto_programt::targett assertion=body.insert_after(loop_end);
   assertion->type=goto_program_instruction_typet::ASSERT;
   assertion->source_location=default_danger_source_location();

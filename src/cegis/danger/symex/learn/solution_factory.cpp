@@ -13,8 +13,7 @@
 #include <cegis/danger/instrument/meta_variables.h>
 #include <cegis/danger/value/danger_goto_solution.h>
 #include <cegis/danger/options/danger_program.h>
-#include <cegis/danger/util/copy_instructions.h>
-#include <cegis/danger/util/danger_program_helper.h>
+#include <cegis/invariant/util/copy_instructions.h>
 #include <cegis/danger/symex/learn/replace_operators.h>
 #include <cegis/danger/symex/learn/solution_factory.h>
 #include <cegis/danger/symex/learn/read_x0.h>
@@ -160,7 +159,7 @@ public:
     const size_t op2=ops.size() >= 3 ? ops.at(2) : empty_op;
     const symbol_tablet &st=danger_prog.st;
     replace_ops_in_instr(st, first, last, names, rnames, op0, op1, op2, insidx);
-    if (++insidx % prog_size == 0) danger_make_presentable(prog);
+    if (++insidx % prog_size == 0) invariant_make_presentable(prog);
   }
 
   void operator()(const exprt &prog_arary_member)

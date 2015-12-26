@@ -2,9 +2,9 @@
 
 #include <ansi-c/expr2c.h>
 
+#include <cegis/invariant/constant/add_constant.h>
 #include <cegis/danger/options/danger_program.h>
 #include <cegis/danger/instrument/meta_variables.h>
-#include <cegis/danger/constant/add_constant.h>
 
 namespace
 {
@@ -43,7 +43,7 @@ bool contains_constant(const symbol_tablet &st, const exprt &value)
   return false;
 }
 
-const char CONSTANT_PREFIX[]="DANGER_CONSTANT_";
+const char CONSTANT_PREFIX[]="INVARIANT_CONSTANT_";
 
 bool is_empty(const exprt &expr)
 {
@@ -51,7 +51,7 @@ bool is_empty(const exprt &expr)
 }
 }
 
-void add_danger_constant(danger_programt &program, const exprt &value)
+void add_danger_constant(invariant_programt &program, const exprt &value)
 {
   symbol_tablet &st=program.st;
   if (contains_constant(st, value)) return;
@@ -69,26 +69,26 @@ void add_danger_constant(danger_programt &prog, const std::string &name,
 {
   goto_programt::targett pos=prog.invariant_range.begin;
   while (is_builtin(pos))
-    ++pos;
+  ++pos;
   type.set(ID_C_constant, true);
   symbol_tablet &st=prog.st;
   create_danger_symbol(st, name, type).value=value;
   if (!is_empty(value))
-    pos=danger_assign_user_variable(st, prog.gf, pos, name, value);
+  pos=danger_assign_user_variable(st, prog.gf, pos, name, value);
 }
 #endif
 }
 
-void add_danger_constant(danger_programt &prog, const std::string &name,
-    const exprt &value)
+void add_danger_constant(invariant_programt &prog, const std::string &name,
+  const exprt &value)
 {
-  goto_programt::targett pos=prog.invariant_range.begin;
-  while (is_builtin(pos))
-    ++pos;
-  typet type=value.type();
-  type.set(ID_C_constant, true);
-  symbol_tablet &st=prog.st;
-  create_danger_symbol(st, name, type).value=value;
-  if (!is_empty(value))
-    pos=danger_assign_user_variable(st, prog.gf, pos, name, value);
+goto_programt::targett pos=prog.invariant_range.begin;
+while (is_builtin(pos))
+  ++pos;
+typet type=value.type();
+type.set(ID_C_constant, true);
+symbol_tablet &st=prog.st;
+create_danger_symbol(st, name, type).value=value;
+if (!is_empty(value))
+  pos=danger_assign_user_variable(st, prog.gf, pos, name, value);
 }

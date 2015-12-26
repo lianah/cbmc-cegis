@@ -5,10 +5,10 @@
 
 #include <ansi-c/c_types.h>
 
+#include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/danger/meta/literals.h>
 #include <cegis/danger/meta/meta_variable_names.h>
 #include <cegis/danger/instrument/meta_variables.h>
-#include <cegis/danger/util/danger_program_helper.h>
 #include <cegis/danger/options/danger_program.h>
 #include <cegis/danger/symex/learn/add_variable_refs.h>
 
@@ -72,7 +72,7 @@ void link_user_symbols(const symbol_tablet &st, danger_variable_idst &var_ids,
   for (symbolst::const_iterator it=symbols.begin(); it != symbols.end(); ++it)
   {
     const symbolt &symbol=it->second;
-    if (!is_danger_user_variable(symbol.name, symbol.type)) continue;
+    if (!is_invariant_user_variable(symbol.name, symbol.type)) continue;
     const bool is_const=is_global_const(symbol.name, symbol.type);
     if (is_const == consts)
       var_ids.insert(std::make_pair(symbol.name, variable_id++));
@@ -83,7 +83,7 @@ void link_user_program_variables(danger_programt &prog,
     const danger_variable_idst &var_ids)
 {
   danger_variable_idst to_instrument(var_ids);
-  goto_programt &body=get_danger_body(prog.gf);
+  goto_programt &body=get_entry_body(prog.gf);
   goto_programt::instructionst &instrs=body.instructions;
   const goto_programt::targett end=prog.invariant_range.end;
   const symbol_tablet &st=prog.st;
@@ -93,7 +93,7 @@ void link_user_program_variables(danger_programt &prog,
     const goto_program_instruction_typet type=instr.type;
     if (DECL != type && DEAD != type) continue;
     const irep_idt &name=get_affected_variable(instr);
-    if (!is_danger_user_variable(name, typet())) continue;
+    if (!is_invariant_user_variable(name, typet())) continue;
     const danger_variable_idst::const_iterator id=var_ids.find(name);
     switch (type)
     {
@@ -152,7 +152,7 @@ class link_single_resultt
 public:
   link_single_resultt(const symbol_tablet &st, goto_functionst &gf,
       const size_t num_user_vars, const size_t max_solution_size) :
-      st(st), body(get_danger_body(gf)), num_user_vars(num_user_vars), max_solution_size(
+      st(st), body(get_entry_body(gf)), num_user_vars(num_user_vars), max_solution_size(
           max_solution_size)
   {
   }
@@ -173,7 +173,7 @@ void link_skolem(danger_programt &prog, const size_t num_user_vars,
   const goto_programt::targetst &sklm=loop.danger_meta_variables.Sx;
   if (sklm.empty()) return;
   const symbol_tablet &st=prog.st;
-  goto_programt &body=get_danger_body(prog.gf);
+  goto_programt &body=get_entry_body(prog.gf);
   goto_programt::targett pos=sklm.front();
   const size_t num_skolem=sklm.size();
   const size_t num_tmp=max_solution_size - num_skolem;

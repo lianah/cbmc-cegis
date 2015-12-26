@@ -1,6 +1,6 @@
 #include <util/simplify_expr.h>
 
-#include <cegis/danger/util/danger_program_helper.h>
+#include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/danger/options/danger_program.h>
 
 namespace
@@ -56,7 +56,7 @@ void handle_loop_removal(danger_programt &program,
 
 void danger_remove_loops_and_assertion(danger_programt &program)
 {
-  goto_programt &body=get_danger_body(program.gf);
+  goto_programt &body=get_entry_body(program.gf);
   goto_programt::instructionst &instrs=body.instructions;
   program.invariant_range.begin=instrs.begin();
   for (goto_programt::targett it=instrs.begin(); it != instrs.end(); ++it)

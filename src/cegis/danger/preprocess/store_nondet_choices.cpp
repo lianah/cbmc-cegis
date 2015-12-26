@@ -1,6 +1,6 @@
 #include <algorithm>
 
-#include <cegis/danger/util/danger_program_helper.h>
+#include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/danger/options/danger_program.h>
 
 namespace

@@ -1,7 +1,7 @@
 #include <algorithm>
 
+#include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/danger/options/danger_program_printer.h>
-#include <cegis/danger/util/danger_program_helper.h>
 #include <cegis/danger/symex/learn/add_variable_refs.h>
 #include <cegis/danger/symex/learn/danger_library.h>
 #include <cegis/danger/symex/learn/add_programs_to_learn.h>
