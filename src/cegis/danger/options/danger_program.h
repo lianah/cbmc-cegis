@@ -85,16 +85,6 @@ public:
    *
    * @details
    *
-   * @param st
-   * @param gf
-   */
-  void set_goto_program(const symbol_tablet &st, const goto_functionst &gf);
-
-  /**
-   * @brief
-   *
-   * @details
-   *
    * @param other
    *
    * @return

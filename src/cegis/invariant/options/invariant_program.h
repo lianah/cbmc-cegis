@@ -81,8 +81,18 @@ public:
    * @details
    *
    * @param st
+   * @param gf
    */
-  invariant_programt(const symbol_tablet &st);
+  invariant_programt(const symbol_tablet &st, const goto_functionst &gf);
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @param other
+   */
+  invariant_programt(const invariant_programt &other);
 
   /**
    * @brief
@@ -90,6 +100,17 @@ public:
    * @details
    */
   ~invariant_programt();
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @param other
+   *
+   * @return
+   */
+  invariant_programt &operator=(const invariant_programt &other);
 };
 
 #endif /* CEGIS_INVARIANT_PROGRAM_H_ */

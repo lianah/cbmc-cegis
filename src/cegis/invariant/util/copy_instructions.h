@@ -75,15 +75,6 @@ public:
  *
  * @param instrs
  */
-void danger_remove_skips(goto_programt::instructionst &instrs);
-
-/**
- * @brief
- *
- * @details
- *
- * @param instrs
- */
-void danger_make_presentable(goto_programt::instructionst &instrs);
+void invariant_make_presentable(goto_programt::instructionst &instrs);
 
 #endif /* SRC_CEGIS_DANGER_UTIL_COPY_INSTRUCTIONS_H_ */
