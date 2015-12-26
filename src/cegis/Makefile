@@ -1,9 +1,6 @@
-SRC = danger/util/danger_program_helper.cpp danger/util/copy_instructions.cpp \
-      danger/meta/meta_variable_names.cpp danger/instrument/meta_variables.cpp \
+SRC = danger/meta/meta_variable_names.cpp danger/instrument/meta_variables.cpp \
       danger/facade/danger_runner.cpp danger/options/danger_program.cpp \
       danger/options/danger_program_printer.cpp danger/constraint/danger_constraint_factory.cpp \
-      danger/constant/add_constant.cpp danger/constant/default_constant_strategy.cpp \
-      danger/constant/literals_constant_strategy.cpp \
       danger/fitness/concrete_fitness_source_provider.cpp \
       danger/preprocess/danger_preprocessing.cpp danger/preprocess/remove_loops_and_assertion.cpp \
       danger/preprocess/store_nondet_choices.cpp danger/preprocess/add_invariants_and_temp_variables.cpp \
@@ -19,6 +16,9 @@ SRC = danger/util/danger_program_helper.cpp danger/util/copy_instructions.cpp \
       danger/symex/verify/parallel_danger_verify_task.cpp danger/symex/fitness/danger_fitness_config.cpp \
       safety/options/safety_program.cpp \
       invariant/options/invariant_program.cpp invariant/options/target_copy_helper.cpp \
+      invariant/util/copy_instructions.cpp invariant/util/invariant_program_helper.cpp \
+      invariant/constant/add_constant.cpp invariant/constant/default_constant_strategy.cpp \
+      invariant/constant/literals_constant_strategy.cpp \
       wordsize/restrict_bv_size.cpp value/program_individual_serialisation.cpp \
       seed/null_seed.cpp seed/literals_seed.cpp genetic/tournament_select.cpp genetic/match_select.cpp \
       genetic/instruction_set_info_factory.cpp genetic/random_mutate.cpp genetic/random_cross.cpp \

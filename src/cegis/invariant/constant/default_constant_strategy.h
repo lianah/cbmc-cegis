@@ -20,7 +20,7 @@ Author: Daniel Kroening, kroening@kroening.com
  *
  * @return
  */
-size_t default_constant_strategy(class danger_programt &program,
+size_t default_constant_strategy(class invariant_programt &program,
     const size_t max_length);
 
 #endif /* CEGIS_DANGER_DEFAULT_CONSTANT_STRATEGY_H_ */

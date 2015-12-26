@@ -69,7 +69,7 @@ public:
       constant_sett &constants) :
       ns(prog.st), type(danger_meta_type()), constants(constants)
   {
-    const invariant_programt::invariant_loopst loops=prog.get_loops();
+    const invariant_programt::const_invariant_loopst loops=prog.get_loops();
     constant_expr_visitort &op=*this;
     std::for_each(loops.begin(), loops.end(), op);
     prog.assertion.visit(op);

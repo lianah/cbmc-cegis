@@ -87,11 +87,19 @@ danger_programt &danger_programt::operator =(const danger_programt &other)
   return assign(*this, other);
 }
 
-invariant_programt::invariant_loopst danger_programt::get_loops() const
+invariant_programt::const_invariant_loopst danger_programt::get_loops() const
 {
-  std::vector<const invariant_programt::invariant_loopt *> result(loops.size());
+  const_invariant_loopst result(loops.size());
   std::transform(loops.begin(), loops.end(), result.begin(),
       [](const loopt &loop)
       { return &loop;});
+  return result;
+}
+
+invariant_programt::invariant_loopst danger_programt::get_loops()
+{
+  invariant_loopst result(loops.size());
+  std::transform(loops.begin(), loops.end(), result.begin(), [](loopt &loop)
+  { return &loop;});
   return result;
 }

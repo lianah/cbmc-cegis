@@ -20,7 +20,7 @@ Author: Daniel Kroening, kroening@kroening.com
  * @param program
  * @param value
  */
-void add_danger_constant(class danger_programt &program,
+void add_danger_constant(class invariant_programt &program,
     const class exprt &value);
 
 /**
@@ -32,7 +32,7 @@ void add_danger_constant(class danger_programt &program,
  * @param name
  * @param value
  */
-void add_danger_constant(danger_programt &program, const std::string &name,
+void add_danger_constant(invariant_programt &program, const std::string &name,
     const exprt &value);
 
 #endif /* CEGIS_DANGER_ADD_CONSTANT_H_ */

@@ -137,6 +137,9 @@ goto_programt::targett insert_before_preserve_labels(goto_programt &body,
 void restrict_bv_size(invariant_programt &prog, const size_t width_in_bits)
 {
   restrict_bv_size(prog.st, prog.gf, width_in_bits);
+  const invariant_programt::invariant_loopst loops(prog.get_loops());
+  for (invariant_programt::invariant_loopt * const loop : loops)
+    restrict_bv_size(loop->guard, width_in_bits);
   restrict_bv_size(prog.assertion, width_in_bits);
 }
 

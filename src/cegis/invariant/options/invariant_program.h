@@ -54,6 +54,8 @@ public:
     program_ranget body;
     meta_vars_positionst meta_variables;
   };
+  typedef std::vector<const invariant_loopt *> const_invariant_loopst;
+  typedef std::vector<invariant_loopt *> invariant_loopst;
 
   symbol_tablet st;
   goto_functionst gf;
@@ -99,7 +101,7 @@ public:
    *
    * @details
    */
-  ~invariant_programt();
+  virtual ~invariant_programt();
 
   /**
    * @brief
@@ -111,6 +113,24 @@ public:
    * @return
    */
   invariant_programt &operator=(const invariant_programt &other);
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @return
+   */
+  virtual const_invariant_loopst get_loops() const = 0;
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @return
+   */
+  virtual invariant_loopst get_loops() = 0;
 };
 
 #endif /* CEGIS_INVARIANT_PROGRAM_H_ */

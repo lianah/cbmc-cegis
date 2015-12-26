@@ -78,7 +78,7 @@ public:
    *
    * @details
    */
-  ~danger_programt();
+  virtual ~danger_programt();
 
   /**
    * @brief
@@ -90,6 +90,16 @@ public:
    * @return
    */
   danger_programt &operator=(const danger_programt &other);
+
+  /**
+   * @see invariant_programt::get_loops
+   */
+  virtual const_invariant_loopst get_loops() const;
+
+  /**
+   * @see invariant_programt::get_loops
+   */
+  virtual invariant_loopst get_loops();
 };
 
 #endif /* CEGIS_DANGER_PROGRAM_H_ */

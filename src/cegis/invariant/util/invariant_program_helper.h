@@ -141,6 +141,4 @@ bool is_invariant_user_variable(const irep_idt &name, const typet &type);
  */
 bool is_global_const(const irep_idt &name, const typet &type);
 
-#include "invariant_program_helper.inc"
-
 #endif /* CEGIS_INVARIANT_PROGRAM_HELPER_H_ */

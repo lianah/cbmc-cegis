@@ -28,7 +28,7 @@ OBJ += ../ansi-c/ansi-c$(LIBEXT) \
 
 INCLUDES= -I ..
 
-LIBS = -ldl
+LIBS = 
 
 include ../config.inc
 include ../common
