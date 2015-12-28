@@ -5,9 +5,10 @@
 
 #include <goto-instrument/dump_c.h>
 
+#include <cegis/invariant/util/invariant_constraint_variables.h>
+#include <cegis/invariant/meta/literals.h>
 #include <cegis/danger/instrument/meta_variables.h>
 #include <cegis/danger/symex/learn/danger_library.h>
-#include <cegis/danger/symex/verify/insert_constraint.h>
 #include <cegis/danger/fitness/concrete_fitness_source_provider.h>
 
 concrete_fitness_source_providert::concrete_fitness_source_providert(
@@ -25,16 +26,17 @@ namespace
 void add_assume_implementation(std::string &source)
 {
   source+=
-      "#define __CPROVER_cegis_assert(constraint) if(constraint) { return 0; } else { return 1; }\n";
+      "#define " CEGIS_PREFIX "assert(constraint) if(constraint) { return 0; } else { return 1; }\n";
   source+="#define __CPROVER_assume(constraint) \n";
   source+=
-      "#define __CPROVER_danger_execute_assume(constraint) if (!(constraint)) { return 1; }\n";
+      "#define " CEGIS_PREFIX "execute_assume(constraint) if (!(constraint)) { return 1; }\n";
 }
 
 void add_danger_execute(std::string &source, const size_t num_vars,
     const size_t num_consts, const size_t max_prog_size)
 {
-  std::string text=get_danger_library_text(num_vars, num_consts, max_prog_size);
+  std::string text=get_invariant_library_text(num_vars, num_consts,
+      max_prog_size);
   substitute(text, "#define opcode program[i].opcode",
       "const opcodet opcode=program[i].opcode;");
   substitute(text, "#line 1 \"<builtin-library>\"",
@@ -42,20 +44,20 @@ void add_danger_execute(std::string &source, const size_t num_vars,
   substitute(text, "#line 1 \"<builtin-library-__CPROVER_danger_execute>\"",
       "//#line 2 \"<builtin-library-__CPROVER_danger_execute>\"");
   const char result_op[]=
-      "    *(unsigned int *)__CPROVER_danger_RESULT_OPS[i]=result;\n  }\n";
+      "    *(unsigned int *)" CEGIS_RESULT_OPS "[i]=result;\n  }\n";
   const std::string::size_type pos=text.find(result_op);
   assert(std::string::npos != pos);
   text.insert(pos + strlen(result_op),
-      "if (size <= 0 || size >= __CPROVER_danger_max_solution_size) return 0;\n"
-          "int diff=__CPROVER_danger_max_solution_size-size;\n"
-          "for (int i = size-1; i >= 0; --i) {\n"
-          "  *(unsigned int *)__CPROVER_danger_RESULT_OPS[i+diff]=*(unsigned int *)__CPROVER_danger_RESULT_OPS[i];\n"
-          "}\n"
-          "return 0;\n");
+      "if (size <= 0 || size >= " CEGIS_PREFIX "max_solution_size) return 0;\n"
+      "int diff=" CEGIS_PREFIX "max_solution_size-size;\n"
+      "for (int i = size-1; i >= 0; --i) {\n"
+      "  *(unsigned int *)" CEGIS_RESULT_OPS "[i+diff]=*(unsigned int *)" CEGIS_RESULT_OPS "[i];\n"
+      "}\n"
+      "return 0;\n");
   substitute(text, "__CPROVER_assume(op0_ptr && op1_ptr && op2_ptr)",
-      "__CPROVER_danger_execute_assume(op0_ptr && op1_ptr && op2_ptr)");
+  CEGIS_PREFIX "execute_assume(op0_ptr && op1_ptr && op2_ptr)");
   substitute(text, "__CPROVER_assume((opcode != 19 && opcode != 20) || op1)",
-      "__CPROVER_danger_execute_assume(opcode != 19 && opcode != 20 || op1)");
+  CEGIS_PREFIX "execute_assume(opcode != 19 && opcode != 20 || op1)");
   substitute(text, "void __CPROVER_danger_execute(",
       "int __CPROVER_danger_execute_impl(");
   source+=text;
@@ -80,17 +82,17 @@ bool handle_return_value(const std::string &line)
   return contains(line, "main#return_value");
 }
 
-#define PROG_PREFIX "  struct __CPROVER_danger_instructiont "
+#define PROG_PREFIX "  struct " CEGIS_PREFIX "instructiont "
 #define PROG_PREFIX_LEN strlen(PROG_PREFIX)
 
 void replace_ce_index(std::string &line)
 {
-  substitute(line, "[__CPROVER_danger_x_index]", "[0u]");
+  substitute(line, "[" CEGIS_PREFIX "x_index]", "[0u]");
 }
 
 void replace_assume(std::string &line)
 {
-  substitute(line, "__CPROVER_assume", "__CPROVER_cegis_assert");
+  substitute(line, "__CPROVER_assume", CEGIS_PREFIX "assert");
 }
 
 void replace_danger_execute_size(std::string &line)
@@ -123,13 +125,13 @@ bool handle_programs(std::string &source, bool &initialised,
   if (PROG_PREFIX != line.substr(0, len)) return false;
   if (!initialised)
   {
-    source+="  __CPROVER_cegis_deserialise_init();\n";
+    source+="  " CEGIS_PREFIX "deserialise_init();\n";
     initialised=true;
   }
   const std::string::size_type name_len=line.find('[', len) - len;
   std::string name(line.substr(len, name_len));
   fix_cprover_names(name);
-  source+="  __CPROVER_cegis_declare_prog(";
+  source+="  " CEGIS_PREFIX "declare_prog(";
   source+=name;
   source+=", ";
   source+=name;
@@ -146,7 +148,7 @@ bool handle_x0(std::string &source, std::string &line)
   const std::string::size_type name_start=line.rfind(' ') + 1;
   const std::string name(line.substr(name_start, line.size() - name_start - 1));
   source+=line;
-  source+="\n  __CPROVER_cegis_deserialise_x0(";
+  source+="\n  " CEGIS_PREFIX "deserialise_x0(";
   source+=name;
   source+=");\n";
   return true;
@@ -154,11 +156,11 @@ bool handle_x0(std::string &source, std::string &line)
 
 bool handle_ce(std::string &source, bool &initialised, const std::string &line)
 {
-  if (!contains(line, "__CPROVER_danger_x_choice_")
-      || contains(line, "__CPROVER_danger_x_index")) return false;
+  if (!contains(line, CEGIS_PREFIX "x_choice_")
+      || contains(line, CEGIS_PREFIX "x_index")) return false;
   if (!initialised)
   {
-    source+="  __CPROVER_cegis_ce_value_init();\n";
+    source+="  " CEGIS_PREFIX "ce_value_init();\n";
     initialised=true;
   }
   const std::string::size_type name_end=line.find(" = { ");
@@ -166,27 +168,27 @@ bool handle_ce(std::string &source, bool &initialised, const std::string &line)
   std::string prefix=line.substr(0, name_end);
   fix_cprover_names(prefix);
   source+=prefix;
-  source+=" = { __CPROVER_cegis_ce_value() };\n";
+  source+=" = { " CEGIS_PREFIX "ce_value() };\n";
   return true;
 }
 
 bool handle_second_instr_struct(std::string &source, const std::string &line)
 {
-  if ("struct __CPROVER_danger_instructiont" != line) return false;
-  source+="struct __CPROVER_danger_instructiont_escaped\n";
+  if ("struct " CEGIS_PREFIX "instructiont" != line) return false;
+  source+="struct " CEGIS_PREFIX "instructiont_escaped\n";
   return true;
 }
 
 bool handle_ce_loop(const std::string &line, std::stringstream &ss)
 {
-  if ("    __CPROVER_danger_x_index = __CPROVER_danger_x_index + 1u;" == line
+  if ("    " CEGIS_PREFIX "x_index = " CEGIS_PREFIX "x_index + 1u;" == line
       || "  do" == line)
   {
     std::string skip;
     std::getline(ss, skip);
     return true;
   }
-  return "  while(__CPROVER_danger_x_index < 2u);" == line;
+  return "  while(" CEGIS_PREFIX "index < 2u);" == line;
 }
 
 bool handle_internals(const std::string &line)
@@ -232,7 +234,7 @@ std::string &post_process(std::string &source, std::stringstream &ss)
 
 void add_first_prog_offset(std::string &source, const size_t num_ce_vars)
 {
-  source+="#define __CPROVER_cegis_first_prog_offset ";
+  source+="#define " CEGIS_PREFIX "first_prog_offset ";
   source+=integer2string(num_ce_vars);
   source+="\n";
 }
@@ -242,7 +244,7 @@ std::string concrete_fitness_source_providert::operator ()()
 {
   if (!source.empty()) return source;
   constraint_varst ce_vars;
-  get_danger_constraint_vars(ce_vars, prog);
+  get_invariant_constraint_vars(ce_vars, prog);
   danger_learn_configt::counterexamplet dummy_ce;
   const typet type(danger_meta_type());  // XXX: Currently single data type
   const exprt zero(gen_zero(type));

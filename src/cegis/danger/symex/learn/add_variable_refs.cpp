@@ -6,7 +6,7 @@
 #include <ansi-c/c_types.h>
 
 #include <cegis/invariant/util/invariant_program_helper.h>
-#include <cegis/danger/meta/literals.h>
+#include <cegis/invariant/meta/literals.h>
 #include <cegis/danger/meta/meta_variable_names.h>
 #include <cegis/danger/instrument/meta_variables.h>
 #include <cegis/danger/options/danger_program.h>
@@ -41,14 +41,14 @@ goto_programt::targett set_ops_reference(const symbol_tablet &st,
     goto_programt &body, const goto_programt::targett &pos, const exprt &rhs,
     const unsigned int id)
 {
-  return set_ops_reference(st, body, pos, DANGER_OPS, rhs, id);
+  return set_ops_reference(st, body, pos, CEGIS_OPS, rhs, id);
 }
 
 goto_programt::targett set_ops_reference(const symbol_tablet &st,
     goto_programt &body, const goto_programt::targett &pos,
     const irep_idt &name, const unsigned int id)
 {
-  return set_ops_reference(st, body, pos, DANGER_OPS, name, id);
+  return set_ops_reference(st, body, pos, CEGIS_OPS, name, id);
 }
 
 null_pointer_exprt get_null()
@@ -124,7 +124,7 @@ goto_programt::targett set_rops_reference(const symbol_tablet &st,
     goto_programt &body, const goto_programt::targett &pos,
     const irep_idt &name, const unsigned int id)
 {
-  return set_ops_reference(st, body, pos, DANGER_RESULT_OPS, name, id);
+  return set_ops_reference(st, body, pos, CEGIS_RESULT_OPS, name, id);
 }
 
 goto_programt::targett link_temps(const symbol_tablet &st, goto_programt &body,

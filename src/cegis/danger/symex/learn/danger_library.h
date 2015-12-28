@@ -22,7 +22,7 @@ Author: Daniel Kroening, kroening@kroening.com
  * @param num_consts
  * @param max_solution_size
  */
-std::string get_danger_library_text(size_t num_vars, size_t num_consts,
+std::string get_invariant_library_text(size_t num_vars, size_t num_consts,
     size_t max_solution_size);
 
 /**
@@ -36,8 +36,8 @@ std::string get_danger_library_text(size_t num_vars, size_t num_consts,
  * @param num_consts
  * @param max_solution_size
  */
-void add_danger_library(class danger_programt &prog,
-    class message_handlert &msg, const size_t num_vars, const size_t num_consts,
+void add_invariant_library(class danger_programt &prog, class message_handlert &msg,
+    const size_t num_vars, const size_t num_consts,
     const size_t max_solution_size);
 
 #endif /* CEGIS_DANGER_LIBRARY_H_ */

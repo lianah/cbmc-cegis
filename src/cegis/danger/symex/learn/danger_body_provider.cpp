@@ -19,7 +19,7 @@ const goto_programt &danger_body_providert::operator ()()
   {
     prog=original_prog;
     null_message_handlert msg;
-    add_danger_library(prog, msg, 0u, 0u, 1u);
+    add_invariant_library(prog, msg, 0u, 0u, 1u);
     initialised=true;
   }
   const irep_idt id(DANGER_EXECUTE);

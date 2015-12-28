@@ -6,6 +6,7 @@
 #include <util/bv_arithmetic.h>
 #include <util/substitute.h>
 
+#include <cegis/invariant/meta/literals.h>
 #include <cegis/genetic/dynamic_test_runner.h>
 
 #define LIBRARY_PREFIX "fitness_test"
@@ -28,9 +29,9 @@ dynamic_test_runnert::~dynamic_test_runnert()
 {
   if (fitness_tester)
   {
-    #if 0
+#if 0
     dlclose(handle);
-    #endif
+#endif
   }
 }
 
@@ -40,20 +41,20 @@ void implement_deserialise(std::string &source)
 {
   source+=
       "#include <string.h>\n\n"
-          "#define __CPROVER_cegis_next_arg() argv[__CPROVER_cegis_deserialise_index++]\n"
-          "#define __CPROVER_cegis_deserialise_init() unsigned int __CPROVER_cegis_deserialise_index=__CPROVER_cegis_first_prog_offset\n"
-          "#define __CPROVER_cegis_declare_prog(var_name, sz) const size_t sz=__CPROVER_cegis_next_arg(); \\\n"
-          "  struct __CPROVER_danger_instructiont var_name[sz]; \\\n"
-          "for (unsigned int i=0; i < sizeof(var_name) / sizeof(struct __CPROVER_danger_instructiont); ++i) \\\n"
-          "{ \\\n"
-          "  var_name[i].opcode=__CPROVER_cegis_next_arg(); \\\n"
-          "  var_name[i].op0=__CPROVER_cegis_next_arg(); \\\n"
-          "  var_name[i].op1=__CPROVER_cegis_next_arg(); \\\n"
-          "  var_name[i].op2=__CPROVER_cegis_next_arg(); \\\n"
-          "}\n"
-          "#define __CPROVER_cegis_deserialise_x0(var_name) var_name=__CPROVER_cegis_next_arg()\n"
-          "#define __CPROVER_cegis_ce_value_init() unsigned int __CPROVER_cegis_ce_index=0u\n"
-          "#define __CPROVER_cegis_ce_value() argv[__CPROVER_cegis_ce_index++]\n";
+          "#define " CEGIS_PREFIX "next_arg() argv[" CEGIS_PREFIX "deserialise_index++]\n"
+      "#define " CEGIS_PREFIX "deserialise_init() unsigned int " CEGIS_PREFIX "deserialise_index=" CEGIS_PREFIX "first_prog_offset\n"
+      "#define " CEGIS_PREFIX "declare_prog(var_name, sz) const size_t sz=" CEGIS_PREFIX "next_arg(); \\\n"
+      "  struct " CEGIS_PREFIX "instructiont var_name[sz]; \\\n"
+      "for (unsigned int i=0; i < sizeof(var_name) / sizeof(struct " CEGIS_PREFIX "instructiont); ++i) \\\n"
+      "{ \\\n"
+      "  var_name[i].opcode=" CEGIS_PREFIX "next_arg(); \\\n"
+      "  var_name[i].op0=" CEGIS_PREFIX "next_arg(); \\\n"
+      "  var_name[i].op1=" CEGIS_PREFIX "next_arg(); \\\n"
+      "  var_name[i].op2=" CEGIS_PREFIX "next_arg(); \\\n"
+      "}\n"
+      "#define " CEGIS_PREFIX "deserialise_x0(var_name) var_name=" CEGIS_PREFIX "next_arg()\n"
+      "#define " CEGIS_PREFIX "ce_value_init() unsigned int " CEGIS_PREFIX "ce_index=0u\n"
+      "#define " CEGIS_PREFIX "ce_value() argv[" CEGIS_PREFIX "ce_index++]\n";
 
 }
 
@@ -89,11 +90,10 @@ void prepare_library(dynamic_test_runnert::lib_handlet &handle,
   implement_deserialise(source);
   source+=source_code_provider();
   substitute(source, "int main(const int argc, const char * const argv[])\n"
-      "{\n",
-      "int " FUNC "(const unsigned int argv[])\n"
-      "{\n"
-      "memset(__CPROVER_danger_OPS, 0, sizeof(__CPROVER_danger_OPS));\n"
-      "memset(__CPROVER_danger_RESULT_OPS, 0, sizeof(__CPROVER_danger_RESULT_OPS));\n");
+      "{\n", "int " FUNC "(const unsigned int argv[])\n"
+  "{\n"
+  "memset(" CEGIS_OPS ", 0, sizeof(" CEGIS_OPS "));\n"
+  "memset(" CEGIS_RESULT_OPS ", 0, sizeof(" CEGIS_RESULT_OPS "));\n");
   write_file(source_file_name.c_str(), source);
   std::string compile_command(COMPILE_COMMAND);
   compile_command+=source_file_name;

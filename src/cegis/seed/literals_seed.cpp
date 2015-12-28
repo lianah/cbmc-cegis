@@ -2,8 +2,8 @@
 
 #include <util/expr_util.h>
 
+#include <cegis/invariant/util/invariant_constraint_variables.h>
 #include <cegis/invariant/util/invariant_program_helper.h>
-#include <cegis/danger/symex/verify/insert_constraint.h>
 #include <cegis/seed/literals_seed.h>
 
 danger_literals_seedt::danger_literals_seedt(const danger_programt &prog) :
@@ -291,7 +291,7 @@ void danger_literals_seedt::operator()(
 {
   if (seeded) return;
   constraint_varst vars;
-  get_danger_constraint_vars(vars, prog);
+  get_invariant_constraint_vars(vars, prog);
   const value_poolt pool(prog, vars);
   pool.seed(counterexamples);
   seeded=true;

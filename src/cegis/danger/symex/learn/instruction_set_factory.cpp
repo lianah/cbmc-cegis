@@ -5,14 +5,13 @@
 
 #include <cegis/danger/meta/literals.h>
 #include <cegis/invariant/util/copy_instructions.h>
-#include <cegis/danger/util/danger_program_helper.h>
 #include <cegis/danger/symex/learn/instruction_set_factory.h>
 
 namespace
 {
-const char FIRST_PREFIX[]="__CPROVER_danger_opcode_first_";
-const char LAST_PREFIX[]="__CPROVER_danger_opcode_last_";
-const char SINGLE_PREFIX[]="__CPROVER_danger_opcode_";
+const char FIRST_PREFIX[]="__CPROVER_cegis_opcode_first_";
+const char LAST_PREFIX[]="__CPROVER_cegis_opcode_last_";
+const char SINGLE_PREFIX[]="__CPROVER_cegis_opcode_";
 
 class execute_instruction_handlert
 {

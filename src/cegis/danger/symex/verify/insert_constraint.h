@@ -24,19 +24,6 @@
 void danger_insert_constraint(goto_programt::targetst &quantifiers,
     class danger_programt &program);
 
-typedef std::deque<symbol_exprt> constraint_varst;
-
-/**
- * @brief
- *
- * @details
- *
- * @param vars
- * @param program
- */
-void get_danger_constraint_vars(constraint_varst &vars,
-    const danger_programt &program);
-
 /**
  * @brief
  *

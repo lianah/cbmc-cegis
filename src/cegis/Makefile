@@ -17,6 +17,7 @@ SRC = danger/meta/meta_variable_names.cpp danger/instrument/meta_variables.cpp \
       safety/options/safety_program.cpp \
       invariant/options/invariant_program.cpp invariant/options/target_copy_helper.cpp \
       invariant/util/copy_instructions.cpp invariant/util/invariant_program_helper.cpp \
+      invariant/util/invariant_constraint_variables.cpp \
       invariant/constant/add_constant.cpp invariant/constant/default_constant_strategy.cpp \
       invariant/constant/literals_constant_strategy.cpp \
       wordsize/restrict_bv_size.cpp value/program_individual_serialisation.cpp \

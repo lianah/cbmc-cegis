@@ -2,7 +2,7 @@
 
 #include <goto-programs/goto_trace.h>
 
-#include <cegis/danger/meta/literals.h>
+#include <cegis/invariant/meta/literals.h>
 #include <cegis/danger/options/danger_program.h>
 #include <cegis/danger/symex/learn/add_variable_refs.h>
 #include <cegis/danger/symex/learn/read_x0.h>
@@ -18,7 +18,7 @@ bool is_program_indivdual_decl(const goto_trace_stept &step)
   const typet &type=value.type().subtype();
   if (ID_struct != type.id()) return false;
   const std::string &tname=id2string(to_struct_type(type).get_tag());
-  const char * const danger_tag=&DANGER_INSTRUCTION_TYPE_NAME[4];
+  const char * const danger_tag=&CEGIS_INSTRUCTION_TYPE_NAME[4];
   return std::string::npos != tname.find(danger_tag);
 }
 

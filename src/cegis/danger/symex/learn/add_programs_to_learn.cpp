@@ -5,6 +5,8 @@
 #include <util/arith_tools.h>
 
 #include <cegis/invariant/util/invariant_program_helper.h>
+#include <cegis/invariant/meta/literals.h>
+#include <cegis/danger/meta/literals.h>
 #include <cegis/danger/options/danger_program.h>
 #include <cegis/danger/instrument/meta_variables.h>
 
@@ -19,7 +21,6 @@ std::string get_prog_name(const symbol_tablet &st,
   return base_name+=PROG_SUFFIX;
 }
 
-const char DANGER_EXECUTE[]="__CPROVER_danger_execute";
 void execute(const symbol_tablet &st, goto_functionst &gf,
     const size_t max_solution_size, const goto_programt::targett &decl,
     const std::string &prog_base_name)
@@ -48,7 +49,6 @@ void execute(const symbol_tablet &st, goto_functionst &gf,
   execute(st, gf, max_solution_size, decl, get_prog_name(st, decl));
 }
 
-const char DANGER_INSTRUCTION_TYPE_NAME[]="tag-__CPROVER_danger_instructiont";
 goto_programt::targett add_program(danger_programt &prog,
     goto_programt::targett pos, const size_t max_solution_size,
     const goto_programt::targett &decl)
@@ -58,7 +58,7 @@ goto_programt::targett add_program(danger_programt &prog,
   const std::string base_name(get_prog_name(st, decl));
   const typet size_type(unsigned_int_type());
   const constant_exprt size(from_integer(max_solution_size, size_type));
-  const symbol_typet instr_type(DANGER_INSTRUCTION_TYPE_NAME);
+  const symbol_typet instr_type(CEGIS_INSTRUCTION_TYPE_NAME);
   const array_typet prog_type(instr_type, size);
   pos=declare_danger_variable(st, gf, pos, base_name, prog_type);
   execute(st, gf, max_solution_size, decl);
@@ -82,7 +82,8 @@ public:
     const symbol_tablet &st=prog.st;
     goto_functionst &gf=prog.gf;
     const invariant_programt::meta_vars_positionst &im=loop.meta_variables;
-    const danger_programt::danger_meta_vars_positionst &dm=loop.danger_meta_variables;
+    const danger_programt::danger_meta_vars_positionst &dm=
+        loop.danger_meta_variables;
     pos=add_program(prog, pos, max_solution_size, im.Ix);
     const std::string dx_prog_name=get_prog_name(st, im.Ix);
     execute(st, gf, max_solution_size, im.Ix_prime, dx_prog_name);

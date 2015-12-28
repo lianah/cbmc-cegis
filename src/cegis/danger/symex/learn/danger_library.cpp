@@ -6,6 +6,7 @@
 #include <ansi-c/cprover_library.h>
 
 #include <cegis/invariant/util/invariant_program_helper.h>
+#include <cegis/invariant/meta/literals.h>
 #include <cegis/danger/meta/literals.h>
 #include <cegis/danger/options/danger_program.h>
 #include <cegis/danger/instrument/meta_variables.h>
@@ -19,7 +20,7 @@ const char SIZE_ARG_BASE_NAME[]="size";
 
 pointer_typet instr_type()
 {
-  return pointer_typet(symbol_typet(DANGER_INSTRUCTION_TYPE_NAME));
+  return pointer_typet(symbol_typet(CEGIS_INSTRUCTION_TYPE_NAME));
 }
 
 void add_placeholder(symbol_tablet &symbol_table)
@@ -44,7 +45,7 @@ void add_placeholder(symbol_tablet &symbol_table)
   symbol.type=type;
   symbol.is_lvalue=true;
   symbol.mode=ID_C;
-  symbol.module=DANGER_MODULE;
+  symbol.module=CEGIS_MODULE;
   symbol_table.add(symbol);
 }
 
@@ -80,26 +81,26 @@ void set_init_values(danger_programt &prog)
   goto_programt &body=get_entry_body(prog.gf);
   goto_programt::targett pos=prog.invariant_range.begin;
   const symbol_tablet &st=prog.st;
-  pos=init_array(st, body, DANGER_OPS, --pos);
-  pos=init_array(st, body, DANGER_RESULT_OPS, pos);
+  pos=init_array(st, body, CEGIS_OPS, --pos);
+  pos=init_array(st, body, CEGIS_RESULT_OPS, pos);
 }
 
 std::string get_prefix(const size_t num_vars, const size_t num_consts,
     const size_t max_solution_size)
 {
-  std::string prefix("#define __CPROVER_danger_number_of_vars ");
+  std::string prefix("#define " CEGIS_PREFIX "number_of_vars ");
   prefix+=integer2string(num_vars);
-  prefix+="\n#define __CPROVER_danger_number_of_consts ";
+  prefix+="\n#define " CEGIS_PREFIX "number_of_consts ";
   prefix+=integer2string(num_consts);
-  prefix+="u\n#define __CPROVER_danger_number_of_ops ";
+  prefix+="u\n#define " CEGIS_PREFIX "number_of_ops ";
   prefix+=integer2string(num_vars + max_solution_size);
-  prefix+="u\n#define __CPROVER_danger_max_solution_size ";
+  prefix+="u\n#define " CEGIS_PREFIX "max_solution_size ";
   prefix+=integer2string(max_solution_size);
   return prefix+="u\n";
 }
 }
 
-std::string get_danger_library_text(const size_t num_vars,
+std::string get_invariant_library_text(const size_t num_vars,
     const size_t num_consts, const size_t max_solution_size)
 {
   symbol_tablet st;
@@ -112,7 +113,7 @@ std::string get_danger_library_text(const size_t num_vars,
   return text;
 }
 
-void add_danger_library(danger_programt &prog, message_handlert &msg,
+void add_invariant_library(danger_programt &prog, message_handlert &msg,
     const size_t num_vars, const size_t num_consts,
     const size_t max_solution_size)
 {

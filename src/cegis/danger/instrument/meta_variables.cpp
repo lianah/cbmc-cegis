@@ -5,7 +5,7 @@
 #include <goto-programs/goto_functions.h>
 
 #include <cegis/invariant/util/invariant_program_helper.h>
-#include <cegis/danger/meta/literals.h>
+#include <cegis/invariant/meta/literals.h>
 #include <cegis/danger/instrument/meta_variables.h>
 
 namespace
@@ -43,7 +43,7 @@ symbolt &create_danger_symbol(symbol_tablet &st, const std::string &full_name,
   new_symbol.pretty_name=new_symbol.base_name;
   new_symbol.location=default_danger_source_location();
   new_symbol.mode=ID_C;
-  new_symbol.module=DANGER_MODULE;
+  new_symbol.module=CEGIS_MODULE;
   new_symbol.is_thread_local=true;
   new_symbol.is_static_lifetime=false;
   new_symbol.is_file_local=true;
@@ -91,7 +91,7 @@ typet danger_meta_type()
 source_locationt default_danger_source_location()
 {
   source_locationt loc;
-  loc.set_file(DANGER_MODULE);
+  loc.set_file(CEGIS_MODULE);
   loc.set_function(goto_functionst::entry_point());
   return loc;
 }

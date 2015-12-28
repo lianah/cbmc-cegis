@@ -5,7 +5,7 @@
 #include <util/arith_tools.h>
 
 #include <cegis/invariant/util/invariant_program_helper.h>
-#include <cegis/danger/meta/literals.h>
+#include <cegis/invariant/meta/literals.h>
 #include <cegis/danger/options/danger_program.h>
 #include <cegis/danger/constraint/danger_constraint_factory.h>
 #include <cegis/danger/instrument/meta_variables.h>
@@ -44,7 +44,7 @@ public:
   }
 };
 
-const char X_CHOICE_PREFIX[]=DANGER_PREFIX"x_choice_";
+const char X_CHOICE_PREFIX[]=CEGIS_PREFIX "x_choice_";
 void declare_x_arrays(symbol_tablet &st, goto_functionst &gf,
     goto_programt::targett pos, const array_valuest &vals)
 {
@@ -59,14 +59,14 @@ void declare_x_arrays(symbol_tablet &st, goto_functionst &gf,
   }
 }
 
-const char X_INDEX[]=DANGER_PREFIX"x_index";
+const char X_INDEX[]=CEGIS_PREFIX "x_index";
 symbol_exprt get_index(const symbol_tablet &st)
 {
   const std::string index_name(get_danger_meta_name(X_INDEX));
   return st.lookup(index_name).symbol_expr();
 }
 
-const char X_LABEL[]=DANGER_PREFIX"x_loop";
+const char X_LABEL[]=CEGIS_PREFIX"x_loop";
 goto_programt::targett add_ce_loop(danger_programt &prog, const size_t ces_size)
 {
   symbol_tablet &st=prog.st;
