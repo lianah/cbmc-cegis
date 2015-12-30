@@ -1,9 +1,10 @@
 #include <algorithm>
 
+#include <cegis/invariant/instrument/meta_variables.h>
 #include <cegis/invariant/util/invariant_program_helper.h>
-#include <cegis/danger/constraint/danger_constraint_factory.h>
+#include <cegis/invariant/meta/meta_variable_names.h>
 #include <cegis/danger/meta/meta_variable_names.h>
-#include <cegis/danger/instrument/meta_variables.h>
+#include <cegis/danger/constraint/danger_constraint_factory.h>
 #include <cegis/danger/symex/verify/restrict_counterexamples.h>
 
 namespace
@@ -29,7 +30,7 @@ goto_programt::targett add_assume(goto_functionst &gf)
   if (goto_program_instruction_typet::ASSUME == (--pos)->type) return pos;
   pos=body.insert_after(pos);
   pos->type=goto_program_instruction_typet::ASSUME;
-  pos->source_location=default_danger_source_location();
+  pos->source_location=default_invariant_source_location();
   return pos;
 }
 

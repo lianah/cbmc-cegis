@@ -9,7 +9,7 @@
 #include <cegis/invariant/meta/literals.h>
 #include <cegis/danger/meta/literals.h>
 #include <cegis/danger/options/danger_program.h>
-#include <cegis/danger/instrument/meta_variables.h>
+#include <cegis/invariant/instrument/meta_variables.h>
 
 namespace
 {
@@ -69,7 +69,7 @@ goto_programt::targett init_array(const symbol_tablet &st, goto_programt &body,
 {
   pos=body.insert_after(pos);
   pos->type=goto_program_instruction_typet::ASSIGN;
-  pos->source_location=default_danger_source_location();
+  pos->source_location=default_invariant_source_location();
   const symbol_exprt array(st.lookup(name).symbol_expr());
   const array_typet &type=to_array_type(array.type());
   pos->code=code_assignt(array, array_of_exprt(gen_zero(type.subtype()), type));

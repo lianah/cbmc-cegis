@@ -7,7 +7,7 @@
 
 #include <cegis/invariant/util/invariant_constraint_variables.h>
 #include <cegis/invariant/meta/literals.h>
-#include <cegis/danger/instrument/meta_variables.h>
+#include <cegis/invariant/instrument/meta_variables.h>
 #include <cegis/danger/symex/learn/danger_library.h>
 #include <cegis/danger/fitness/concrete_fitness_source_provider.h>
 
@@ -246,7 +246,7 @@ std::string concrete_fitness_source_providert::operator ()()
   constraint_varst ce_vars;
   get_invariant_constraint_vars(ce_vars, prog);
   danger_learn_configt::counterexamplet dummy_ce;
-  const typet type(danger_meta_type());  // XXX: Currently single data type
+  const typet type(invariant_meta_type());  // XXX: Currently single data type
   const exprt zero(gen_zero(type));
   for (const symbol_exprt &var : ce_vars)
     dummy_ce.insert(std::make_pair(var.get_identifier(), zero));

@@ -8,12 +8,13 @@
 
 #include <cegis/value/program_individual_serialisation.h>
 #include <cegis/instructions/instruction_set_factory.h>
+#include <cegis/invariant/util/copy_instructions.h>
+#include <cegis/invariant/instrument/meta_variables.h>
+#include <cegis/invariant/meta/meta_variable_names.h>
 #include <cegis/danger/meta/literals.h>
 #include <cegis/danger/meta/meta_variable_names.h>
-#include <cegis/danger/instrument/meta_variables.h>
 #include <cegis/danger/value/danger_goto_solution.h>
 #include <cegis/danger/options/danger_program.h>
-#include <cegis/invariant/util/copy_instructions.h>
 #include <cegis/danger/symex/learn/replace_operators.h>
 #include <cegis/danger/symex/learn/solution_factory.h>
 #include <cegis/danger/symex/learn/read_x0.h>
@@ -37,7 +38,7 @@ void reverse(danger_variable_namest &names, const danger_variable_idst &o)
 size_t create_temps(danger_variable_namest &rnames, const size_t num_tmp)
 {
   for (size_t i=0; i < num_tmp; ++i)
-    rnames.insert(std::make_pair(i, get_danger_meta_name(get_tmp(i))));
+    rnames.insert(std::make_pair(i, get_invariant_meta_name(get_tmp(i))));
   return num_tmp;
 }
 
@@ -86,7 +87,7 @@ class read_instrt
     case INV:
     {
       const size_t idx=create_temps(rnames, prog_size - 1);
-      const std::string result(get_danger_meta_name(get_Rx(loop_index, 0))); // XXX: Lexicographical ranking?
+      const std::string result(get_invariant_meta_name(get_Rx(loop_index, 0))); // XXX: Lexicographical ranking?
       rnames.insert(std::make_pair(idx, result));
       prog_type=RNK;
       break;
@@ -99,7 +100,7 @@ class read_instrt
       for (size_t i=num_temps; i < prog_size; ++i)
       {
         const size_t sk=i - num_temps;
-        const std::string name(get_danger_meta_name(get_Sx(loop_index, sk)));
+        const std::string name(get_invariant_meta_name(get_Sx(loop_index, sk)));
         rnames.insert(std::make_pair(i, name));
       }
       prog_type=SKO;
@@ -109,7 +110,7 @@ class read_instrt
     case SKO:
     {
       const size_t idx=create_temps(rnames, prog_size - 1);
-      const std::string result_name(get_danger_meta_name(get_Dx(loop_index)));
+      const std::string result_name(get_invariant_meta_name(get_Dx(loop_index)));
       rnames.insert(std::make_pair(idx, result_name));
       prog_type=INV;
       break;
@@ -247,7 +248,7 @@ void create_danger_solution(danger_goto_solutiont &result,
   }
   danger_goto_solutiont::nondet_choicest &nondet=result.x0_choices;
   nondet.clear();
-  const typet type=danger_meta_type(); // XXX: Currently single data type.
+  const typet type=invariant_meta_type(); // XXX: Currently single data type.
   for (const individualt::x0t::value_type &x0 : ind.x0)
     nondet.push_back(from_integer(x0, type));
 }

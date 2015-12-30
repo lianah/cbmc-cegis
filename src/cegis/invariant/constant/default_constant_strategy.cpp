@@ -4,7 +4,7 @@
 #include <cegis/invariant/constant/add_constant.h>
 #include <cegis/invariant/constant/literals_constant_strategy.h>
 #include <cegis/invariant/constant/default_constant_strategy.h>
-#include <cegis/danger/instrument/meta_variables.h>
+#include <cegis/invariant/instrument/meta_variables.h>
 
 namespace
 {
@@ -14,7 +14,7 @@ namespace
 size_t default_constant_strategy(invariant_programt &program,
     const size_t max_length)
 {
-  const typet type(danger_meta_type());
+  const typet type(invariant_meta_type());
   const bv_spect spec(type);
   add_danger_constant(program, from_integer(spec.max_value().to_ulong(), type));
   add_danger_constant(program, from_integer(0u, type));

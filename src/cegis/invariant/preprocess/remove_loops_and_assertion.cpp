@@ -1,11 +1,11 @@
 #include <util/simplify_expr.h>
 
+#include <cegis/invariant/options/invariant_program.h>
 #include <cegis/invariant/util/invariant_program_helper.h>
-#include <cegis/danger/options/danger_program.h>
 
 namespace
 {
-bool handle_assertion_removal(danger_programt &program,
+bool handle_assertion_removal(invariant_programt &program,
     goto_programt::instructionst &instrs, const goto_programt::targett &target)
 {
   const goto_programt::instructiont &instr=*target;
@@ -16,7 +16,7 @@ bool handle_assertion_removal(danger_programt &program,
   goto_programt::targett &end=program.invariant_range.end;
   end=target;
   --end;
-  goto_programt::targett &last_loop_end=program.loops.back().body.end;
+  goto_programt::targett &last_loop_end=program.get_loops().back()->body.end;
   const bool is_last_loop_end=last_loop_end == target;
   erase_target(instrs, target);
   ++end;
@@ -24,14 +24,14 @@ bool handle_assertion_removal(danger_programt &program,
   return true;
 }
 
-void handle_loop_removal(danger_programt &program,
+void handle_loop_removal(invariant_programt &program,
     goto_programt::instructionst &instrs, goto_programt::targett &target)
 {
   const goto_programt::instructiont &instr=*target;
   if (!instr.is_backwards_goto()) return;
   const namespacet ns(program.st);
   const goto_programt::targett goto_target=instr.get_target();
-  danger_programt::loopt loop;
+  invariant_programt::invariant_loopt &loop=program.add_loop();
   if (instr.guard.is_true())
   {
     exprt guard=goto_target->guard;
@@ -50,11 +50,10 @@ void handle_loop_removal(danger_programt &program,
   --loop.body.end;
   erase_target(instrs, target--);
   ++loop.body.end;
-  program.loops.push_back(loop);
 }
 }
 
-void danger_remove_loops_and_assertion(danger_programt &program)
+void invariant_remove_loops_and_assertion(invariant_programt &program)
 {
   goto_programt &body=get_entry_body(program.gf);
   goto_programt::instructionst &instrs=body.instructions;

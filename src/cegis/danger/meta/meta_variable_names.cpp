@@ -4,11 +4,6 @@
 #include <cegis/danger/meta/literals.h>
 #include <cegis/danger/meta/meta_variable_names.h>
 
-std::string get_Ax()
-{
-  return DANGER_PREFIX"A_x";
-}
-
 namespace
 {
 const char INVARIANT_PREFIX[]=DANGER_PREFIX"D";
@@ -40,16 +35,6 @@ const char STATE_BEFORE_LOOP[]="x";
 std::string get_Dx(const size_t loop_id)
 {
   return build_var_name(INVARIANT_PREFIX, loop_id, STATE_BEFORE_LOOP);
-}
-
-namespace
-{
-const char GUARD_PREFIX[]=DANGER_PREFIX"G";
-}
-
-std::string get_Gx(const size_t loop_id)
-{
-  return build_var_name(GUARD_PREFIX, loop_id, STATE_BEFORE_LOOP);
 }
 
 namespace
@@ -96,10 +81,4 @@ const char SKOLEM_PREFIX[]=DANGER_PREFIX"S";
 std::string get_Sx(const size_t loop_id, const size_t result_id)
 {
   return build_var_name(SKOLEM_PREFIX, loop_id, STATE_BEFORE_LOOP, result_id);
-}
-
-std::string get_tmp(const size_t id)
-{
-  std::string result(CEGIS_TMP_PREFIX);
-  return result+=integer2string(id);
 }

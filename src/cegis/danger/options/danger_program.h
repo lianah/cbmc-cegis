@@ -100,6 +100,11 @@ public:
    * @see invariant_programt::get_loops
    */
   virtual invariant_loopst get_loops();
+
+  /**
+   * @see invariant_programt::add_loop
+   */
+  virtual invariant_loopt &add_loop();
 };
 
 #endif /* CEGIS_DANGER_PROGRAM_H_ */

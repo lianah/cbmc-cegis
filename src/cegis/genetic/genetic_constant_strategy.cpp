@@ -6,7 +6,7 @@
 
 #include <cegis/invariant/constant/literals_constant_strategy.h>
 #include <cegis/danger/options/danger_program.h>
-#include <cegis/danger/instrument/meta_variables.h>
+#include <cegis/invariant/instrument/meta_variables.h>
 #include <cegis/genetic/genetic_constant_strategy.h>
 #include <cegis/genetic/genetic_constant_strategy.h>
 
@@ -42,8 +42,8 @@ size_t genetic_constant_strategy(invariant_programt &prog,
   for (const constant_exprt &expr : literals)
   {
     const std::string base_name(get_name(const_index++));
-    pos=declare_danger_variable(st, gf, pos, base_name, expr.type());
-    pos=assign_danger_variable(st, gf, pos, base_name, expr);
+    pos=declare_invariant_variable(st, gf, pos, base_name, expr.type());
+    pos=assign_invariant_variable(st, gf, pos, base_name, expr);
     max_word_width=std::max(max_word_width, get_min_word_width(expr));
   }
 

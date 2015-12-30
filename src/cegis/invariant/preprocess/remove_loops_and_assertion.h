@@ -7,8 +7,8 @@
 
 \*******************************************************************/
 
-#ifndef CEGIS_DANGER_ADD_INVARIANT_AND_TEMP_VARIABLES_H_
-#define CEGIS_DANGER_ADD_INVARIANT_AND_TEMP_VARIABLES_H_
+#ifndef CEGIS_INVARIANT_REMOVE_LOOPS_AND_ASSERTION_H_
+#define CEGIS_INVARIANT_REMOVE_LOOPS_AND_ASSERTION_H_
 
 /**
  * @brief
@@ -16,9 +16,7 @@
  * @details
  *
  * @param program
- * @param max_program_length
  */
-void add_danger_invariants_and_temp_variables(class danger_programt &program,
-    const size_t max_program_length);
+void invariant_remove_loops_and_assertion(class invariant_programt &program);
 
-#endif /* CEGIS_DANGER_ADD_INVARIANT_AND_TEMP_VARIABLES_H_ */
+#endif /* CEGIS_INVARIANT_REMOVE_LOOPS_AND_ASSERTION_H_ */

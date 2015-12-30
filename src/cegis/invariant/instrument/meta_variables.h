@@ -7,8 +7,8 @@
 
 \*******************************************************************/
 
-#ifndef CEGIS_DANGER_META_VARIABLES_H_
-#define CEGIS_DANGER_META_VARIABLES_H_
+#ifndef CEGIS_INVARIANT_META_VARIABLES_H_
+#define CEGIS_INVARIANT_META_VARIABLES_H_
 
 #include <goto-programs/goto_program.h>
 
@@ -21,7 +21,7 @@
  *
  * @return
  */
-std::string get_danger_meta_name(const std::string &base_name);
+std::string get_invariant_meta_name(const std::string &base_name);
 
 /**
  * @brief
@@ -36,7 +36,7 @@ std::string get_danger_meta_name(const std::string &base_name);
  *
  * @return
  */
-goto_programt::targett declare_danger_variable(symbol_tablet &st,
+goto_programt::targett declare_invariant_variable(symbol_tablet &st,
     class goto_functionst &gf, const goto_programt::targett &insert_after_pos,
     const std::string &base_name, const typet &type);
 
@@ -51,7 +51,7 @@ goto_programt::targett declare_danger_variable(symbol_tablet &st,
  *
  * @return
  */
-symbolt &create_danger_symbol(symbol_tablet &st, const std::string &full_name,
+symbolt &create_invariant_symbol(symbol_tablet &st, const std::string &full_name,
     const typet &type);
 
 /**
@@ -67,7 +67,7 @@ symbolt &create_danger_symbol(symbol_tablet &st, const std::string &full_name,
  *
  * @return
  */
-goto_programt::targett danger_assign(const symbol_tablet &st,
+goto_programt::targett invariant_assign(const symbol_tablet &st,
     goto_functionst &gf, const goto_programt::targett &insert_after_pos,
     const exprt &lhs, const exprt &rhs);
 
@@ -84,7 +84,7 @@ goto_programt::targett danger_assign(const symbol_tablet &st,
  *
  * @return
  */
-goto_programt::targett danger_assign_user_variable(const symbol_tablet &st,
+goto_programt::targett invariant_assign_user_variable(const symbol_tablet &st,
     goto_functionst &gf, const goto_programt::targett &insert_after_pos,
     const irep_idt &name, const exprt &value);
 
@@ -101,7 +101,7 @@ goto_programt::targett danger_assign_user_variable(const symbol_tablet &st,
  *
  * @return
  */
-goto_programt::targett assign_danger_variable(const symbol_tablet &st,
+goto_programt::targett assign_invariant_variable(const symbol_tablet &st,
     goto_functionst &gf, const goto_programt::targett &insert_after_pos,
     const std::string &base_name, const exprt &value);
 
@@ -112,7 +112,7 @@ goto_programt::targett assign_danger_variable(const symbol_tablet &st,
  *
  * @return
  */
-typet danger_meta_type();
+typet invariant_meta_type();
 
 /**
  * @brief
@@ -121,6 +121,6 @@ typet danger_meta_type();
  *
  * @return
  */
-source_locationt default_danger_source_location();
+source_locationt default_invariant_source_location();
 
-#endif /* CEGIS_DANGER_META_VARIABLES_H_ */
+#endif /* CEGIS_INVARIANT_META_VARIABLES_H_ */

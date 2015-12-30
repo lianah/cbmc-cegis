@@ -7,8 +7,8 @@
 
 \*******************************************************************/
 
-#ifndef CEGIS_DANGER_REMOVE_LOOPS_AND_ASSERTION_H_
-#define CEGIS_DANGER_REMOVE_LOOPS_AND_ASSERTION_H_
+#ifndef CEGIS_DANGER_ADD_INVARIANT_AND_TEMP_VARIABLES_H_
+#define CEGIS_DANGER_ADD_INVARIANT_AND_TEMP_VARIABLES_H_
 
 /**
  * @brief
@@ -16,7 +16,9 @@
  * @details
  *
  * @param program
+ * @param max_program_length
  */
-void danger_remove_loops_and_assertion(class danger_programt &program);
+void add_ranking_and_skolem_variables(class danger_programt &program,
+    const size_t max_program_length);
 
-#endif /* CEGIS_DANGER_REMOVE_LOOPS_AND_ASSERTION_H_ */
+#endif /* CEGIS_DANGER_ADD_INVARIANT_AND_TEMP_VARIABLES_H_ */

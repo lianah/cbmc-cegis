@@ -4,7 +4,7 @@
 
 #include <cegis/invariant/constant/add_constant.h>
 #include <cegis/danger/options/danger_program.h>
-#include <cegis/danger/instrument/meta_variables.h>
+#include <cegis/invariant/instrument/meta_variables.h>
 
 namespace
 {
@@ -72,7 +72,7 @@ void add_danger_constant(danger_programt &prog, const std::string &name,
   ++pos;
   type.set(ID_C_constant, true);
   symbol_tablet &st=prog.st;
-  create_danger_symbol(st, name, type).value=value;
+  create_invariant_symbol(st, name, type).value=value;
   if (!is_empty(value))
   pos=danger_assign_user_variable(st, prog.gf, pos, name, value);
 }
@@ -88,7 +88,7 @@ while (is_builtin(pos))
 typet type=value.type();
 type.set(ID_C_constant, true);
 symbol_tablet &st=prog.st;
-create_danger_symbol(st, name, type).value=value;
+create_invariant_symbol(st, name, type).value=value;
 if (!is_empty(value))
-  pos=danger_assign_user_variable(st, prog.gf, pos, name, value);
+  pos=invariant_assign_user_variable(st, prog.gf, pos, name, value);
 }

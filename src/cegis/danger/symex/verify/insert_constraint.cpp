@@ -7,7 +7,7 @@
 #include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/danger/constraint/danger_constraint_factory.h>
 #include <cegis/danger/options/danger_program.h>
-#include <cegis/danger/instrument/meta_variables.h>
+#include <cegis/invariant/instrument/meta_variables.h>
 #include <cegis/danger/symex/verify/insert_constraint.h>
 
 namespace
@@ -28,7 +28,7 @@ public:
   {
     pos=body.insert_after(pos);
     pos->type=goto_program_instruction_typet::ASSIGN;
-    pos->source_location=default_danger_source_location();
+    pos->source_location=default_invariant_source_location();
     pos->code=code_assignt(var, side_effect_expr_nondett(var.type()));
     quantifiers.push_back(pos);
   }
@@ -49,7 +49,7 @@ void add_final_assertion(danger_programt &program)
   goto_programt::targett pos=program.invariant_range.end;
   pos=get_entry_body(program.gf).insert_after(--pos);
   pos->type=goto_program_instruction_typet::ASSERT;
-  pos->source_location=default_danger_source_location();
+  pos->source_location=default_invariant_source_location();
   pos->guard=create_danger_constraint(program.loops.size());
 }
 }
@@ -71,7 +71,7 @@ void danger_limit_ce(const goto_programt::targetst &quantifiers,
     const irep_idt &var=get_affected_variable(*quantifier);
     const goto_programt::targett assume=body.insert_after(quantifier);
     assume->type=goto_program_instruction_typet::ASSUME;
-    assume->source_location=default_danger_source_location();
+    assume->source_location=default_invariant_source_location();
     const symbol_exprt expr=st.lookup(var).symbol_expr();
     const typet &type=expr.type();
     constant_exprt pattern=to_constant_expr(gen_zero(type));

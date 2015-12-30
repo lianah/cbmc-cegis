@@ -28,7 +28,7 @@
 #include <cegis/invariant/constant/constant_strategy.h>
 #include <cegis/invariant/constant/default_constant_strategy.h>
 #include <cegis/danger/fitness/concrete_fitness_source_provider.h>
-#include <cegis/danger/instrument/meta_variables.h>
+#include <cegis/invariant/instrument/meta_variables.h>
 #include <cegis/danger/preprocess/danger_preprocessing.h>
 #include <cegis/danger/symex/learn/add_variable_refs.h>
 #include <cegis/danger/symex/learn/danger_learn_config.h>
@@ -283,7 +283,7 @@ int run_genetic_and_symex(mstreamt &os, optionst &opt,
   { return counter.get_num_consts();});
 
   // Set-up genetic algorithm
-  const typet type=danger_meta_type(); // XXX: Currently single user data type.
+  const typet type=invariant_meta_type(); // XXX: Currently single user data type.
   random_individualt rnd(seed, type, info_fac, min_prog_sz, max_prog_sz,
       num_progs, num_vars, num_consts, num_x0);
   danger_fitness_configt converter(info_fac, prog);

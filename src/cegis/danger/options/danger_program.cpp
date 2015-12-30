@@ -103,3 +103,9 @@ invariant_programt::invariant_loopst danger_programt::get_loops()
   { return &loop;});
   return result;
 }
+
+invariant_programt::invariant_loopt &danger_programt::add_loop()
+{
+  loops.push_back(loopt());
+  return loops.back();
+}

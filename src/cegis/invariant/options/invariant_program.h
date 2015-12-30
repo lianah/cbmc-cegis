@@ -131,6 +131,15 @@ public:
    * @return
    */
   virtual invariant_loopst get_loops() = 0;
+
+  /**
+   * @brief
+   *
+   * @details
+   *
+   * @return
+   */
+  virtual invariant_loopt &add_loop() = 0;
 };
 
 #endif /* CEGIS_INVARIANT_PROGRAM_H_ */

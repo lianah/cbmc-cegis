@@ -5,10 +5,10 @@
 
 #include <ansi-c/c_types.h>
 
+#include <cegis/invariant/instrument/meta_variables.h>
 #include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/invariant/meta/literals.h>
-#include <cegis/danger/meta/meta_variable_names.h>
-#include <cegis/danger/instrument/meta_variables.h>
+#include <cegis/invariant/meta/meta_variable_names.h>
 #include <cegis/danger/options/danger_program.h>
 #include <cegis/danger/symex/learn/add_variable_refs.h>
 
@@ -21,7 +21,7 @@ goto_programt::targett set_ops_reference(const symbol_tablet &st,
   const goto_programt::targett target=body.insert_after(pos);
   goto_programt::instructiont &set_op=*target;
   set_op.type=ASSIGN;
-  set_op.source_location=default_danger_source_location();
+  set_op.source_location=default_invariant_source_location();
   const constant_exprt index(from_integer(id, unsigned_int_type()));
   const symbol_exprt ops(st.lookup(ops_array).symbol_expr());
   const index_exprt op(ops, index);
@@ -135,7 +135,7 @@ goto_programt::targett link_temps(const symbol_tablet &st, goto_programt &body,
   ++previous_successor;
   for (size_t i=0; i < num_temps; ++i)
   {
-    const std::string name=get_danger_meta_name(get_tmp(i));
+    const std::string name=get_invariant_meta_name(get_tmp(i));
     pos=set_rops_reference(st, body, pos, name, i);
     if (i == 0) move_labels(body, previous_successor, pos);
     pos=set_ops_reference(st, body, pos, name, i + num_user_vars);

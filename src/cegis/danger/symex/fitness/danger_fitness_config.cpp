@@ -1,7 +1,7 @@
 #include <util/arith_tools.h>
 
 #include <cegis/invariant/util/invariant_program_helper.h>
-#include <cegis/danger/instrument/meta_variables.h>
+#include <cegis/invariant/instrument/meta_variables.h>
 #include <cegis/danger/value/danger_goto_solution.h>
 #include <cegis/danger/options/danger_program_printer.h>
 #include <cegis/danger/symex/learn/add_variable_refs.h>
@@ -81,7 +81,7 @@ void danger_fitness_configt::set_test_case(const counterexamplet &ce)
       goto_programt::targett assignment=quantifier;
       erase_target(get_entry_body(gf).instructions, ++assignment);
     }
-    danger_assign_user_variable(st, gf, quantifier, var, it->second);
+    invariant_assign_user_variable(st, gf, quantifier, var, it->second);
   }
   gf.update();
   program_contains_ce=true;

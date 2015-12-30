@@ -6,7 +6,7 @@
 #include <cegis/danger/value/danger_goto_solution.h>
 #include <cegis/danger/options/danger_program.h>
 #include <cegis/invariant/util/copy_instructions.h>
-#include <cegis/danger/instrument/meta_variables.h>
+#include <cegis/invariant/instrument/meta_variables.h>
 #include <cegis/danger/symex/verify/insert_candidate.h>
 
 namespace
@@ -30,7 +30,7 @@ public:
   {
     const goto_programt::targett pos=*current_choice++;
     const irep_idt &var_name=get_affected_variable(*pos);
-    danger_assign_user_variable(st, gf, pos, var_name, x0_value);
+    invariant_assign_user_variable(st, gf, pos, var_name, x0_value);
   }
 };
 
@@ -159,8 +159,8 @@ void insert_programs(danger_programt &prog, const candidatet &candidate)
   if (progs.empty()) return;
   goto_programt &body=get_entry_body(prog.gf);
   const goto_programt::instructionst &first_inv=progs.begin()->invariant;
-  const std::string D0x(get_danger_meta_name(get_Dx(0)));
-  const std::string Dx0(get_danger_meta_name(get_Dx0()));
+  const std::string D0x(get_invariant_meta_name(get_Dx(0)));
+  const std::string Dx0(get_invariant_meta_name(get_Dx0()));
   insert_program(body, prog.Ix0, first_inv, D0x, Dx0);
   const insert_danger_programt insert(prog, body);
   std::for_each(progs.begin(), progs.end(), insert);

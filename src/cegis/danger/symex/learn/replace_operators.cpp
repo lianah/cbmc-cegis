@@ -1,7 +1,7 @@
 #include <util/namespace_utils.h>
 
 #include <cegis/danger/meta/literals.h>
-#include <cegis/danger/instrument/meta_variables.h>
+#include <cegis/invariant/instrument/meta_variables.h>
 #include <cegis/danger/symex/learn/replace_operators.h>
 
 namespace
@@ -52,7 +52,7 @@ public:
     const danger_variable_namest::const_iterator name=names.find(op);
     assert(names.end() != name);
     const symbol_exprt symbol(st.lookup(name->second).symbol_expr());
-    const typet danger_type(danger_meta_type());
+    const typet danger_type(invariant_meta_type());
     if (type_eq(danger_type, symbol.type(), ns)) expr=symbol;
     else expr=typecast_exprt(symbol, danger_type); // XXX: Change if operations for other types are added.
   }
