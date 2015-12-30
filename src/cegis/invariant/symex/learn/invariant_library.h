@@ -7,8 +7,8 @@ Author: Daniel Kroening, kroening@kroening.com
 
 \*******************************************************************/
 
-#ifndef CEGIS_DANGER_LIBRARY_H_
-#define CEGIS_DANGER_LIBRARY_H_
+#ifndef CEGIS_INVARIANT_LIBRARY_H_
+#define CEGIS_INVARIANT_LIBRARY_H_
 
 #include <cstddef>
 
@@ -21,9 +21,10 @@ Author: Daniel Kroening, kroening@kroening.com
  * @param num_vars
  * @param num_consts
  * @param max_solution_size
+ * @param func_name
  */
 std::string get_invariant_library_text(size_t num_vars, size_t num_consts,
-    size_t max_solution_size);
+    size_t max_solution_size, const std::string &func_name);
 
 /**
  * @brief
@@ -35,9 +36,10 @@ std::string get_invariant_library_text(size_t num_vars, size_t num_consts,
  * @param num_vars
  * @param num_consts
  * @param max_solution_size
+ * @param func_name
  */
-void add_invariant_library(class danger_programt &prog, class message_handlert &msg,
-    const size_t num_vars, const size_t num_consts,
-    const size_t max_solution_size);
+void add_invariant_library(class invariant_programt &prog,
+    class message_handlert &msg, size_t num_vars, size_t num_consts,
+    size_t max_solution_size, const std::string &func_name);
 
-#endif /* CEGIS_DANGER_LIBRARY_H_ */
+#endif /* CEGIS_INVARIANT_LIBRARY_H_ */

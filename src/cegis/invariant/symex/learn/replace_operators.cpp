@@ -1,20 +1,23 @@
 #include <util/namespace_utils.h>
 
-#include <cegis/danger/meta/literals.h>
 #include <cegis/invariant/instrument/meta_variables.h>
-#include <cegis/danger/symex/learn/replace_operators.h>
+#include <cegis/invariant/symex/learn/replace_operators.h>
 
 namespace
 {
-const char ROP[]="__CPROVER_danger_execute::1::1::1::result";
-const char OP0[]="__CPROVER_danger_execute::1::1::1::op0";
-const char OP1[]="__CPROVER_danger_execute::1::1::1::op1";
-const char OP2[]="__CPROVER_danger_execute::1::1::1::op2";
+const char ROP_SUFFIX[]="::1::1::1::result";
+const char OP0_SUFFIX[]="::1::1::1::op0";
+const char OP1_SUFFIX[]="::1::1::1::op1";
+const char OP2_SUFFIX[]="::1::1::1::op2";
 class replace_ops_visitort: public expr_visitort
 {
 private:
   const symbol_tablet &st;
   const namespacet ns;
+  const std::string rop_name;
+  const std::string op0_name;
+  const std::string op1_name;
+  const std::string op2_name;
   danger_variable_namest names;
   const danger_variable_namest &rnames;
   const size_t op0;
@@ -22,12 +25,14 @@ private:
   const size_t op2;
   const size_t instr_idx;
 public:
-  replace_ops_visitort(const symbol_tablet &st,
+  replace_ops_visitort(const symbol_tablet &st, const std::string &func_name,
       const danger_variable_namest &names, const danger_variable_namest &rnames,
       const size_t op0, const size_t op1, const size_t op2,
       const size_t instr_idx) :
-      st(st), ns(st), names(names), rnames(rnames), op0(op0), op1(op1), op2(
-          op2), instr_idx(instr_idx)
+      st(st), ns(st), rop_name(func_name + ROP_SUFFIX), op0_name(
+          func_name + OP0_SUFFIX), op1_name(func_name + OP1_SUFFIX), op2_name(
+          func_name + OP2_SUFFIX), names(names), rnames(rnames), op0(op0), op1(
+          op1), op2(op2), instr_idx(instr_idx)
   {
     typedef danger_variable_namest::const_iterator itt;
     const size_t offset(names.size());
@@ -42,10 +47,10 @@ public:
   {
     if (ID_symbol != expr.id()) return;
     const irep_idt &op_name=to_symbol_expr(expr).get_identifier();
-    const bool is_res=op_name == ROP;
-    const bool is_op0=op_name == OP0;
-    const bool is_op1=op_name == OP1;
-    const bool is_op2=op_name == OP2;
+    const bool is_res=op_name == rop_name;
+    const bool is_op0=op_name == op0_name;
+    const bool is_op1=op_name == op1_name;
+    const bool is_op2=op_name == op2_name;
     if (!is_res && !is_op0 && !is_op1 && !is_op2) return;
     const danger_variable_namest &names=is_res ? rnames : this->names;
     const size_t op=is_res ? instr_idx : is_op0 ? op0 : is_op1 ? op1 : op2;
@@ -59,17 +64,17 @@ public:
 };
 }
 
-void replace_ops_in_instr(const symbol_tablet &st,
+void replace_ops_in_instr(const symbol_tablet &st, const std::string &func,
     const goto_programt::targett &first, const goto_programt::targett &last,
     const danger_variable_namest &names, const danger_variable_namest &rnames,
     const size_t op0, const size_t op1, const size_t op2,
     const size_t instr_idx)
 {
-  replace_ops_visitort visitor(st, names, rnames, op0, op1, op2, instr_idx);
+  replace_ops_visitort v(st, func, names, rnames, op0, op1, op2, instr_idx);
   for (goto_programt::targett it=first; it != last; ++it)
   {
     goto_programt::instructiont &instr=*it;
-    instr.code.visit(visitor);
-    instr.guard.visit(visitor);
+    instr.code.visit(v);
+    instr.guard.visit(v);
   }
 }

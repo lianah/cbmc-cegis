@@ -2,18 +2,15 @@
 
 #include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/invariant/symex/learn/add_counterexamples.h>
+#include <cegis/invariant/symex/learn/invariant_library.h>
+#include <cegis/danger/meta/literals.h>
 #include <cegis/danger/options/danger_program_printer.h>
 #include <cegis/danger/constraint/danger_constraint_factory.h>
 #include <cegis/danger/symex/learn/add_variable_refs.h>
-#include <cegis/danger/symex/learn/danger_library.h>
 #include <cegis/danger/symex/learn/add_programs_to_learn.h>
 #include <cegis/danger/symex/learn/add_x0_placeholders.h>
 #include <cegis/danger/symex/learn/solution_factory.h>
 #include <cegis/danger/symex/learn/danger_learn_config.h>
-
-// XXX: Debug
-#include <iostream>
-// XXX: Debug
 
 danger_learn_configt::danger_learn_configt(const danger_programt &program) :
     original_program(program), num_consts(0u)
@@ -25,25 +22,21 @@ danger_learn_configt::~danger_learn_configt()
 }
 
 void danger_learn_configt::process(const counterexamplest &ces,
-    const size_t max_solution_size)
+    const size_t max_sz)
 {
   program=original_program;
   var_ids.clear();
   num_consts=get_danger_variable_ids(program.st, var_ids);
   const size_t num_vars=var_ids.size();
   null_message_handlert msg;
-  add_invariant_library(program, msg, num_vars, num_consts, max_solution_size);
-  danger_add_variable_refs(program, var_ids, max_solution_size);
-  danger_add_programs_to_learn(program, max_solution_size);
+  const std::string name(DANGER_EXECUTE);
+  add_invariant_library(program, msg, num_vars, num_consts, max_sz, name);
+  link_user_program_variables(program, var_ids);
+  link_meta_variables(program, var_ids.size(), max_sz);
+  danger_add_programs_to_learn(program, max_sz);
   danger_add_x0_placeholders(program);
   danger_add_learned_counterexamples(program, ces, create_danger_constraint);
   program.gf.update();
-  // XXX: Debug
-  std::cout << "<learn>" << std::endl;
-  const namespacet ns(program.st);
-  program.gf.output(ns, std::cout);
-  std::cout << "</learn>" << std::endl;
-  // XXX: Debug
 }
 
 void danger_learn_configt::set_word_width(const size_t word_width_in_bits)

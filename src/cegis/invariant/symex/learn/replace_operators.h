@@ -7,8 +7,8 @@
 
 \*******************************************************************/
 
-#ifndef CEGIS_DANGER_REPLACE_OPERATORS_H_
-#define CEGIS_DANGER_REPLACE_OPERATORS_H_
+#ifndef CEGIS_INVARIANT_REPLACE_OPERATORS_H_
+#define CEGIS_INVARIANT_REPLACE_OPERATORS_H_
 
 #include <goto-programs/goto_program.h>
 
@@ -20,6 +20,7 @@ typedef std::map<size_t, const irep_idt> danger_variable_namest;
  * @details
  *
  * @param st
+ * @param func_name
  * @param first
  * @param last
  * @param names
@@ -29,10 +30,10 @@ typedef std::map<size_t, const irep_idt> danger_variable_namest;
  * @param op2
  * @param instr_idx
  */
-void replace_ops_in_instr(const symbol_tablet &st,
+void replace_ops_in_instr(const symbol_tablet &st, const std::string &func_name,
     const goto_programt::targett &first, const goto_programt::targett &last,
     const danger_variable_namest &names, const danger_variable_namest &rnames,
     const size_t op0, const size_t op1, const size_t op2,
     const size_t instr_idx);
 
-#endif /* CEGIS_DANGER_REPLACE_OPERATORS_H_ */
+#endif /* CEGIS_INVARIANT_REPLACE_OPERATORS_H_ */

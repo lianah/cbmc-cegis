@@ -7,15 +7,13 @@
 
 #include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/invariant/meta/literals.h>
-#include <cegis/danger/meta/literals.h>
-#include <cegis/danger/options/danger_program.h>
+#include <cegis/invariant/options/invariant_program.h>
 #include <cegis/invariant/instrument/meta_variables.h>
 
 namespace
 {
-const char PROGRAM_ARG_NAME[]="__CPROVER_danger_execute::program";
+const char BASE_NAME_SEP[]="::";
 const char PROGRAM_ARG_BASE_NAME[]="program";
-const char SIZE_ARG_NAME[]="__CPROVER_danger_execute::size";
 const char SIZE_ARG_BASE_NAME[]="size";
 
 pointer_typet instr_type()
@@ -23,11 +21,11 @@ pointer_typet instr_type()
   return pointer_typet(symbol_typet(CEGIS_INSTRUCTION_TYPE_NAME));
 }
 
-void add_placeholder(symbol_tablet &symbol_table)
+void add_placeholder(symbol_tablet &symbol_table, const std::string &func_name)
 {
-  if (symbol_table.has_symbol(DANGER_EXECUTE)) return;
+  if (symbol_table.has_symbol(func_name)) return;
   symbolt symbol;
-  symbol.name=DANGER_EXECUTE;
+  symbol.name=func_name;
   symbol.base_name=symbol.name;
   symbol.pretty_name=symbol.base_name;
   code_typet type;
@@ -35,11 +33,17 @@ void add_placeholder(symbol_tablet &symbol_table)
   type.parameter_identifiers().push_back(PROGRAM_ARG_BASE_NAME);
   type.parameter_identifiers().push_back(SIZE_ARG_BASE_NAME);
   code_typet::parametert program(instr_type());
-  program.set_identifier(PROGRAM_ARG_NAME);
+  std::string program_arg(func_name);
+  program_arg+=BASE_NAME_SEP;
+  program_arg+=PROGRAM_ARG_BASE_NAME;
+  program.set_identifier(program_arg);
   program.set_base_name(PROGRAM_ARG_BASE_NAME);
   type.parameters().push_back(program);
   code_typet::parametert size(unsigned_char_type());
-  size.set_identifier(SIZE_ARG_NAME);
+  std::string size_arg(func_name);
+  size_arg+=BASE_NAME_SEP;
+  size_arg+=SIZE_ARG_BASE_NAME;
+  size.set_identifier(size_arg);
   size.set_base_name(SIZE_ARG_BASE_NAME);
   type.parameters().push_back(size);
   symbol.type=type;
@@ -49,10 +53,10 @@ void add_placeholder(symbol_tablet &symbol_table)
   symbol_table.add(symbol);
 }
 
-void set_loop_id(goto_functionst &gf)
+void set_loop_id(goto_functionst &gf, const std::string &func_name)
 {
   goto_functionst::function_mapt &fm=gf.function_map;
-  goto_functionst::function_mapt::iterator execute=fm.find(DANGER_EXECUTE);
+  goto_functionst::function_mapt::iterator execute=fm.find(func_name);
   assert(fm.end() != execute);
   goto_programt &body=execute->second.body;
   goto_programt::instructionst &instrs=body.instructions;
@@ -76,7 +80,7 @@ goto_programt::targett init_array(const symbol_tablet &st, goto_programt &body,
   return pos;
 }
 
-void set_init_values(danger_programt &prog)
+void set_init_values(invariant_programt &prog)
 {
   goto_programt &body=get_entry_body(prog.gf);
   goto_programt::targett pos=prog.invariant_range.begin;
@@ -101,30 +105,31 @@ std::string get_prefix(const size_t num_vars, const size_t num_consts,
 }
 
 std::string get_invariant_library_text(const size_t num_vars,
-    const size_t num_consts, const size_t max_solution_size)
+    const size_t num_consts, const size_t max_solution_size,
+    const std::string &func_name)
 {
   symbol_tablet st;
-  add_placeholder(st);
+  add_placeholder(st, func_name);
   std::set<irep_idt> functions;
-  functions.insert(DANGER_EXECUTE);
+  functions.insert(func_name);
   std::string text;
   get_cprover_library_text(text, functions, st,
       get_prefix(num_vars, num_consts, max_solution_size));
   return text;
 }
 
-void add_invariant_library(danger_programt &prog, message_handlert &msg,
+void add_invariant_library(invariant_programt &prog, message_handlert &msg,
     const size_t num_vars, const size_t num_consts,
-    const size_t max_solution_size)
+    const size_t max_solution_size, const std::string &func_name)
 {
   symbol_tablet &st=prog.st;
   goto_functionst &goto_functions=prog.gf;
-  add_placeholder(st);
+  add_placeholder(st, func_name);
   std::set<irep_idt> functions;
-  functions.insert(DANGER_EXECUTE);
+  functions.insert(func_name);
   const std::string prefix(get_prefix(num_vars, num_consts, max_solution_size));
   add_cprover_library(functions, st, msg, prefix);
-  goto_convert(DANGER_EXECUTE, st, goto_functions, msg);
-  set_loop_id(goto_functions);
+  goto_convert(func_name, st, goto_functions, msg);
+  set_loop_id(goto_functions, func_name);
   set_init_values(prog);
 }

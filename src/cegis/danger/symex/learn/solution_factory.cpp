@@ -11,11 +11,11 @@
 #include <cegis/invariant/util/copy_instructions.h>
 #include <cegis/invariant/instrument/meta_variables.h>
 #include <cegis/invariant/meta/meta_variable_names.h>
+#include <cegis/invariant/symex/learn/replace_operators.h>
 #include <cegis/danger/meta/literals.h>
 #include <cegis/danger/meta/meta_variable_names.h>
 #include <cegis/danger/value/danger_goto_solution.h>
 #include <cegis/danger/options/danger_program.h>
-#include <cegis/danger/symex/learn/replace_operators.h>
 #include <cegis/danger/symex/learn/solution_factory.h>
 #include <cegis/danger/symex/learn/read_x0.h>
 
@@ -110,7 +110,8 @@ class read_instrt
     case SKO:
     {
       const size_t idx=create_temps(rnames, prog_size - 1);
-      const std::string result_name(get_invariant_meta_name(get_Dx(loop_index)));
+      const std::string result_name(
+          get_invariant_meta_name(get_Dx(loop_index)));
       rnames.insert(std::make_pair(idx, result_name));
       prog_type=INV;
       break;
@@ -159,7 +160,8 @@ public:
     const size_t op1=ops.size() >= 2 ? ops.at(1) : empty_op;
     const size_t op2=ops.size() >= 3 ? ops.at(2) : empty_op;
     const symbol_tablet &st=danger_prog.st;
-    replace_ops_in_instr(st, first, last, names, rnames, op0, op1, op2, insidx);
+    replace_ops_in_instr(st, DANGER_EXECUTE, first, last, names, rnames, op0,
+        op1, op2, insidx);
     if (++insidx % prog_size == 0) invariant_make_presentable(prog);
   }
 

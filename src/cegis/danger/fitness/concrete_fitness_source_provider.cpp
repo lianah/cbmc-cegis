@@ -8,7 +8,8 @@
 #include <cegis/invariant/util/invariant_constraint_variables.h>
 #include <cegis/invariant/meta/literals.h>
 #include <cegis/invariant/instrument/meta_variables.h>
-#include <cegis/danger/symex/learn/danger_library.h>
+#include <cegis/invariant/symex/learn/invariant_library.h>
+#include <cegis/danger/meta/literals.h>
 #include <cegis/danger/fitness/concrete_fitness_source_provider.h>
 
 concrete_fitness_source_providert::concrete_fitness_source_providert(
@@ -36,7 +37,7 @@ void add_danger_execute(std::string &source, const size_t num_vars,
     const size_t num_consts, const size_t max_prog_size)
 {
   std::string text=get_invariant_library_text(num_vars, num_consts,
-      max_prog_size);
+      max_prog_size, DANGER_EXECUTE);
   substitute(text, "#define opcode program[i].opcode",
       "const opcodet opcode=program[i].opcode;");
   substitute(text, "#line 1 \"<builtin-library>\"",

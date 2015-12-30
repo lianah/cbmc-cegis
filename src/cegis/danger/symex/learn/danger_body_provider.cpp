@@ -1,7 +1,7 @@
 #include <util/message.h>
 
+#include <cegis/invariant/symex/learn/invariant_library.h>
 #include <cegis/danger/meta/literals.h>
-#include <cegis/danger/symex/learn/danger_library.h>
 #include <cegis/danger/symex/learn/danger_body_provider.h>
 
 danger_body_providert::danger_body_providert(const danger_programt &prog) :
@@ -19,7 +19,7 @@ const goto_programt &danger_body_providert::operator ()()
   {
     prog=original_prog;
     null_message_handlert msg;
-    add_invariant_library(prog, msg, 0u, 0u, 1u);
+    add_invariant_library(prog, msg, 0u, 0u, 1u, DANGER_EXECUTE);
     initialised=true;
   }
   const irep_idt id(DANGER_EXECUTE);

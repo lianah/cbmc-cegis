@@ -3,10 +3,8 @@ SRC = danger/meta/meta_variable_names.cpp \
       danger/options/danger_program_printer.cpp danger/constraint/danger_constraint_factory.cpp \
       danger/fitness/concrete_fitness_source_provider.cpp danger/preprocess/danger_preprocessing.cpp \
       danger/preprocess/store_nondet_choices.cpp danger/preprocess/add_ranking_and_skolem_variables.cpp \
-      danger/symex/learn/danger_library.cpp danger/symex/learn/add_variable_refs.cpp \
-      danger/symex/learn/add_programs_to_learn.cpp \
-      danger/symex/learn/replace_operators.cpp danger/symex/learn/solution_factory.cpp \
-      danger/symex/learn/read_x0.cpp danger/symex/learn/add_x0_placeholders.cpp \
+      danger/symex/learn/add_variable_refs.cpp danger/symex/learn/add_programs_to_learn.cpp \
+      danger/symex/learn/solution_factory.cpp danger/symex/learn/read_x0.cpp danger/symex/learn/add_x0_placeholders.cpp \
       danger/symex/learn/danger_learn_config.cpp danger/symex/learn/danger_body_provider.cpp \
       danger/symex/learn/encoded_danger_learn_config.cpp \
       danger/symex/verify/insert_candidate.cpp danger/symex/verify/insert_constraint.cpp \
@@ -20,7 +18,9 @@ SRC = danger/meta/meta_variable_names.cpp \
       invariant/constant/add_constant.cpp invariant/constant/default_constant_strategy.cpp \
       invariant/constant/literals_constant_strategy.cpp invariant/meta/meta_variable_names.cpp \
       invariant/symex/learn/add_counterexamples.cpp invariant/symex/learn/add_invariant_programs_to_learn.cpp \
+      invariant/symex/learn/instrument_vars.cpp invariant/symex/learn/invariant_library.cpp \
       invariant/preprocess/add_invariants_and_temp_variables.cpp invariant/preprocess/remove_loops_and_assertion.cpp \
+      invariant/symex/learn/replace_operators.cpp \
       wordsize/restrict_bv_size.cpp value/program_individual_serialisation.cpp \
       seed/null_seed.cpp seed/literals_seed.cpp genetic/tournament_select.cpp genetic/match_select.cpp \
       genetic/instruction_set_info_factory.cpp genetic/random_mutate.cpp genetic/random_cross.cpp \
