@@ -7,9 +7,8 @@
 #include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/invariant/instrument/meta_variables.h>
 #include <cegis/invariant/meta/literals.h>
-#include <cegis/danger/options/danger_program.h>
-#include <cegis/danger/constraint/danger_constraint_factory.h>
-#include <cegis/danger/symex/learn/add_counterexamples.h>
+#include <cegis/invariant/options/invariant_program.h>
+#include <cegis/invariant/symex/learn/add_counterexamples.h>
 
 namespace
 {
@@ -67,7 +66,8 @@ symbol_exprt get_index(const symbol_tablet &st)
 }
 
 const char X_LABEL[]=CEGIS_PREFIX"x_loop";
-goto_programt::targett add_ce_loop(danger_programt &prog, const size_t ces_size)
+goto_programt::targett add_ce_loop(invariant_programt &prog,
+    const size_t ces_size)
 {
   symbol_tablet &st=prog.st;
   goto_functionst &gf=prog.gf;
@@ -92,7 +92,7 @@ goto_programt::targett add_ce_loop(danger_programt &prog, const size_t ces_size)
   pos->function=goto_functionst::entry_point();
   pos->targets.push_back(loop_head);
   pos->loop_number=0u;
-  //const constant_exprt num_ces(from_integer(ces_size, size_type));
+  // XXX: We use x0 as a CE as well. While certainly reasonable, impact on performance needs to be tested.
   const constant_exprt num_ces(from_integer(ces_size + 1, size_type));
   const binary_relation_exprt cond(index, ID_lt, num_ces);
   pos->guard=cond;
@@ -116,12 +116,12 @@ public:
     goto_pos=pos;
   }
 
-  assign_ce_valuet(danger_programt &prog, const size_t ces_size) :
+  assign_ce_valuet(invariant_programt &prog, const size_t ces_size) :
       st(prog.st), gf(prog.gf)
   {
-    const danger_programt::loopst &loops=prog.loops;
+    const invariant_programt::invariant_loopst loops(prog.get_loops());
     assert(!loops.empty());
-    pos=loops.begin()->meta_variables.Ix;
+    pos=loops.front()->meta_variables.Ix;
     ++pos;
     pos=get_entry_body(gf).insert_after(pos);
     pos->type=goto_program_instruction_typet::GOTO;
@@ -146,16 +146,15 @@ public:
   }
 };
 
-void assign_ce_values(danger_programt &prog, const counterexamplet &ce,
+void assign_ce_values(invariant_programt &prog, const counterexamplet &ce,
     const size_t num_ces)
 {
   const assign_ce_valuet assign_value(prog, num_ces);
   std::for_each(ce.begin(), ce.end(), assign_value).finalize_x0_case();
 }
 
-//const char CONSTRAINTS[]=DANGER_PREFIX "constraints";
-
-void create_constraints(danger_programt &prog)
+void create_constraints(invariant_programt &prog,
+    const constraint_factoryt &constraint)
 {
   goto_programt::targett pos=prog.invariant_range.end;
   std::advance(pos, -3);
@@ -163,10 +162,10 @@ void create_constraints(danger_programt &prog)
   pos=body.insert_after(pos);
   pos->type=goto_program_instruction_typet::ASSUME;
   pos->source_location=default_invariant_source_location();
-  pos->guard=create_danger_constraint(prog.loops.size());
+  pos->guard=constraint(prog.get_loops().size());
 }
 
-void add_final_assertion(danger_programt &prog,
+void add_final_assertion(invariant_programt &prog,
     const goto_programt::targett &loop_end)
 {
   goto_programt &body=get_entry_body(prog.gf);
@@ -177,8 +176,8 @@ void add_final_assertion(danger_programt &prog,
 }
 }
 
-void danger_add_learned_counterexamples(danger_programt &prog,
-    const counterexamplest &ces)
+void danger_add_learned_counterexamples(invariant_programt &prog,
+    const counterexamplest &ces, const constraint_factoryt constraint)
 {
   if (ces.empty()) return;
   array_valuest vals;
@@ -192,6 +191,6 @@ void danger_add_learned_counterexamples(danger_programt &prog,
   declare_x_arrays(st, gf, --pos, vals);
   const goto_programt::targett loop_end=add_ce_loop(prog, ces.size());
   assign_ce_values(prog, prototype, ces_count);
-  create_constraints(prog);
+  create_constraints(prog, constraint);
   add_final_assertion(prog, loop_end);
 }

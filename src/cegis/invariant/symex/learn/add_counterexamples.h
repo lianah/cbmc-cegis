@@ -7,10 +7,11 @@
 
 \*******************************************************************/
 
-#ifndef CEGIS_DANGER_ADD_COUNTEREXAMPLES_H_
-#define CEGIS_DANGER_ADD_COUNTEREXAMPLES_H_
+#ifndef CEGIS_INVARIANT_ADD_COUNTEREXAMPLES_H_
+#define CEGIS_INVARIANT_ADD_COUNTEREXAMPLES_H_
 
 #include <deque>
+#include <functional>
 
 #include <util/expr.h>
 
@@ -20,8 +21,14 @@
  * @details Counterexamples give a set of values used for the state variables.
  */
 typedef std::map<const irep_idt, exprt> counterexamplet;
-
 typedef std::deque<counterexamplet> counterexamplest;
+
+/**
+ * @brief Constraint factory function.
+ *
+ * @details Provides the constraint to test counterexamples against (safety or danger).
+ */
+typedef std::function<exprt(size_t)> constraint_factoryt;
 
 /**
  * @brief
@@ -31,7 +38,7 @@ typedef std::deque<counterexamplet> counterexamplest;
  * @param prog
  * @param ces
  */
-void danger_add_learned_counterexamples(class danger_programt &prog,
-    const counterexamplest &ces);
+void danger_add_learned_counterexamples(class invariant_programt &prog,
+    const counterexamplest &ces, constraint_factoryt constraint);
 
-#endif /* CEGIS_DANGER_ADD_COUNTEREXAMPLES_H_ */
+#endif /* CEGIS_INVARIANT_ADD_COUNTEREXAMPLES_H_ */
