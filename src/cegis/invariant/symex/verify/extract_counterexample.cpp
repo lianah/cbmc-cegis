@@ -2,7 +2,7 @@
 
 #include <goto-programs/goto_trace.h>
 
-#include <cegis/danger/symex/verify/extract_counterexample.h>
+#include <cegis/invariant/symex/verify/extract_counterexample.h>
 
 namespace
 {

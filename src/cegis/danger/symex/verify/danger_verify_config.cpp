@@ -1,9 +1,9 @@
 #include <algorithm>
 
 #include <cegis/wordsize/restrict_bv_size.h>
+#include <cegis/invariant/symex/verify/extract_counterexample.h>
 #include <cegis/danger/symex/verify/insert_constraint.h>
 #include <cegis/danger/symex/verify/insert_candidate.h>
-#include <cegis/danger/symex/verify/extract_counterexample.h>
 #include <cegis/danger/symex/verify/danger_verify_config.h>
 
 danger_verify_configt::danger_verify_configt(const danger_programt &program) :

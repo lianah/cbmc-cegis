@@ -8,7 +8,7 @@ SRC = danger/meta/meta_variable_names.cpp \
       danger/symex/learn/danger_learn_config.cpp danger/symex/learn/danger_body_provider.cpp \
       danger/symex/learn/encoded_danger_learn_config.cpp \
       danger/symex/verify/insert_candidate.cpp danger/symex/verify/insert_constraint.cpp \
-      danger/symex/verify/extract_counterexample.cpp danger/symex/verify/restrict_counterexamples.cpp \
+      danger/symex/verify/restrict_counterexamples.cpp \
       danger/symex/verify/danger_verify_config.cpp danger/symex/verify/parallel_danger_verifier.cpp \
       danger/symex/verify/parallel_danger_verify_task.cpp danger/symex/fitness/danger_fitness_config.cpp \
       safety/options/safety_program.cpp \
@@ -21,6 +21,7 @@ SRC = danger/meta/meta_variable_names.cpp \
       invariant/symex/learn/instrument_vars.cpp invariant/symex/learn/invariant_library.cpp \
       invariant/preprocess/add_invariants_and_temp_variables.cpp invariant/preprocess/remove_loops_and_assertion.cpp \
       invariant/symex/learn/replace_operators.cpp \
+      invariant/symex/verify/extract_counterexample.cpp \
       wordsize/restrict_bv_size.cpp value/program_individual_serialisation.cpp \
       seed/null_seed.cpp seed/literals_seed.cpp genetic/tournament_select.cpp genetic/match_select.cpp \
       genetic/instruction_set_info_factory.cpp genetic/random_mutate.cpp genetic/random_cross.cpp \

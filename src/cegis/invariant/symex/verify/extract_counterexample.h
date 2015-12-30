@@ -7,10 +7,10 @@
 
 \*******************************************************************/
 
-#ifndef CEGIS_DANGER_EXTRACT_COUNTEREXAMPLE_H_
-#define CEGIS_DANGER_EXTRACT_COUNTEREXAMPLE_H_
+#ifndef CEGIS_INVARIANT_EXTRACT_COUNTEREXAMPLE_H_
+#define CEGIS_INVARIANT_EXTRACT_COUNTEREXAMPLE_H_
 
-#include <util/std_expr.h>
+#include <goto-programs/goto_program.h>
 
 /**
  * @brief Counterexample type for this CEGIS component.
@@ -31,4 +31,4 @@ typedef std::map<const irep_idt, exprt> counterexamplet;
 void danger_extract_counterexample(counterexamplet &result,
     const class goto_tracet &trace, const goto_programt::targetst &quantifiers);
 
-#endif /* CEGIS_DANGER_EXTRACT_COUNTEREXAMPLE_H_ */
+#endif /* CEGIS_INVARIANT_EXTRACT_COUNTEREXAMPLE_H_ */
