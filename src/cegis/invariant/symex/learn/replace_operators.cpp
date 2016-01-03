@@ -18,15 +18,15 @@ private:
   const std::string op0_name;
   const std::string op1_name;
   const std::string op2_name;
-  danger_variable_namest names;
-  const danger_variable_namest &rnames;
+  invariant_variable_namest names;
+  const invariant_variable_namest &rnames;
   const size_t op0;
   const size_t op1;
   const size_t op2;
   const size_t instr_idx;
 public:
   replace_ops_visitort(const symbol_tablet &st, const std::string &func_name,
-      const danger_variable_namest &names, const danger_variable_namest &rnames,
+      const invariant_variable_namest &names, const invariant_variable_namest &rnames,
       const size_t op0, const size_t op1, const size_t op2,
       const size_t instr_idx) :
       st(st), ns(st), rop_name(func_name + ROP_SUFFIX), op0_name(
@@ -34,7 +34,7 @@ public:
           func_name + OP2_SUFFIX), names(names), rnames(rnames), op0(op0), op1(
           op1), op2(op2), instr_idx(instr_idx)
   {
-    typedef danger_variable_namest::const_iterator itt;
+    typedef invariant_variable_namest::const_iterator itt;
     const size_t offset(names.size());
     for (itt it=rnames.begin(); it != rnames.end(); ++it)
       this->names.insert(std::make_pair(offset + it->first, it->second));
@@ -52,9 +52,9 @@ public:
     const bool is_op1=op_name == op1_name;
     const bool is_op2=op_name == op2_name;
     if (!is_res && !is_op0 && !is_op1 && !is_op2) return;
-    const danger_variable_namest &names=is_res ? rnames : this->names;
+    const invariant_variable_namest &names=is_res ? rnames : this->names;
     const size_t op=is_res ? instr_idx : is_op0 ? op0 : is_op1 ? op1 : op2;
-    const danger_variable_namest::const_iterator name=names.find(op);
+    const invariant_variable_namest::const_iterator name=names.find(op);
     assert(names.end() != name);
     const symbol_exprt symbol(st.lookup(name->second).symbol_expr());
     const typet danger_type(invariant_meta_type());
@@ -66,7 +66,7 @@ public:
 
 void replace_ops_in_instr(const symbol_tablet &st, const std::string &func,
     const goto_programt::targett &first, const goto_programt::targett &last,
-    const danger_variable_namest &names, const danger_variable_namest &rnames,
+    const invariant_variable_namest &names, const invariant_variable_namest &rnames,
     const size_t op0, const size_t op1, const size_t op2,
     const size_t instr_idx)
 {
@@ -77,4 +77,11 @@ void replace_ops_in_instr(const symbol_tablet &st, const std::string &func,
     instr.code.visit(v);
     instr.guard.visit(v);
   }
+}
+
+void reverse_invariant_var_ids(invariant_variable_namest &names,
+    const invariant_variable_idst &ids)
+{
+  for (const auto id : ids)
+    names.insert(std::make_pair(id.second, id.first));
 }

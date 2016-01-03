@@ -14,21 +14,6 @@
 
 namespace
 {
-void link_user_symbols(const symbol_tablet &st, danger_variable_idst &var_ids,
-    size_t &variable_id, bool consts)
-{
-  typedef symbol_tablet::symbolst symbolst;
-  const symbolst &symbols=st.symbols;
-  for (symbolst::const_iterator it=symbols.begin(); it != symbols.end(); ++it)
-  {
-    const symbolt &symbol=it->second;
-    if (!is_invariant_user_variable(symbol.name, symbol.type)) continue;
-    const bool is_const=is_global_const(symbol.name, symbol.type);
-    if (is_const == consts)
-      var_ids.insert(std::make_pair(symbol.name, variable_id++));
-  }
-}
-
 void link_skolem(danger_programt &prog, const size_t num_user_vars,
     const size_t user_vars, const size_t max_solution_size,
     const danger_programt::loopt &loop)
@@ -98,14 +83,4 @@ void link_meta_variables(danger_programt &prog, const size_t user_vars,
   const danger_programt::loopst &loops=prog.loops;
   const link_meta_variablest link(prog, user_vars, max_solution_size);
   std::for_each(loops.begin(), loops.end(), link);
-}
-
-size_t get_danger_variable_ids(const symbol_tablet &st,
-    danger_variable_idst &ids)
-{
-  size_t variable_id=0;
-  link_user_symbols(st, ids, variable_id, true);
-  const size_t num_consts=ids.size();
-  link_user_symbols(st, ids, variable_id, false);
-  return num_consts;
 }

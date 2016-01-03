@@ -38,7 +38,7 @@ typedef std::function<exprt(size_t)> constraint_factoryt;
  * @param prog
  * @param ces
  */
-void danger_add_learned_counterexamples(class invariant_programt &prog,
+void invariant_add_learned_counterexamples(class invariant_programt &prog,
     const counterexamplest &ces, constraint_factoryt constraint);
 
 #endif /* CEGIS_INVARIANT_ADD_COUNTEREXAMPLES_H_ */

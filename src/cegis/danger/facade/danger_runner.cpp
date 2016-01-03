@@ -107,8 +107,8 @@ class variable_counter_helper
   {
     if (!counted)
     {
-      danger_variable_idst ids;
-      num_consts=get_danger_variable_ids(prog.st, ids);
+      invariant_variable_idst ids;
+      num_consts=get_invariant_variable_ids(prog.st, ids);
       num_vars=ids.size();
       counted=true;
     }

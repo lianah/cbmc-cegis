@@ -29,13 +29,7 @@ const program_individualt::instructiont::opt get_const_value(const exprt &expr)
 }
 #endif
 
-void reverse(danger_variable_namest &names, const danger_variable_idst &o)
-{
-  for (danger_variable_idst::const_iterator it=o.begin(); it != o.end(); ++it)
-    names.insert(std::make_pair(it->second, it->first));
-}
-
-size_t create_temps(danger_variable_namest &rnames, const size_t num_tmp)
+size_t create_temps(invariant_variable_namest &rnames, const size_t num_tmp)
 {
   for (size_t i=0; i < num_tmp; ++i)
     rnames.insert(std::make_pair(i, get_invariant_meta_name(get_tmp(i))));
@@ -70,8 +64,8 @@ class read_instrt
 {
   danger_goto_solutiont::danger_programst &progs;
   const danger_programt &danger_prog;
-  const danger_variable_namest &names;
-  danger_variable_namest rnames;
+  const invariant_variable_namest &names;
+  invariant_variable_namest rnames;
   const instruction_sett &instrset;
   size_t prog_size;
   size_t loop_index;
@@ -120,7 +114,7 @@ class read_instrt
   }
 public:
   read_instrt(danger_goto_solutiont::danger_programst &progs,
-      const danger_programt &danger_prog, const danger_variable_namest &names,
+      const danger_programt &danger_prog, const invariant_variable_namest &names,
       const instruction_sett &instrset, const size_t prog_size) :
       progs(progs), danger_prog(danger_prog), names(names), instrset(instrset), prog_size(
           prog_size), loop_index(0u), insidx(0u), prog_type(SKO)
@@ -129,7 +123,7 @@ public:
   }
 
   read_instrt(danger_goto_solutiont::danger_programst &progs,
-      const danger_programt &danger_prog, const danger_variable_namest &names,
+      const danger_programt &danger_prog, const invariant_variable_namest &names,
       const instruction_sett &instrset) :
       progs(progs), danger_prog(danger_prog), names(names), instrset(instrset), prog_size(
           0u), loop_index(0u), insidx(0u), prog_type(SKO)
@@ -184,7 +178,7 @@ class extract_programt
   read_instrt read_instr;
 public:
   extract_programt(danger_goto_solutiont::danger_programst &progs,
-      const danger_programt &prog, const danger_variable_namest &names,
+      const danger_programt &prog, const invariant_variable_namest &names,
       const instruction_sett &instrset, const size_t max_size) :
       read_instr(progs, prog, names, instrset, max_size)
   {
@@ -200,7 +194,7 @@ public:
 
 void extract_programs(danger_goto_solutiont::danger_programst &progs,
     const danger_programt &prog, const goto_tracet &trace,
-    const danger_variable_namest &names, const instruction_sett &instrset,
+    const invariant_variable_namest &names, const instruction_sett &instrset,
     const size_t max_size)
 {
   const extract_programt extract(progs, prog, names, instrset, max_size);
@@ -220,10 +214,10 @@ void extract_instruction_set(instruction_sett &instr_set,
 
 void create_danger_solution(danger_goto_solutiont &result,
     const danger_programt &prog, const goto_tracet &trace,
-    const danger_variable_idst &ids, const size_t max_size)
+    const invariant_variable_idst &ids, const size_t max_size)
 {
-  danger_variable_namest names;
-  reverse(names, ids);
+  invariant_variable_namest names;
+  reverse_invariant_var_ids(names, ids);
   instruction_sett instr_set;
   extract_instruction_set(instr_set, prog.gf);
   danger_goto_solutiont::danger_programst &progs=result.danger_programs;
@@ -233,10 +227,10 @@ void create_danger_solution(danger_goto_solutiont &result,
 
 void create_danger_solution(danger_goto_solutiont &result,
     const danger_programt &prog, const program_individualt &ind,
-    const instruction_sett &instr_set, const danger_variable_idst &ids)
+    const instruction_sett &instr_set, const invariant_variable_idst &ids)
 {
-  danger_variable_namest names;
-  reverse(names, ids);
+  invariant_variable_namest names;
+  reverse_invariant_var_ids(names, ids);
   danger_goto_solutiont::danger_programst &progs=result.danger_programs;
   progs.clear();
   typedef program_individualt individualt;
@@ -257,7 +251,7 @@ void create_danger_solution(danger_goto_solutiont &result,
 
 void create_danger_solution(danger_goto_solutiont &result,
     const danger_programt &prog, const program_individualt &ind,
-    const danger_variable_idst &ids)
+    const invariant_variable_idst &ids)
 {
   instruction_sett instr_set;
   extract_instruction_set(instr_set, prog.gf);

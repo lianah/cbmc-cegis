@@ -26,7 +26,7 @@ void danger_learn_configt::process(const counterexamplest &ces,
 {
   program=original_program;
   var_ids.clear();
-  num_consts=get_danger_variable_ids(program.st, var_ids);
+  num_consts=get_invariant_variable_ids(program.st, var_ids);
   const size_t num_vars=var_ids.size();
   null_message_handlert msg;
   const std::string name(DANGER_EXECUTE);
@@ -35,7 +35,7 @@ void danger_learn_configt::process(const counterexamplest &ces,
   link_meta_variables(program, var_ids.size(), max_sz);
   danger_add_programs_to_learn(program, max_sz);
   danger_add_x0_placeholders(program);
-  danger_add_learned_counterexamples(program, ces, create_danger_constraint);
+  invariant_add_learned_counterexamples(program, ces, create_danger_constraint);
   program.gf.update();
 }
 
@@ -74,7 +74,7 @@ void danger_learn_configt::show_candidate(messaget::mstreamt &os,
   print_danger_program(os, program, candidate);
 }
 
-const danger_learn_configt::danger_variable_idst &danger_learn_configt::get_vars() const
+const danger_learn_configt::invariant_variable_idst &danger_learn_configt::get_vars() const
 {
   return var_ids;
 }

@@ -11,7 +11,9 @@ SRC = danger/meta/meta_variable_names.cpp \
       danger/symex/verify/restrict_counterexamples.cpp \
       danger/symex/verify/danger_verify_config.cpp danger/symex/verify/parallel_danger_verifier.cpp \
       danger/symex/verify/parallel_danger_verify_task.cpp danger/symex/fitness/danger_fitness_config.cpp \
-      safety/options/safety_program.cpp safety/options/safety_program_printer.cpp \
+      safety/options/safety_program.cpp safety/options/safety_program_printer.cpp safety/preprocessing/safety_preprocessing.cpp \
+      safety/meta/meta_variable_names.cpp safety/symex/learn/safety_learn_config.cpp \
+      safety/constraint/safety_constraint_factory.cpp safety/symex/learn/solution_factory.cpp \
       invariant/options/invariant_program.cpp invariant/options/target_copy_helper.cpp \
       invariant/util/copy_instructions.cpp invariant/util/invariant_program_helper.cpp \
       invariant/util/invariant_constraint_variables.cpp invariant/instrument/meta_variables.cpp \

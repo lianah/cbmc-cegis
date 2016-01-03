@@ -26,8 +26,8 @@ danger_fitness_configt::~danger_fitness_configt()
 void danger_fitness_configt::convert(candidatet &current_candidate,
     const individualt &ind)
 {
-  danger_variable_idst ids;
-  get_danger_variable_ids(original_program.st, ids);
+  invariant_variable_idst ids;
+  get_invariant_variable_ids(original_program.st, ids);
   const instruction_sett &instrs=info_fac.get_instructions();
   create_danger_solution(current_candidate, original_program, ind, instrs, ids);
 }

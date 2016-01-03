@@ -90,9 +90,9 @@ goto_programt::targett link_temp_vars(const symbol_tablet &st,
 }
 
 void link_user_program_variables(invariant_programt &prog,
-    const danger_variable_idst &var_ids)
+    const invariant_variable_idst &var_ids)
 {
-  danger_variable_idst to_instrument(var_ids);
+  invariant_variable_idst to_instrument(var_ids);
   goto_programt &body=get_entry_body(prog.gf);
   goto_programt::instructionst &instrs=body.instructions;
   const goto_programt::targett end=prog.invariant_range.end;
@@ -104,7 +104,7 @@ void link_user_program_variables(invariant_programt &prog,
     if (DECL != type && DEAD != type) continue;
     const irep_idt &name=get_affected_variable(instr);
     if (!is_invariant_user_variable(name, typet())) continue;
-    const danger_variable_idst::const_iterator id=var_ids.find(name);
+    const invariant_variable_idst::const_iterator id=var_ids.find(name);
     switch (type)
     {
     case goto_program_instruction_typet::DECL:
@@ -123,10 +123,38 @@ void link_user_program_variables(invariant_programt &prog,
   const goto_programt::targett range_begin(prog.invariant_range.begin);
   goto_programt::targett pos=range_begin;
   --pos;
-  danger_variable_idst::const_iterator it;
+  invariant_variable_idst::const_iterator it;
   for (it=to_instrument.begin(); it != to_instrument.end(); ++it)
   {
     pos=set_ops_reference(st, body, pos, it->first, it->second);
     if (it == to_instrument.begin()) move_labels(body, range_begin, pos);
   }
+}
+
+namespace
+{
+void link_user_symbols(const symbol_tablet &st,
+    invariant_variable_idst &var_ids, size_t &variable_id, bool consts)
+{
+  typedef symbol_tablet::symbolst symbolst;
+  const symbolst &symbols=st.symbols;
+  for (symbolst::const_iterator it=symbols.begin(); it != symbols.end(); ++it)
+  {
+    const symbolt &symbol=it->second;
+    if (!is_invariant_user_variable(symbol.name, symbol.type)) continue;
+    const bool is_const=is_global_const(symbol.name, symbol.type);
+    if (is_const == consts)
+      var_ids.insert(std::make_pair(symbol.name, variable_id++));
+  }
+}
+}
+
+size_t get_invariant_variable_ids(const symbol_tablet &st,
+    invariant_variable_idst &ids)
+{
+  size_t variable_id=0;
+  link_user_symbols(st, ids, variable_id, true);
+  const size_t num_consts=ids.size();
+  link_user_symbols(st, ids, variable_id, false);
+  return num_consts;
 }

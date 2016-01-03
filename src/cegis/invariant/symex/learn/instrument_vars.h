@@ -12,12 +12,14 @@
 
 #include <util/irep.h>
 
+#include <goto-programs/goto_functions.h>
+
 /**
  * @brief
  *
  * @details
  */
-typedef std::map<const irep_idt, size_t> danger_variable_idst;
+typedef std::map<const irep_idt, size_t> invariant_variable_idst;
 
 /**
  * @brief
@@ -87,7 +89,7 @@ goto_programt::targett set_ops_reference(const symbol_tablet &st,
  * @param var_ids
  */
 void link_user_program_variables(class invariant_programt &prog,
-    const danger_variable_idst &var_ids);
+    const invariant_variable_idst &var_ids);
 
 /**
  * @brief
@@ -99,7 +101,7 @@ void link_user_program_variables(class invariant_programt &prog,
  *
  * @return
  */
-size_t get_danger_variable_ids(const class symbol_tablet &st,
-    danger_variable_idst &ids);
+size_t get_invariant_variable_ids(const class symbol_tablet &st,
+    invariant_variable_idst &ids);
 
 #endif /* CEGIS_INVARIANT_INSTRUMENT_VARS_H_ */

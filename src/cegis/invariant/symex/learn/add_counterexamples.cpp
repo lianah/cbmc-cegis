@@ -176,7 +176,7 @@ void add_final_assertion(invariant_programt &prog,
 }
 }
 
-void danger_add_learned_counterexamples(invariant_programt &prog,
+void invariant_add_learned_counterexamples(invariant_programt &prog,
     const counterexamplest &ces, const constraint_factoryt constraint)
 {
   if (ces.empty()) return;
