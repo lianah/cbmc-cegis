@@ -7,6 +7,7 @@
 #include <cegis/danger/options/danger_program.h>
 #include <cegis/invariant/util/copy_instructions.h>
 #include <cegis/invariant/instrument/meta_variables.h>
+#include <cegis/invariant/symex/verify/insert_program.h>
 #include <cegis/danger/symex/verify/insert_candidate.h>
 
 namespace
@@ -43,82 +44,6 @@ void assign_x0(danger_programt &prog, const candidatet &candidate)
   std::for_each(x0_values.begin(), x0_values.end(), assign);
 }
 
-typedef std::map<const irep_idt, const irep_idt> replacementst;
-
-class replace_name_visitort: public expr_visitort
-{
-  const replacementst &repl;
-public:
-  replace_name_visitort(const replacementst &repl) :
-      repl(repl)
-  {
-  }
-
-  virtual ~replace_name_visitort()
-  {
-  }
-
-  virtual void operator()(exprt &expr)
-  {
-    if (ID_symbol != expr.id()) return;
-    symbol_exprt &symbol=to_symbol_expr(expr);
-    for (replacementst::const_iterator it=repl.begin(); it != repl.end(); ++it)
-      if (symbol.get_identifier() == it->first)
-        symbol.set_identifier(it->second);
-  }
-};
-
-class insert_instrt
-{
-  copy_instructionst &copy_instr;
-  goto_programt &body;
-  goto_programt::targett &pos;
-  replace_name_visitort visitor;
-public:
-  insert_instrt(copy_instructionst &copy_instr, goto_programt &body,
-      goto_programt::targett &pos, const replacementst &replacements) :
-      copy_instr(copy_instr), body(body), pos(pos), visitor(replacements)
-  {
-  }
-
-  void operator()(const goto_programt::const_targett &target)
-  {
-    copy_instr(pos=body.insert_after(pos), target);
-    pos->guard.visit(visitor);
-    pos->code.visit(visitor);
-  }
-};
-
-void insert_program(goto_programt &body, goto_programt::targett pos,
-    const goto_programt::instructionst &prog, const replacementst &replacements)
-{
-  copy_instructionst copy_instr;
-  insert_instrt insert_instr(copy_instr, body, pos, replacements);
-  goto_programt::const_targett first=prog.begin();
-  goto_programt::const_targett last=prog.end();
-  if (first == last) return;
-  --last;
-  for (; first != last; ++first)
-    insert_instr(first);
-  copy_instr.finalize(++pos, last);
-}
-
-void insert_program(goto_programt &body, const goto_programt::targett &pos,
-    const goto_programt::instructionst &prog, const irep_idt &org_name,
-    const irep_idt &new_name)
-{
-  replacementst repl;
-  repl.insert(std::make_pair(org_name, new_name));
-  insert_program(body, pos, prog, repl);
-}
-
-void insert_program(goto_programt &body, const goto_programt::targett &pos,
-    const goto_programt::instructionst &prog)
-{
-  const replacementst replacements;
-  insert_program(body, pos, prog, replacements);
-}
-
 class insert_danger_programt
 {
   const danger_programt::loopst &loops;
@@ -134,7 +59,8 @@ public:
   {
     const danger_programt::loopt &loop=loops.at(loop_id);
     const invariant_programt::meta_vars_positionst &im=loop.meta_variables;
-    const danger_programt::danger_meta_vars_positionst &dm=loop.danger_meta_variables;
+    const danger_programt::danger_meta_vars_positionst &dm=
+        loop.danger_meta_variables;
     insert_program(body, im.Ix, solution.invariant);
     const irep_idt &Dx=get_affected_variable(*im.Ix);
     const irep_idt &Dx_prime=get_affected_variable(*im.Ix_prime);
@@ -148,8 +74,7 @@ public:
       const irep_idt &Rx_pn=get_affected_variable(*Rx_prime);
       insert_program(body, Rx_prime, solution.ranking, Rx_n, Rx_pn); // XXX: Lexicographical ranking?
     }
-    if (!dm.Sx.empty())
-      insert_program(body, *dm.Sx.rbegin(), solution.skolem);
+    if (!dm.Sx.empty()) insert_program(body, *dm.Sx.rbegin(), solution.skolem);
   }
 };
 

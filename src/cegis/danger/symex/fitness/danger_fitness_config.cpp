@@ -1,15 +1,16 @@
 #include <util/arith_tools.h>
 
-#include <cegis/invariant/util/invariant_program_helper.h>
-#include <cegis/invariant/instrument/meta_variables.h>
-#include <cegis/danger/value/danger_goto_solution.h>
-#include <cegis/danger/options/danger_program_printer.h>
-#include <cegis/danger/symex/learn/add_variable_refs.h>
-#include <cegis/danger/symex/learn/solution_factory.h>
-#include <cegis/danger/symex/verify/insert_constraint.h>
-#include <cegis/danger/symex/verify/insert_candidate.h>
 #include <cegis/value/program_individual.h>
 #include <cegis/genetic/instruction_set_info_factory.h>
+#include <cegis/invariant/util/invariant_program_helper.h>
+#include <cegis/invariant/instrument/meta_variables.h>
+#include <cegis/invariant/symex/verify/insert_constraint.h>
+#include <cegis/danger/value/danger_goto_solution.h>
+#include <cegis/danger/options/danger_program_printer.h>
+#include <cegis/danger/constraint/danger_constraint_factory.h>
+#include <cegis/danger/symex/learn/add_variable_refs.h>
+#include <cegis/danger/symex/learn/solution_factory.h>
+#include <cegis/danger/symex/verify/insert_candidate.h>
 #include <cegis/danger/symex/fitness/danger_fitness_config.h>
 
 danger_fitness_configt::danger_fitness_configt(
@@ -56,7 +57,8 @@ void danger_fitness_configt::set_candidate(const candidatet &candidate)
   if (!constraint_inserted)
   {
     program_with_constraint=original_program;
-    danger_insert_constraint(original_quantifiers, program_with_constraint);
+    invariant_insert_constraint(original_quantifiers, program_with_constraint,
+        create_danger_constraint);
     constraint_inserted=true;
   }
   program=program_with_constraint;

@@ -28,7 +28,7 @@ typedef std::map<const irep_idt, exprt> counterexamplet;
  * @param trace
  * @param quantifiers
  */
-void danger_extract_counterexample(counterexamplet &result,
+void invariant_extract_counterexample(counterexamplet &result,
     const class goto_tracet &trace, const goto_programt::targetst &quantifiers);
 
 #endif /* CEGIS_INVARIANT_EXTRACT_COUNTEREXAMPLE_H_ */

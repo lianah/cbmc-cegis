@@ -54,7 +54,7 @@ public:
 };
 }
 
-void danger_extract_counterexample(counterexamplet &result,
+void invariant_extract_counterexample(counterexamplet &result,
     const goto_tracet &trace, const goto_programt::targetst &quantifiers)
 {
   result.clear();
