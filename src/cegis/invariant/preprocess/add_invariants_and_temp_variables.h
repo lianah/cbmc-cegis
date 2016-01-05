@@ -21,11 +21,13 @@ typedef std::function<std::string(size_t)> inv_name_factoryt;
  *
  * @param program
  * @param max_program_length
+ * @param inv0_name
  * @param inv_name
  * @param inv_prime_name
  */
 void add_invariant_variables(class invariant_programt &program,
-    const inv_name_factoryt inv_name, const inv_name_factoryt inv_prime_name);
+    const std::string &inv0_name, const inv_name_factoryt inv_name,
+    const inv_name_factoryt inv_prime_name);
 
 /**
  * @brief

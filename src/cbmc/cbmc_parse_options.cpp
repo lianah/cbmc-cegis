@@ -38,6 +38,7 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <goto-programs/link_to_library.h>
 
 #include <cegis/danger/facade/danger_runner.h>
+#include <cegis/safety/facade/safety_runner.h>
 
 #include <goto-instrument/full_slicer.h>
 
@@ -434,7 +435,7 @@ void cbmc_parse_optionst::get_command_line_options(optionst &options)
   if(cmdline.isset("graphml-cex"))
     options.set_option("graphml-cex", cmdline.get_value("graphml-cex"));
 
-  if(cmdline.isset("danger"))
+  if(cmdline.isset("danger") || cmdline.isset("safety"))
   {
     unsigned int min_prog_size=1u;
     if (cmdline.isset("cegis-min-size"))
@@ -588,6 +589,8 @@ int cbmc_parse_optionst::doit()
 
   if(cmdline.isset("danger"))
     return run_danger(options, result(), symbol_table, goto_functions);
+  if(cmdline.isset("safety"))
+    return run_safety(options, result(), symbol_table, goto_functions);
 
   // do actual BMC
   return do_bmc(bmc, goto_functions);

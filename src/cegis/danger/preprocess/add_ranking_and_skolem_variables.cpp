@@ -8,18 +8,6 @@
 
 namespace
 {
-void createDx0(danger_programt &prog)
-{
-  danger_programt::loopst &loops=prog.loops;
-  assert(!loops.empty() && "At least one loop required.");
-  const typet type(invariant_meta_type());
-  const danger_programt::loopt &first=*loops.begin();
-  goto_programt::targett &meta=prog.Ix0;
-  goto_programt::targett pos=first.meta_variables.Ix;
-  meta=declare_invariant_variable(prog.st, prog.gf, --pos, get_Dx0(), type);
-  move_labels(get_entry_body(prog.gf), first.body.begin, meta);
-}
-
 class create_skolem_meta_variablest
 {
   symbol_tablet &st;
@@ -103,7 +91,6 @@ void createAx(invariant_programt &program)
 void add_ranking_and_skolem_variables(danger_programt &program,
     const size_t max_program_length)
 {
-  createDx0(program);
   danger_programt::loopst &loops=program.loops;
   const create_danger_meta_variables_for_loopt create_meta(program);
   std::for_each(loops.begin(), loops.end(), create_meta);

@@ -17,6 +17,15 @@
  *
  * @details
  *
+ * @return
+ */
+std::string get_Ix0();
+
+/**
+ * @brief
+ *
+ * @details
+ *
  * @param loop_id
  *
  * @return

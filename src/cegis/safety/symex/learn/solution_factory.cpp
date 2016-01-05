@@ -46,8 +46,8 @@ void copy_instructions(goto_programt::instructionst &prog,
   const size_t op0=!ops.empty() ? ops.front() : empty_op;
   const size_t op1=ops.size() >= 2 ? ops.at(1) : empty_op;
   const size_t op2=ops.size() >= 3 ? ops.at(2) : empty_op;
-  replace_ops_in_instr(st, "", first, prog.end(), var_names, result_var_names,
-      op0, op1, op2, instr_idx);
+  replace_ops_in_instr(st, DANGER_EXECUTE, first, prog.end(), var_names,
+      result_var_names, op0, op1, op2, instr_idx);
 }
 
 void extract_program(goto_programt::instructionst &prog,

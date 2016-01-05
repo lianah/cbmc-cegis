@@ -67,7 +67,7 @@ symbol_exprt get_index(const symbol_tablet &st)
 
 const char X_LABEL[]=CEGIS_PREFIX"x_loop";
 goto_programt::targett add_ce_loop(invariant_programt &prog,
-    const size_t ces_size)
+    const size_t ces_size, const bool use_x0_ce)
 {
   symbol_tablet &st=prog.st;
   goto_functionst &gf=prog.gf;
@@ -92,8 +92,8 @@ goto_programt::targett add_ce_loop(invariant_programt &prog,
   pos->function=goto_functionst::entry_point();
   pos->targets.push_back(loop_head);
   pos->loop_number=0u;
-  // XXX: We use x0 as a CE as well. While certainly reasonable, impact on performance needs to be tested.
-  const constant_exprt num_ces(from_integer(ces_size + 1, size_type));
+  const size_t loop_limit=use_x0_ce ? ces_size + 1 : ces_size;
+  const constant_exprt num_ces(from_integer(loop_limit, size_type));
   const binary_relation_exprt cond(index, ID_lt, num_ces);
   pos->guard=cond;
   return pos;
@@ -105,6 +105,7 @@ class assign_ce_valuet
   goto_functionst &gf;
   goto_programt::targett pos;
   goto_programt::targett goto_pos;
+  const bool use_x0_ce;
 public:
   void add_x0_case(const size_t ces_size)
   {
@@ -116,17 +117,21 @@ public:
     goto_pos=pos;
   }
 
-  assign_ce_valuet(invariant_programt &prog, const size_t ces_size) :
-      st(prog.st), gf(prog.gf)
+  assign_ce_valuet(invariant_programt &prog, const size_t ces_size,
+      const bool use_x0_ce) :
+      st(prog.st), gf(prog.gf), use_x0_ce(use_x0_ce)
   {
     const invariant_programt::invariant_loopst loops(prog.get_loops());
     assert(!loops.empty());
     pos=loops.front()->meta_variables.Ix;
     ++pos;
-    pos=get_entry_body(gf).insert_after(pos);
-    pos->type=goto_program_instruction_typet::GOTO;
-    pos->source_location=default_invariant_source_location();
-    add_x0_case(ces_size);
+    if (use_x0_ce)
+    {
+      pos=get_entry_body(gf).insert_after(pos);
+      pos->type=goto_program_instruction_typet::GOTO;
+      pos->source_location=default_invariant_source_location();
+      add_x0_case(ces_size);
+    }
   }
 
   void operator()(const std::pair<const irep_idt, exprt> &assignment)
@@ -142,14 +147,14 @@ public:
 
   void finalize_x0_case()
   {
-    goto_pos->targets.push_back(++pos);
+    if (use_x0_ce) goto_pos->targets.push_back(++pos);
   }
 };
 
 void assign_ce_values(invariant_programt &prog, const counterexamplet &ce,
-    const size_t num_ces)
+    const size_t num_ces, const bool use_x0_ce)
 {
-  const assign_ce_valuet assign_value(prog, num_ces);
+  const assign_ce_valuet assign_value(prog, num_ces, use_x0_ce);
   std::for_each(ce.begin(), ce.end(), assign_value).finalize_x0_case();
 }
 
@@ -177,7 +182,8 @@ void add_final_assertion(invariant_programt &prog,
 }
 
 void invariant_add_learned_counterexamples(invariant_programt &prog,
-    const counterexamplest &ces, const constraint_factoryt constraint)
+    const counterexamplest &ces, const constraint_factoryt constraint,
+    const bool x0_ce)
 {
   if (ces.empty()) return;
   array_valuest vals;
@@ -189,8 +195,8 @@ void invariant_add_learned_counterexamples(invariant_programt &prog,
   goto_functionst &gf=prog.gf;
   goto_programt::targett pos=prog.invariant_range.begin;
   declare_x_arrays(st, gf, --pos, vals);
-  const goto_programt::targett loop_end=add_ce_loop(prog, ces.size());
-  assign_ce_values(prog, prototype, ces_count);
+  const goto_programt::targett loop_end=add_ce_loop(prog, ces.size(), x0_ce);
+  assign_ce_values(prog, prototype, ces_count, x0_ce);
   create_constraints(prog, constraint);
   add_final_assertion(prog, loop_end);
 }

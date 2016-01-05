@@ -28,7 +28,7 @@ public:
 };
 }
 
-void print_danger_program(messaget::mstreamt &os,
+void print_safety_program(messaget::mstreamt &os,
     const safety_programt &program, const safety_goto_solutiont &solution)
 {
   os << "Programs:" << messaget::endl;

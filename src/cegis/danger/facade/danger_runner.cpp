@@ -27,8 +27,8 @@
 
 #include <cegis/invariant/constant/constant_strategy.h>
 #include <cegis/invariant/constant/default_constant_strategy.h>
-#include <cegis/danger/fitness/concrete_fitness_source_provider.h>
 #include <cegis/invariant/instrument/meta_variables.h>
+#include <cegis/danger/fitness/concrete_fitness_source_provider.h>
 #include <cegis/danger/preprocess/danger_preprocessing.h>
 #include <cegis/danger/symex/learn/add_variable_refs.h>
 #include <cegis/danger/symex/learn/danger_learn_config.h>
@@ -46,8 +46,8 @@ bool is_genetic(const optionst &opt)
   return opt.get_bool_option("cegis-genetic");
 }
 
-#define DANGER_MAX_SIZE "cegis-max-size"
-#define DANGER_STATISTICS "cegis-statistics"
+#define CEGIS_MAX_SIZE "cegis-max-size"
+#define CEGIS_STATISTICS "cegis-statistics"
 
 typedef messaget::mstreamt mstreamt;
 
@@ -58,8 +58,8 @@ int run_statistics(mstreamt &os, const optionst &options,
 {
   null_seedt seed;
   //danger_literals_seedt seed(prog);  // XXX: Benchmark performance
-  const size_t max_prog_size=options.get_unsigned_int_option(DANGER_MAX_SIZE);
-  if (!options.get_bool_option(DANGER_STATISTICS))
+  const size_t max_prog_size=options.get_unsigned_int_option(CEGIS_MAX_SIZE);
+  if (!options.get_bool_option(CEGIS_STATISTICS))
     return run_cegis(learn, verify, preproc, seed, max_prog_size, os);
   cegis_statistics_wrappert<learnt, verifyt, mstreamt> stat(learn, verify, os);
   return run_cegis(stat, stat, preproc, seed, max_prog_size, os);
@@ -80,14 +80,14 @@ int run_limited(mstreamt &os, optionst &options, const danger_programt &prog,
   return run_statistics(os, options, prog, learn, limited_verify, preproc);
 }
 
-#define DANGER_PARALLEL_VERIFY "cegis-parallel-verify"
+#define CEGIS_PARALLEL_VERIFY "cegis-parallel-verify"
 
 template<class learnert, class preproct>
 int run_parallel(mstreamt &os, optionst &options, const danger_programt &prog,
     learnert &learn, preproct &preproc)
 {
   danger_verify_configt config(prog);
-  if (options.get_bool_option(DANGER_PARALLEL_VERIFY))
+  if (options.get_bool_option(CEGIS_PARALLEL_VERIFY))
   {
     parallel_danger_verifiert verify(options, config);
     return run_limited(os, options, prog, config, learn, verify, preproc);
@@ -98,7 +98,7 @@ int run_parallel(mstreamt &os, optionst &options, const danger_programt &prog,
 
 class variable_counter_helper
 {
-  const danger_programt &prog;
+  const invariant_programt &prog;
   bool counted;
   size_t num_vars;
   size_t num_consts;
@@ -115,7 +115,7 @@ class variable_counter_helper
     return value;
   }
 public:
-  variable_counter_helper(const danger_programt &prog) :
+  variable_counter_helper(const invariant_programt &prog) :
       prog(prog), counted(false), num_vars(0), num_consts(0)
   {
   }
@@ -152,12 +152,12 @@ public:
 
 #define SKOLEM_PROG_INDEX 2u
 
-class min_danger_prog_sizet
+class min_cegis_prog_sizet
 {
   lazy_sizet &preproc_min_prog_size;
   const size_t user_min_prog_size;
 public:
-  min_danger_prog_sizet(lazy_sizet &preproc_min_prog_size, const optionst &opt) :
+  min_cegis_prog_sizet(lazy_sizet &preproc_min_prog_size, const optionst &opt) :
       preproc_min_prog_size(preproc_min_prog_size), user_min_prog_size(
           opt.get_unsigned_int_option("cegis-min-size"))
   {
@@ -273,7 +273,7 @@ int run_genetic_and_symex(mstreamt &os, optionst &opt,
   { return prog.x0_choices.size();});
   lazy_sizet preproc_min_size([&preproc]()
   { return preproc.get_min_solution_size();});
-  const min_danger_prog_sizet min_prog_sz(preproc_min_size, opt);
+  const min_cegis_prog_sizet min_prog_sz(preproc_min_size, opt);
   const max_danger_prog_sizet max_prog_sz(prog, opt);
   const size_t rounds=opt.get_unsigned_int_option("cegis-genetic-rounds");
   variable_counter_helper counter(prog);

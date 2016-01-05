@@ -80,13 +80,29 @@ void createAx(invariant_programt &program)
   program.Ax=declare_invariant_variable(st, gf, --pos, get_Ax(), type);
   assign_invariant_variable(st, gf, program.Ax, base_name, program.assertion);
 }
+
+void createIx0(invariant_programt &program, const std::string &inv0_name)
+{
+  const invariant_programt &prog=program;
+  invariant_programt::const_invariant_loopst loops(prog.get_loops());
+  assert(!loops.empty() && "At least one loop required.");
+  const typet type(invariant_meta_type());
+  const invariant_programt::invariant_loopt &first=*loops.front();
+  goto_programt::targett &meta=program.Ix0;
+  goto_programt::targett pos=first.meta_variables.Ix;
+  goto_functionst &gf=program.gf;
+  meta=declare_invariant_variable(program.st, gf, --pos, inv0_name, type);
+  move_labels(get_entry_body(gf), first.body.begin, meta);
+}
 }
 
 void add_invariant_variables(invariant_programt &prog,
-    const inv_name_factoryt inv_name, const inv_name_factoryt inv_prime_name)
+    const std::string &inv0_name, const inv_name_factoryt inv_name,
+    const inv_name_factoryt inv_prime_name)
 {
   const invariant_programt::invariant_loopst loops(prog.get_loops());
   const create_meta_variables_for_loopt create(prog, inv_name, inv_prime_name);
   std::for_each(loops.begin(), loops.end(), create);
+  createIx0(prog, inv0_name);
   createAx(prog);
 }

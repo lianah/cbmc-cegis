@@ -6,6 +6,7 @@
 #include <cegis/invariant/symex/learn/add_counterexamples.h>
 #include <cegis/safety/options/safety_program_printer.h>
 #include <cegis/safety/constraint/safety_constraint_factory.h>
+#include <cegis/safety/symex/learn/add_variable_refs.h>
 #include <cegis/safety/symex/learn/solution_factory.h>
 #include <cegis/safety/symex/learn/safety_learn_config.h>
 
@@ -18,6 +19,10 @@ safety_learn_configt::~safety_learn_configt()
 {
 }
 
+// XXX: Debug
+#include <iostream>
+// XXX: Debug
+
 void safety_learn_configt::process(const counterexamplest &ces,
     const size_t max_sz)
 {
@@ -29,17 +34,24 @@ void safety_learn_configt::process(const counterexamplest &ces,
   null_message_handlert msg;
   const std::string name(DANGER_EXECUTE);
   add_invariant_library(program, msg, num_vars, num_consts, max_sz, name);
-  link_user_program_variables(program, var_ids);
+  add_safety_learning_variable_refs(program, var_ids, max_sz);
   goto_functionst &gf=program.gf;
   link_result_var(st, gf, var_ids.size(), max_sz, program.Ix0);
   add_invariant_progs_to_learn(program, max_sz);
   const invariant_programt &prog=program;
   const invariant_programt::const_invariant_loopst loops(prog.get_loops());
   const invariant_programt::invariant_loopt &first_loop=*loops.front();
-  const std::string D0=get_prog_var_name(st, first_loop.meta_variables.Ix);
-  execute_inv_prog(st, gf, max_sz, program.Ix0, D0);
-  invariant_add_learned_counterexamples(program, ces, create_safety_constraint);
+  const std::string I0=get_prog_var_name(st, first_loop.meta_variables.Ix);
+  execute_inv_prog(st, gf, max_sz, program.Ix0, I0);
+  invariant_add_learned_counterexamples(program, ces, create_safety_constraint,
+      false);
   gf.update();
+  // XXX: Debug
+  std::cout << "<learn_prog>" << std::endl;
+  const namespacet ns(st);
+  gf.output(ns, std::cout);
+  std::cout << "</learn_prog>" << std::endl;
+  // XXX: Debug
 }
 
 void safety_learn_configt::set_word_width(const size_t word_width_in_bits)

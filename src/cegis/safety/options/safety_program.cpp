@@ -44,6 +44,7 @@ safety_programt::~safety_programt()
 
 safety_programt &safety_programt::operator=(const safety_programt &other)
 {
+  invariant_programt::operator =(other);
   return assign(*this, other);
 }
 

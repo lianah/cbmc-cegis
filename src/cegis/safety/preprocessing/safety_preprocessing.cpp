@@ -41,7 +41,7 @@ void safety_preprocessingt::operator ()(const size_t max_length)
   const unsigned int max_width=constant_strategy(current_program, max_length);
   options.set_option("max-constant-width", max_width);
   create_tmp_variables(current_program, max_length);
-  add_invariant_variables(current_program, get_Ix, get_Ix_prime);
+  add_invariant_variables(current_program, get_Ix0(), get_Ix, get_Ix_prime);
 }
 
 const safety_programt &safety_preprocessingt::get_safety_program() const

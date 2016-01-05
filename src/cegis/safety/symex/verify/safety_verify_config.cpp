@@ -13,6 +13,10 @@ safety_verify_configt::~safety_verify_configt()
 {
 }
 
+// XXX: Debug
+#include <iostream>
+// XXX: Debug
+
 void safety_verify_configt::process(const candidatet &candidate)
 {
   program=original_program;
@@ -20,6 +24,12 @@ void safety_verify_configt::process(const candidatet &candidate)
   invariant_insert_constraint(quantifiers, program, create_safety_constraint);
   safety_insert_candidate(program, candidate);
   program.gf.update();
+  // XXX: Debug
+  std::cout << "<verify_prog>" << std::endl;
+  const namespacet ns(program.st);
+  program.gf.output(ns, std::cout);
+  std::cout << "</verify_prog>" << std::endl;
+  // XXX: Debug
 }
 
 const symbol_tablet &safety_verify_configt::get_symbol_table() const

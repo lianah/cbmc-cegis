@@ -10,6 +10,13 @@ const char SEP='_';
 const char INITIAL_STATE[]="x0";
 }
 
+std::string get_Ix0()
+{
+  std::string result(INVARIANT_PREFIX);
+  result+=SEP;
+  return result+=INITIAL_STATE;
+}
+
 namespace
 {
 std::string build_var_name(const char * const prefix, const size_t loop_id,

@@ -35,7 +35,8 @@ void danger_learn_configt::process(const counterexamplest &ces,
   link_meta_variables(program, var_ids.size(), max_sz);
   danger_add_programs_to_learn(program, max_sz);
   danger_add_x0_placeholders(program);
-  invariant_add_learned_counterexamples(program, ces, create_danger_constraint);
+  invariant_add_learned_counterexamples(program, ces, create_danger_constraint,
+      true);
   program.gf.update();
 }
 
