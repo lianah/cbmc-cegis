@@ -25,10 +25,11 @@
 #include <cegis/value/program_individual_serialisation.h>
 #include <cegis/wordsize/limited_wordsize_verify.h>
 
+#include <cegis/invariant/fitness/concrete_fitness_source_provider.h>
 #include <cegis/invariant/constant/constant_strategy.h>
 #include <cegis/invariant/constant/default_constant_strategy.h>
 #include <cegis/invariant/instrument/meta_variables.h>
-#include <cegis/danger/fitness/concrete_fitness_source_provider.h>
+#include <cegis/danger/meta/literals.h>
 #include <cegis/danger/preprocess/danger_preprocessing.h>
 #include <cegis/danger/symex/learn/add_variable_refs.h>
 #include <cegis/danger/symex/learn/danger_learn_config.h>
@@ -250,17 +251,17 @@ int run_match(mstreamt &os, optionst &opt, const danger_programt &prog,
 
 template<class preproct>
 int run_genetic_and_symex(mstreamt &os, optionst &opt,
-    const danger_programt &prog, preproct &preproc)
+    const danger_programt &prog, preproct &prep)
 {
   if (!is_genetic(opt))
   {
     danger_learn_configt cfg(prog);
-    cegis_symex_learnt<preproct, danger_learn_configt> learn(opt, preproc, cfg);
-    return run_parallel(os, opt, prog, learn, preproc);
+    cegis_symex_learnt<preproct, danger_learn_configt> learn(opt, prep, cfg);
+    return run_parallel(os, opt, prog, learn, prep);
   }
   typedef encoded_danger_learn_configt cfgt;
   cfgt cfg(prog);
-  cegis_symex_learnt<preproct, cfgt> learn(opt, preproc, cfg);
+  cegis_symex_learnt<preproct, cfgt> learn(opt, prep, cfg);
 
   // Danger program properties and GA settings
   const unsigned int seed=opt.get_unsigned_int_option("cegis-seed");
@@ -271,8 +272,8 @@ int run_genetic_and_symex(mstreamt &os, optionst &opt,
   { return prog.loops.size() * 3u;});
   lazy_sizet num_x0([&prog]()
   { return prog.x0_choices.size();});
-  lazy_sizet preproc_min_size([&preproc]()
-  { return preproc.get_min_solution_size();});
+  lazy_sizet preproc_min_size([&prep]()
+  { return prep.get_min_solution_size();});
   const min_cegis_prog_sizet min_prog_sz(preproc_min_size, opt);
   const max_danger_prog_sizet max_prog_sz(prog, opt);
   const size_t rounds=opt.get_unsigned_int_option("cegis-genetic-rounds");
@@ -287,14 +288,15 @@ int run_genetic_and_symex(mstreamt &os, optionst &opt,
   random_individualt rnd(seed, type, info_fac, min_prog_sz, max_prog_sz,
       num_progs, num_vars, num_consts, num_x0);
   danger_fitness_configt converter(info_fac, prog);
-  concrete_fitness_source_providert src(prog, std::ref(max_prog_sz));
+  concrete_fitness_source_providert<danger_programt, danger_learn_configt> src(
+      prog, std::ref(max_prog_sz), DANGER_EXECUTE);
   dynamic_test_runnert test_runner(std::ref(src), std::ref(max_prog_sz));
   typedef lazy_fitnesst<dynamic_test_runnert> fitnesst;
   fitnesst fitness(test_runner);
   random_mutatet mutate(rnd, num_consts);
   random_crosst cross(rnd);
   return run_match(os, opt, prog, rnd, info_fac, pop_size, rounds, fitness,
-      mutate, cross, converter, preproc, learn);
+      mutate, cross, converter, prep, learn);
 }
 }
 

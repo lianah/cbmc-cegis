@@ -25,8 +25,6 @@ template<class test_runnert>
 void lazy_fitnesst<test_runnert>::add_test_case(const counterexamplet &ce)
 {
   const counterexamplest::const_iterator end=counterexamples.end();
-  // XXX: This should never occur
-  //if (end == std::find(counterexamples.begin(), counterexamples.end(), ce))
   assert(end == std::find(counterexamples.begin(), counterexamples.end(), ce));
   counterexamples.push_back(ce);
 }

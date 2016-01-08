@@ -5,7 +5,7 @@
 #include <cegis/cegis-util/constant_width.h>
 
 #include <cegis/invariant/constant/literals_constant_strategy.h>
-#include <cegis/danger/options/danger_program.h>
+#include <cegis/invariant/options/invariant_program.h>
 #include <cegis/invariant/instrument/meta_variables.h>
 #include <cegis/genetic/genetic_constant_strategy.h>
 #include <cegis/genetic/genetic_constant_strategy.h>

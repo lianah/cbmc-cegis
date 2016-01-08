@@ -56,7 +56,7 @@ void write_file(const char * const path, const std::string &content)
   ofs << content;
 }
 
-#define COMPILE_COMMAND "gcc -std=c99 -g0 -O3 "
+#define COMPILE_COMMAND "gcc -std=c99 -g0 -O2 "
 #define ARTIFACT_SEPARATOR " -o "
 #define COMPLING_FAILED "Compiling test runner failed."
 

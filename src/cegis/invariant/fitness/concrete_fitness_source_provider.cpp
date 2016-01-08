@@ -1,26 +1,12 @@
 #include <cstring>
 
-#include <util/expr_util.h>
 #include <util/substitute.h>
 
 #include <goto-instrument/dump_c.h>
 
-#include <cegis/invariant/util/invariant_constraint_variables.h>
 #include <cegis/invariant/meta/literals.h>
-#include <cegis/invariant/instrument/meta_variables.h>
 #include <cegis/invariant/symex/learn/invariant_library.h>
-#include <cegis/danger/meta/literals.h>
-#include <cegis/danger/fitness/concrete_fitness_source_provider.h>
-
-concrete_fitness_source_providert::concrete_fitness_source_providert(
-    const danger_programt &prog, const std::function<size_t(void)> max_size) :
-    prog(prog), max_size(max_size), learn_config(prog)
-{
-}
-
-concrete_fitness_source_providert::~concrete_fitness_source_providert()
-{
-}
+#include <cegis/invariant/fitness/concrete_fitness_source_provider.h>
 
 namespace
 {
@@ -34,10 +20,11 @@ void add_assume_implementation(std::string &source)
 }
 
 void add_danger_execute(std::string &source, const size_t num_vars,
-    const size_t num_consts, const size_t max_prog_size)
+    const size_t num_consts, const size_t max_prog_size,
+    const std::string &exec_func_name)
 {
   std::string text=get_invariant_library_text(num_vars, num_consts,
-      max_prog_size, DANGER_EXECUTE);
+      max_prog_size, exec_func_name);
   substitute(text, "#define opcode program[i].opcode",
       "const opcodet opcode=program[i].opcode;");
   substitute(text, "#line 1 \"<builtin-library>\"",
@@ -241,29 +228,17 @@ void add_first_prog_offset(std::string &source, const size_t num_ce_vars)
 }
 }
 
-std::string concrete_fitness_source_providert::operator ()()
+std::string &post_process_fitness_source(std::string &result,
+    const symbol_tablet &st, const goto_functionst &gf,
+    const size_t num_ce_vars, const size_t num_vars, const size_t num_consts,
+    const size_t max_prog_size, const std::string &exec)
 {
-  if (!source.empty()) return source;
-  constraint_varst ce_vars;
-  get_invariant_constraint_vars(ce_vars, prog);
-  danger_learn_configt::counterexamplet dummy_ce;
-  const typet type(invariant_meta_type());  // XXX: Currently single data type
-  const exprt zero(gen_zero(type));
-  for (const symbol_exprt &var : ce_vars)
-    dummy_ce.insert(std::make_pair(var.get_identifier(), zero));
-  danger_learn_configt::counterexamplest empty(1, dummy_ce);
-  const size_t max_prog_size=max_size();
-  learn_config.process(empty, max_prog_size);
-  const symbol_tablet &st(learn_config.get_symbol_table());
-  const goto_functionst &gf=learn_config.get_goto_functions();
-  const size_t num_vars=learn_config.get_num_vars();
-  const size_t num_consts=learn_config.get_num_consts();
   const namespacet ns(st);
   std::stringstream ss;
   dump_c(gf, true, ns, ss);
-  add_first_prog_offset(source, ce_vars.size());
-  add_assume_implementation(source);
-  add_danger_execute(source, num_vars, num_consts, max_prog_size);
-  post_process(source, ss);
-  return source;
+  add_first_prog_offset(result, num_ce_vars);
+  add_assume_implementation(result);
+  add_danger_execute(result, num_vars, num_consts, max_prog_size, exec);
+  post_process(result, ss);
+  return result;
 }

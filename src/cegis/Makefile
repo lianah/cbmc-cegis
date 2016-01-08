@@ -1,10 +1,9 @@
-SRC = danger/meta/meta_variable_names.cpp \
-      danger/facade/danger_runner.cpp danger/options/danger_program.cpp \
+SRC = danger/meta/meta_variable_names.cpp danger/facade/danger_runner.cpp danger/options/danger_program.cpp \
       danger/options/danger_program_printer.cpp danger/constraint/danger_constraint_factory.cpp \
-      danger/fitness/concrete_fitness_source_provider.cpp danger/preprocess/danger_preprocessing.cpp \
-      danger/preprocess/store_nondet_choices.cpp danger/preprocess/add_ranking_and_skolem_variables.cpp \
-      danger/symex/learn/add_variable_refs.cpp danger/symex/learn/add_programs_to_learn.cpp \
-      danger/symex/learn/solution_factory.cpp danger/symex/learn/read_x0.cpp danger/symex/learn/add_x0_placeholders.cpp \
+      danger/preprocess/danger_preprocessing.cpp danger/preprocess/store_nondet_choices.cpp \
+      danger/preprocess/add_ranking_and_skolem_variables.cpp danger/symex/learn/add_variable_refs.cpp \
+      danger/symex/learn/add_programs_to_learn.cpp danger/symex/learn/solution_factory.cpp \
+      danger/symex/learn/read_x0.cpp danger/symex/learn/add_x0_placeholders.cpp \
       danger/symex/learn/danger_learn_config.cpp danger/symex/learn/danger_body_provider.cpp \
       danger/symex/learn/encoded_danger_learn_config.cpp danger/symex/verify/insert_candidate.cpp danger/symex/verify/restrict_counterexamples.cpp \
       danger/symex/verify/danger_verify_config.cpp danger/symex/verify/parallel_danger_verifier.cpp \
@@ -24,6 +23,7 @@ SRC = danger/meta/meta_variable_names.cpp \
       invariant/symex/learn/instrument_vars.cpp invariant/symex/learn/invariant_library.cpp \
       invariant/symex/learn/replace_operators.cpp invariant/symex/verify/extract_counterexample.cpp \
       invariant/symex/verify/insert_constraint.cpp invariant/symex/verify/insert_program.cpp \
+      invariant/fitness/concrete_fitness_source_provider.cpp \
       wordsize/restrict_bv_size.cpp value/program_individual_serialisation.cpp \
       seed/null_seed.cpp seed/literals_seed.cpp genetic/tournament_select.cpp genetic/match_select.cpp \
       genetic/instruction_set_info_factory.cpp genetic/random_mutate.cpp genetic/random_cross.cpp \
