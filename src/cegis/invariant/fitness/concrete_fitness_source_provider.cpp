@@ -228,6 +228,8 @@ void add_first_prog_offset(std::string &source, const size_t num_ce_vars)
 }
 }
 
+#include <iostream>
+
 std::string &post_process_fitness_source(std::string &result,
     const symbol_tablet &st, const goto_functionst &gf,
     const size_t num_ce_vars, const size_t num_vars, const size_t num_consts,
@@ -240,5 +242,10 @@ std::string &post_process_fitness_source(std::string &result,
   add_assume_implementation(result);
   add_danger_execute(result, num_vars, num_consts, max_prog_size, exec);
   post_process(result, ss);
+  // XXX: Debug
+  std::cout << "<learn_source>" << std::endl;
+  std::cout << result << std::endl;
+  std::cout << "</learn_source>" << std::endl;
+  // XXX: Debug
   return result;
 }

@@ -69,6 +69,11 @@ const goto_functionst &safety_learn_configt::get_goto_functions() const
   return program.gf;
 }
 
+const safety_programt &safety_learn_configt::get_safety_program() const
+{
+  return program;
+}
+
 void safety_learn_configt::convert(candidatet &current_candidate,
     const goto_tracet &trace, const size_t max_sz)
 {
@@ -80,4 +85,19 @@ void safety_learn_configt::show_candidate(messaget::mstreamt &os,
     const candidatet &candidate)
 {
   print_safety_program(os, program, candidate);
+}
+
+const safety_learn_configt::invariant_variable_idst &safety_learn_configt::get_vars() const
+{
+  return var_ids;
+}
+
+size_t safety_learn_configt::get_num_vars() const
+{
+  return var_ids.size();
+}
+
+size_t safety_learn_configt::get_num_consts() const
+{
+  return num_consts;
 }

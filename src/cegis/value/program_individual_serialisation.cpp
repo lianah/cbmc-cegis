@@ -42,7 +42,7 @@ program_individualt::instructiont to_program_individual_instruction(
   return result;
 }
 
-program_individualt to_program_individual(const danger_programt &prog,
+program_individualt to_program_individual(const invariant_programt &prog,
     const goto_tracet &trace)
 {
   program_individualt individual;
@@ -58,6 +58,14 @@ program_individualt to_program_individual(const danger_programt &prog,
       }
       individual.programs.push_back(prog);
     }
+  return individual;
+}
+
+program_individualt to_program_individual(const danger_programt &prog,
+    const goto_tracet &trace)
+{
+  const invariant_programt &inv_prog=prog;
+  program_individualt individual(to_program_individual(inv_prog, trace));
   danger_read_x0(individual, prog, trace);
   return individual;
 }

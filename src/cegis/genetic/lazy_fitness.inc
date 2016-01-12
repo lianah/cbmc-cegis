@@ -39,6 +39,8 @@ typename lazy_fitnesst<test_runnert>::populationt::iterator lazy_fitnesst<
   return pop.end();
 }
 
+namespace
+{
 size_t get_bounty(const size_t index)
 {
   /*size_t bounty=1u;
@@ -47,8 +49,6 @@ size_t get_bounty(const size_t index)
   return 1u;
 }
 
-namespace
-{
 bool &new_test_result(std::list<bool> &test_case_data)
 {
   test_case_data.push_back(false);

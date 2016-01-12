@@ -4,6 +4,7 @@
 #include <util/message.h>
 
 #include <cegis/facade/cegis.h>
+#include <cegis/genetic/lazy_genetic_settings.h>
 #include <cegis/genetic/ga_learn.h>
 #include <cegis/genetic/random_individual.h>
 #include <cegis/genetic/match_select.h>
@@ -29,12 +30,13 @@
 #include <cegis/invariant/constant/constant_strategy.h>
 #include <cegis/invariant/constant/default_constant_strategy.h>
 #include <cegis/invariant/instrument/meta_variables.h>
+#include <cegis/invariant/symex/learn/invariant_body_provider.h>
 #include <cegis/danger/meta/literals.h>
+#include <cegis/danger/options/danger_program_genetic_settings.h>
 #include <cegis/danger/preprocess/danger_preprocessing.h>
 #include <cegis/danger/symex/learn/add_variable_refs.h>
 #include <cegis/danger/symex/learn/danger_learn_config.h>
 #include <cegis/danger/symex/learn/encoded_danger_learn_config.h>
-#include <cegis/danger/symex/learn/danger_body_provider.h>
 #include <cegis/danger/symex/verify/danger_verify_config.h>
 #include <cegis/danger/symex/verify/parallel_danger_verifier.h>
 #include <cegis/danger/symex/fitness/danger_fitness_config.h>
@@ -44,11 +46,8 @@ namespace
 {
 bool is_genetic(const optionst &opt)
 {
-  return opt.get_bool_option("cegis-genetic");
+  return opt.get_bool_option(CEGIS_GENETIC);
 }
-
-#define CEGIS_MAX_SIZE "cegis-max-size"
-#define CEGIS_STATISTICS "cegis-statistics"
 
 typedef messaget::mstreamt mstreamt;
 
@@ -66,8 +65,6 @@ int run_statistics(mstreamt &os, const optionst &options,
   return run_cegis(stat, stat, preproc, seed, max_prog_size, os);
 }
 
-#define CEGIS_LIMIT_WORDSIZE "cegis-limit-wordsize"
-
 template<class learnert, class verifiert, class preproct>
 int run_limited(mstreamt &os, optionst &options, const danger_programt &prog,
     danger_verify_configt &config, learnert &learn, verifiert &verify,
@@ -80,8 +77,6 @@ int run_limited(mstreamt &os, optionst &options, const danger_programt &prog,
       { config.set_max_ce_width(width);});
   return run_statistics(os, options, prog, learn, limited_verify, preproc);
 }
-
-#define CEGIS_PARALLEL_VERIFY "cegis-parallel-verify"
 
 template<class learnert, class preproct>
 int run_parallel(mstreamt &os, optionst &options, const danger_programt &prog,
@@ -96,119 +91,6 @@ int run_parallel(mstreamt &os, optionst &options, const danger_programt &prog,
   cegis_symex_verifyt<danger_verify_configt> verify(options, config);
   return run_limited(os, options, prog, config, learn, verify, preproc);
 }
-
-class variable_counter_helper
-{
-  const invariant_programt &prog;
-  bool counted;
-  size_t num_vars;
-  size_t num_consts;
-
-  const size_t &count(size_t &value)
-  {
-    if (!counted)
-    {
-      invariant_variable_idst ids;
-      num_consts=get_invariant_variable_ids(prog.st, ids);
-      num_vars=ids.size();
-      counted=true;
-    }
-    return value;
-  }
-public:
-  variable_counter_helper(const invariant_programt &prog) :
-      prog(prog), counted(false), num_vars(0), num_consts(0)
-  {
-  }
-
-  size_t get_num_vars()
-  {
-    return count(num_vars);
-  }
-
-  size_t get_num_consts()
-  {
-    return count(num_consts);
-  }
-};
-
-class lazy_sizet
-{
-  const std::function<size_t(void)> func;
-  size_t size;
-  bool initialised;
-public:
-  lazy_sizet(const std::function<size_t(void)> &func) :
-      func(func), size(0), initialised(false)
-  {
-  }
-
-  size_t operator()()
-  {
-    if (initialised) return size;
-    initialised=true;
-    return size=func();
-  }
-};
-
-#define SKOLEM_PROG_INDEX 2u
-
-class min_cegis_prog_sizet
-{
-  lazy_sizet &preproc_min_prog_size;
-  const size_t user_min_prog_size;
-public:
-  min_cegis_prog_sizet(lazy_sizet &preproc_min_prog_size, const optionst &opt) :
-      preproc_min_prog_size(preproc_min_prog_size), user_min_prog_size(
-          opt.get_unsigned_int_option("cegis-min-size"))
-  {
-  }
-
-  size_t operator()(const size_t prog_index) const
-  {
-    if (SKOLEM_PROG_INDEX == prog_index)
-      return std::max(user_min_prog_size, preproc_min_prog_size());
-    return user_min_prog_size;
-  }
-};
-
-const size_t PROGS_PER_LOOP=3u;
-
-class max_danger_prog_sizet
-{
-  const danger_programt &prog;
-  const size_t user_max_prog_size;
-public:
-  max_danger_prog_sizet(const danger_programt &prog, const optionst &opt) :
-      prog(prog), user_max_prog_size(
-          opt.get_unsigned_int_option("cegis-max-size"))
-  {
-  }
-
-  size_t operator()(const size_t prog_index) const
-  {
-    if (SKOLEM_PROG_INDEX == prog_index % PROGS_PER_LOOP)
-    {
-      const size_t loop_index=prog_index / PROGS_PER_LOOP;
-      const size_t num_skolem=prog.loops[loop_index].skolem_choices.size();
-      if (num_skolem == 0u) return 0u;
-      return std::max(num_skolem, user_max_prog_size);
-    }
-    return user_max_prog_size;
-  }
-
-  size_t operator()() const
-  {
-    const danger_programt::loopst &l=prog.loops;
-    const size_t max_num_skolem=
-        std::max_element(l.begin(), l.end(),
-            [](const danger_programt::loopt &l, const danger_programt::loopt &r)
-            { return l.skolem_choices.size() < r.skolem_choices.size();})->skolem_choices.size();
-    return std::max(max_num_skolem, user_max_prog_size);
-  }
-};
-
-#define CEGIS_MATCH_SELECT "cegis-match-select"
 
 template<class fitnesst, class mutatet, class crosst, class convertert,
     class preproct, class symex_learnt>
@@ -264,36 +146,23 @@ int run_genetic_and_symex(mstreamt &os, optionst &opt,
   cegis_symex_learnt<preproct, cfgt> learn(opt, prep, cfg);
 
   // Danger program properties and GA settings
-  const unsigned int seed=opt.get_unsigned_int_option("cegis-seed");
-  danger_body_providert body(prog);
+  danger_program_genetic_settingst<preproct> set(opt, prog, prep);
+  lazy_genetic_settingst<danger_program_genetic_settingst<preproct> > lazy(set);
+  invariant_exec_body_providert<danger_programt> body(DANGER_EXECUTE, prog);
   instruction_set_info_factoryt info_fac(std::ref(body));
-  const size_t pop_size=opt.get_unsigned_int_option("cegis-genetic-popsize");
-  const lazy_sizet num_progs([&prog]()
-  { return prog.loops.size() * 3u;});
-  lazy_sizet num_x0([&prog]()
-  { return prog.x0_choices.size();});
-  lazy_sizet preproc_min_size([&prep]()
-  { return prep.get_min_solution_size();});
-  const min_cegis_prog_sizet min_prog_sz(preproc_min_size, opt);
-  const max_danger_prog_sizet max_prog_sz(prog, opt);
-  const size_t rounds=opt.get_unsigned_int_option("cegis-genetic-rounds");
-  variable_counter_helper counter(prog);
-  const lazy_sizet num_vars([&counter]()
-  { return counter.get_num_vars();});
-  const lazy_sizet num_consts([&counter]()
-  { return counter.get_num_consts();});
+  const size_t pop_size=opt.get_unsigned_int_option(CEGIS_POPSIZE);
+  const size_t rounds=opt.get_unsigned_int_option(CEGIS_ROUNDS);
 
   // Set-up genetic algorithm
   const typet type=invariant_meta_type(); // XXX: Currently single user data type.
-  random_individualt rnd(seed, type, info_fac, min_prog_sz, max_prog_sz,
-      num_progs, num_vars, num_consts, num_x0);
+  random_individualt rnd(type, info_fac, lazy);
   danger_fitness_configt converter(info_fac, prog);
   concrete_fitness_source_providert<danger_programt, danger_learn_configt> src(
-      prog, std::ref(max_prog_sz), DANGER_EXECUTE);
-  dynamic_test_runnert test_runner(std::ref(src), std::ref(max_prog_sz));
-  typedef lazy_fitnesst<dynamic_test_runnert> fitnesst;
-  fitnesst fitness(test_runner);
-  random_mutatet mutate(rnd, num_consts);
+      prog, lazy.max_prog_sz_provider(), DANGER_EXECUTE);
+  dynamic_test_runnert test_runner(std::ref(src),
+      lazy.max_prog_sz_per_index_provider());
+  lazy_fitnesst<dynamic_test_runnert> fitness(test_runner);
+  random_mutatet mutate(rnd, lazy.num_consts_provder());
   random_crosst cross(rnd);
   return run_match(os, opt, prog, rnd, info_fac, pop_size, rounds, fitness,
       mutate, cross, converter, prep, learn);
@@ -303,7 +172,7 @@ int run_genetic_and_symex(mstreamt &os, optionst &opt,
 int run_danger(optionst &options, mstreamt &result, const symbol_tablet &st,
     const goto_functionst &gf)
 {
-  srand(options.get_unsigned_int_option("cegis-seed"));
+  srand(options.get_unsigned_int_option(CEGIS_SEED));
   const bool is_gen=is_genetic(options);
   const constant_strategyt str=
       is_gen ? genetic_constant_strategy : default_constant_strategy;

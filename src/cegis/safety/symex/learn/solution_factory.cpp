@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include <goto-programs/goto_trace.h>
 
 #include <cegis/danger/meta/literals.h>
@@ -53,14 +55,12 @@ void copy_instructions(goto_programt::instructionst &prog,
 void extract_program(goto_programt::instructionst &prog,
     const symbol_tablet &st, const instruction_sett &instr_set,
     const invariant_variable_namest &var_names,
-    const invariant_variable_namest &result_var_names, const size_t max_sz,
-    const exprt::operandst &instructions)
+    const invariant_variable_namest &result_var_names,
+    const program_individualt::programt &instructions)
 {
   size_t instr_idx=0;
-  for (const exprt &instruction : instructions)
+  for (const program_individualt::instructiont &instr : instructions)
   {
-    const program_individualt::instructiont instr(
-        to_program_individual_instruction(to_struct_expr(instruction)));
     const program_individualt::instructiont::opcodet opcode=instr.opcode;
     const instruction_sett::const_iterator instr_entry=instr_set.find(opcode);
     assert(instr_set.end() != instr_entry);
@@ -69,11 +69,32 @@ void extract_program(goto_programt::instructionst &prog,
   }
 }
 
+void extract_program(goto_programt::instructionst &prog,
+    const symbol_tablet &st, const instruction_sett &instr_set,
+    const invariant_variable_namest &vars,
+    const invariant_variable_namest &rvars,
+    const exprt::operandst &instructions)
+{
+  program_individualt::programt converted(instructions.size());
+  std::transform(instructions.begin(), instructions.end(), converted.begin(),
+      [](const exprt &instruction)
+      { return to_program_individual_instruction(to_struct_expr(instruction));});
+  return extract_program(prog, st, instr_set, vars, rvars, converted);
+}
+
 size_t create_temps(invariant_variable_namest &rnames, const size_t num_tmp)
 {
   for (size_t i=0; i < num_tmp; ++i)
     rnames.insert(std::make_pair(i, get_invariant_meta_name(get_tmp(i))));
   return num_tmp;
+}
+
+void set_result_var(invariant_variable_namest &result_var_names,
+    const size_t var_idx, const size_t loop_idx)
+{
+  result_var_names.erase(var_idx);
+  const std::string result_name(get_invariant_meta_name(get_Ix(loop_idx)));
+  result_var_names.insert(std::make_pair(var_idx, result_name));
 }
 }
 
@@ -92,12 +113,30 @@ void create_safety_solution(safety_goto_solutiont &solution,
   for (const goto_trace_stept &step : trace.steps)
   {
     if (!is_program_indivdual_decl(step)) continue;
-    solution.push_back(goto_programt::instructionst());
     const exprt::operandst &instrs=step.full_lhs_value.operands();
-    result_var_names.erase(idx);
-    const std::string result_name(get_invariant_meta_name(get_Ix(loop_idx++)));
-    result_var_names.insert(std::make_pair(idx, result_name));
+    set_result_var(result_var_names, idx, loop_idx++);
+    solution.push_back(goto_programt::instructionst());
     extract_program(solution.back(), prog.st, instr_set, var_names,
-        result_var_names, max_sz, instrs);
+        result_var_names, instrs);
+  }
+}
+
+void create_safety_solution(safety_goto_solutiont &solution,
+    const symbol_tablet &st, const goto_functionst &gf,
+    const program_individualt &ind, const invariant_variable_idst &var_ids)
+{
+  instruction_sett instr_set;
+  extract_instruction_set(instr_set, get_execute_body(gf));
+  invariant_variable_namest vars;
+  reverse_invariant_var_ids(vars, var_ids);
+  size_t loop_idx=0;
+  for (const program_individualt::programt &instrs : ind.programs)
+  {
+    invariant_variable_namest rvars;
+    const size_t prog_size=instrs.size();
+    const size_t idx=prog_size > 0 ? create_temps(rvars, prog_size - 1) : 0;
+    set_result_var(rvars, idx, loop_idx++);
+    solution.push_back(goto_programt::instructionst());
+    extract_program(solution.back(), st, instr_set, vars, rvars, instrs);
   }
 }

@@ -2,16 +2,35 @@
 
 #include <util/options.h>
 
+#include <cegis/danger/meta/literals.h>
+
 #include <cegis/facade/cegis.h>
 #include <cegis/statistics/cegis_statistics_wrapper.h>
+#include <cegis/genetic/genetic_constant_strategy.h>
+#include <cegis/genetic/lazy_genetic_settings.h>
+#include <cegis/genetic/instruction_set_info_factory.h>
+#include <cegis/genetic/random_individual.h>
+#include <cegis/genetic/random_mutate.h>
+#include <cegis/genetic/random_cross.h>
+#include <cegis/genetic/match_select.h>
+#include <cegis/genetic/dynamic_test_runner.h>
+#include <cegis/genetic/lazy_fitness.h>
+#include <cegis/genetic/ga_learn.h>
 #include <cegis/symex/cegis_symex_learn.h>
 #include <cegis/symex/cegis_symex_verify.h>
 #include <cegis/seed/null_seed.h>
+#include <cegis/value/program_individual_serialisation.h>
 #include <cegis/invariant/options/parameters.h>
 #include <cegis/invariant/constant/constant_strategy.h>
 #include <cegis/invariant/constant/default_constant_strategy.h>
+#include <cegis/invariant/instrument/meta_variables.h>
+#include <cegis/invariant/fitness/concrete_fitness_source_provider.h>
+#include <cegis/invariant/symex/learn/invariant_body_provider.h>
+#include <cegis/safety/options/safety_program_genetic_settings.h>
 #include <cegis/safety/preprocessing/safety_preprocessing.h>
+#include <cegis/safety/symex/fitness/safety_fitness_config.h>
 #include <cegis/safety/symex/learn/safety_learn_config.h>
+#include <cegis/safety/symex/learn/encoded_safety_learn_config.h>
 #include <cegis/safety/symex/verify/safety_verify_config.h>
 #include <cegis/safety/facade/safety_runner.h>
 
@@ -20,7 +39,7 @@ namespace
 typedef messaget::mstreamt mstreamt;
 
 template<class learnt, class verifyt, class preproct>
-int run_user_interface(mstreamt &os, const optionst &options, learnt &learn,
+int configure_ui_and_run(mstreamt &os, const optionst &options, learnt &learn,
     verifyt &verify, preproct &preproc)
 {
   null_seedt seed;
@@ -31,23 +50,52 @@ int run_user_interface(mstreamt &os, const optionst &options, learnt &learn,
   return run_cegis(stat, stat, preproc, seed, max_prog_size, os);
 }
 
-template<class learn_configt>
-struct genetic_traits
-{
-};
-
-template<>
-struct genetic_traits<safety_learn_configt>
-{
-};
-
 template<class learnt, class verifyt, class preproct>
-int run_backend(mstreamt &os, const optionst &opt, const safety_programt &prog,
-    learnt &learn, verifyt &verify, preproct &preproc)
+int configure_backend(mstreamt &os, const optionst &o,
+    const safety_programt &prog, learnt &cfg, verifyt &verify, preproct &pre)
 {
-  if (!opt.get_bool_option(CEGIS_GENETIC))
-    return run_user_interface(os, opt, learn, verify, preproc);
-  // TODO: Adde genetic case
+  if (!o.get_bool_option(CEGIS_GENETIC))
+  {
+    cegis_symex_learnt<safety_preprocessingt, learnt> learn(o, pre, cfg);
+    return configure_ui_and_run(os, o, learn, verify, pre);
+  }
+  encoded_safety_learn_configt enc(cfg);
+  cegis_symex_learnt<preproct, encoded_safety_learn_configt> learn(o, pre, enc);
+  safety_program_genetic_settingst<preproct> set(o, prog, pre);
+  lazy_genetic_settingst<safety_program_genetic_settingst<preproct> > lazy(set);
+  invariant_exec_body_providert<safety_programt> body(DANGER_EXECUTE, prog);
+  instruction_set_info_factoryt info_fac(std::ref(body));
+  const size_t pop_size=o.get_unsigned_int_option(CEGIS_POPSIZE);
+  const size_t rounds=o.get_unsigned_int_option(CEGIS_ROUNDS);
+  const typet type=invariant_meta_type(); // XXX: Currently single user data type.
+  random_individualt rnd(type, info_fac, lazy);
+  safety_fitness_configt safety_fitness_config(info_fac, prog);
+  concrete_fitness_source_providert<safety_programt, safety_learn_configt> src(
+      prog, lazy.max_prog_sz_provider(), DANGER_EXECUTE);
+  dynamic_test_runnert test_runner(std::ref(src),
+      lazy.max_prog_sz_per_index_provider());
+  lazy_fitnesst<dynamic_test_runnert> fitness(test_runner);
+  random_mutatet mutate(rnd, lazy.num_consts_provder());
+  random_crosst cross(rnd);
+  match_selectt select(fitness.get_test_case_data(), rnd, pop_size, rounds);
+  typedef ga_learnt<match_selectt, random_mutatet, random_crosst,
+      lazy_fitnesst<dynamic_test_runnert>, safety_fitness_configt> ga_learnt;
+  ga_learnt ga_learn(o, select, mutate, cross, fitness, safety_fitness_config);
+#ifndef _WIN32
+  const individual_to_danger_solution_deserialisert deser(prog, info_fac);
+  concurrent_learnt<ga_learnt, symex_learnt> learner(ga_learn, learn,
+      serialise, std::ref(deser), deserialise);
+#else
+  // TODO: Remove once task_pool supports Windows.
+  ga_learnt &learner=ga_learn;
+#endif
+  return configure_ui_and_run(os, o, learner, verify, pre);
+}
+
+constant_strategyt get_constant_strategy(const optionst &opt)
+{
+  if (opt.get_bool_option(CEGIS_GENETIC)) return genetic_constant_strategy;
+  return default_constant_strategy;
 }
 }
 
@@ -55,13 +103,10 @@ int run_safety(optionst &options, mstreamt &result, const symbol_tablet &st,
     const goto_functionst &gf)
 {
   srand(options.get_unsigned_int_option(CEGIS_SEED));
-  const constant_strategyt constant_strategy(default_constant_strategy);
-  safety_preprocessingt preproc(options, st, gf, constant_strategy);
-  const safety_programt &safety_program=preproc.get_safety_program();
-  safety_learn_configt learn_cfg(safety_program);
-  typedef cegis_symex_learnt<safety_preprocessingt, safety_learn_configt> learnt;
-  learnt learn(options, preproc, learn_cfg);
+  safety_preprocessingt prep(options, st, gf, get_constant_strategy(options));
+  const safety_programt &safety_program=prep.get_safety_program();
+  safety_learn_configt learn(safety_program);
   safety_verify_configt verify_cfg(safety_program);
   cegis_symex_verifyt<safety_verify_configt> verify(options, verify_cfg);
-  return run_backend(result, options, safety_program, learn, verify, preproc);
+  return configure_backend(result, options, safety_program, learn, verify, prep);
 }

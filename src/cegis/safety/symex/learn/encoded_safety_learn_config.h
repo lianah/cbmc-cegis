@@ -7,67 +7,41 @@
 
 \*******************************************************************/
 
-#ifndef CEGIS_SAFETY_LEARN_CONFIG_H_
-#define CEGIS_SAFETY_LEARN_CONFIG_H_
+#ifndef CEGIS_ENCODED_SAFETY_LEARN_CONFIG_H_
+#define CEGIS_ENCODED_SAFETY_LEARN_CONFIG_H_
 
-#include <deque>
+#include <cegis/value/program_individual.h>
 
-#include <util/message.h>
-
-#include <cegis/safety/options/safety_program.h>
-#include <cegis/safety/value/safety_goto_solution.h>
+#include <cegis/safety/symex/learn/safety_learn_config.h>
 
 /**
  * @brief
  *
  * @details
  */
-class safety_learn_configt
+class encoded_safety_learn_configt
 {
+  class safety_learn_configt &config;
 public:
-  /**
-   * @brief
-   *
-   * @details
-   */
-  typedef std::map<const irep_idt, size_t> invariant_variable_idst;
-private:
-  const safety_programt &original_program;
-  safety_programt program;
-  invariant_variable_idst var_ids;
-  size_t num_consts;
-public:
-  /**
-   * @brief Counterexample type for this CEGIS component.
-   *
-   * @details Counterexamples give a set of values used for the state variables.
-   */
-  typedef std::map<const irep_idt, exprt> counterexamplet;
-  typedef std::deque<counterexamplet> counterexamplest;
-
-  /**
-   * @brief Candidate solution type for this CEGIS component.
-   *
-   * @details Solutions are provided as a set of GOTO function bodies
-   * (goto_programt::instructionst) for function names.
-   */
-  typedef safety_goto_solutiont candidatet;
+  typedef safety_learn_configt::counterexamplet counterexamplet;
+  typedef safety_learn_configt::counterexamplest counterexamplest;
+  typedef program_individualt candidatet;
 
   /**
    * @brief
    *
    * @details
    *
-   * @param program
+   * @param config
    */
-  safety_learn_configt(const safety_programt &program);
+  encoded_safety_learn_configt(safety_learn_configt &config);
 
   /**
    * @brief
    *
    * @details
    */
-  ~safety_learn_configt();
+  ~encoded_safety_learn_configt();
 
   /**
    * @brief
@@ -112,15 +86,6 @@ public:
    *
    * @details
    *
-   * @return
-   */
-  const safety_programt &get_safety_program() const;
-
-  /**
-   * @brief
-   *
-   * @details
-   *
    * @param current_candidate
    * @param trace
    * @param max_solution_size
@@ -143,15 +108,6 @@ public:
    *
    * @details
    *
-   * @param
-   */
-  const invariant_variable_idst &get_vars() const;
-
-  /**
-   * @brief
-   *
-   * @details
-   *
    * @return
    */
   size_t get_num_vars() const;
@@ -166,4 +122,4 @@ public:
   size_t get_num_consts() const;
 };
 
-#endif /* CEGIS_SAFETY_LEARN_CONFIG_H_ */
+#endif /* CEGIS_ENCODED_SAFETY_LEARN_CONFIG_H_ */
