@@ -42,7 +42,7 @@ public:
    *
    * @details Counterexamples give a set of values used for the state variables.
    */
-  typedef std::map<const irep_idt, exprt> counterexamplet;
+  typedef class safety_goto_cet counterexamplet;
   typedef std::deque<counterexamplet> counterexamplest;
 
   /**
@@ -79,6 +79,16 @@ public:
    */
   void process(const counterexamplest &counterexamples,
       size_t max_solution_size);
+
+  /**
+   * @brief Process the goto program using template data.
+   *
+   * @details Creates template counterexamples and processes the goto
+   * program with them. This is useful for GA source code generation.
+   *
+   * @param max_solution_size
+   */
+  void process(size_t max_solution_size);
 
   /**
    * @brief

@@ -3,6 +3,7 @@
 #include <goto-programs/goto_trace.h>
 
 #include <cegis/danger/meta/literals.h>
+#include <cegis/genetic/instruction_set_info_factory.h>
 
 #include <cegis/value/program_individual_serialisation.h>
 #include <cegis/instructions/instruction_set_factory.h>
@@ -79,7 +80,7 @@ void extract_program(goto_programt::instructionst &prog,
   std::transform(instructions.begin(), instructions.end(), converted.begin(),
       [](const exprt &instruction)
       { return to_program_individual_instruction(to_struct_expr(instruction));});
-  return extract_program(prog, st, instr_set, vars, rvars, converted);
+  extract_program(prog, st, instr_set, vars, rvars, converted);
 }
 
 size_t create_temps(invariant_variable_namest &rnames, const size_t num_tmp)
@@ -102,6 +103,7 @@ void create_safety_solution(safety_goto_solutiont &solution,
     const safety_programt &prog, const goto_tracet &trace,
     const invariant_variable_idst &var_ids, const size_t max_sz)
 {
+  solution.clear();
   instruction_sett instr_set;
   extract_instruction_set(instr_set, get_execute_body(prog.gf));
   invariant_variable_namest var_names;
@@ -121,12 +123,14 @@ void create_safety_solution(safety_goto_solutiont &solution,
   }
 }
 
+namespace
+{
 void create_safety_solution(safety_goto_solutiont &solution,
     const symbol_tablet &st, const goto_functionst &gf,
-    const program_individualt &ind, const invariant_variable_idst &var_ids)
+    const program_individualt &ind, const invariant_variable_idst &var_ids,
+    const instruction_sett &instr_set)
 {
-  instruction_sett instr_set;
-  extract_instruction_set(instr_set, get_execute_body(gf));
+  solution.clear();
   invariant_variable_namest vars;
   reverse_invariant_var_ids(vars, var_ids);
   size_t loop_idx=0;
@@ -139,4 +143,23 @@ void create_safety_solution(safety_goto_solutiont &solution,
     solution.push_back(goto_programt::instructionst());
     extract_program(solution.back(), st, instr_set, vars, rvars, instrs);
   }
+}
+}
+
+void create_safety_solution(safety_goto_solutiont &solution,
+    const symbol_tablet &st, const goto_functionst &gf,
+    const program_individualt &ind, const invariant_variable_idst &var_ids)
+{
+  instruction_sett instr_set;
+  extract_instruction_set(instr_set, get_execute_body(gf));
+  create_safety_solution(solution, st, gf, ind, var_ids, instr_set);
+}
+
+void create_safety_solution(safety_goto_solutiont &solution,
+    const symbol_tablet &st, const goto_functionst &gf,
+    const program_individualt &ind, const invariant_variable_idst &var_ids,
+    instruction_set_info_factoryt &info_fac)
+{
+  const instruction_sett &instr_set=info_fac.get_instructions();
+  create_safety_solution(solution, st, gf, ind, var_ids, instr_set);
 }

@@ -36,7 +36,7 @@ public:
 void add_universal_quantifier(goto_programt::targetst &quantifiers,
     invariant_programt &program)
 {
-  invaraint_symbol_set vars(create_empty_symbol_set());
+  invariant_symbol_set vars(create_empty_symbol_set());
   collect_counterexample_variables(vars, program);
   goto_programt::targett Ix=program.get_loops().front()->meta_variables.Ix;
   const quantifyt quantify(quantifiers, --Ix, program);

@@ -38,9 +38,9 @@ bool is_meta(const irep_idt &id, const typet &type)
 
 class counterexample_variable_collectort
 {
-  invaraint_symbol_set &vars;
+  invariant_symbol_set &vars;
 public:
-  counterexample_variable_collectort(invaraint_symbol_set &vars) :
+  counterexample_variable_collectort(invariant_symbol_set &vars) :
       vars(vars)
   {
   }
@@ -71,7 +71,7 @@ bool compare_symbol_by_id(const symbol_exprt &lhs, const symbol_exprt &rhs)
 }
 }
 
-void collect_counterexample_variables(invaraint_symbol_set &vars,
+void collect_counterexample_variables(invariant_symbol_set &vars,
     const invariant_programt &program)
 {
   const counterexample_variable_collectort collector(vars);
@@ -86,12 +86,12 @@ void collect_counterexample_variables(invaraint_symbol_set &vars,
 void get_invariant_constraint_vars(constraint_varst &vars,
     const invariant_programt &program)
 {
-  invaraint_symbol_set smb(&compare_symbol_by_id);
+  invariant_symbol_set smb(&compare_symbol_by_id);
   collect_counterexample_variables(smb, program);
   std::copy(smb.begin(), smb.end(), std::back_inserter(vars));
 }
 
-invaraint_symbol_set create_empty_symbol_set()
+invariant_symbol_set create_empty_symbol_set()
 {
-  return invaraint_symbol_set(&compare_symbol_by_id);
+  return invariant_symbol_set(&compare_symbol_by_id);
 }

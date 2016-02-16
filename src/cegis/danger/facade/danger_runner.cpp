@@ -16,7 +16,6 @@
 #include <cegis/genetic/genetic_preprocessing.h>
 #include <cegis/genetic/lazy_fitness.h>
 #include <cegis/genetic/concrete_test_runner.h>
-#include <cegis/genetic/dynamic_test_runner.h>
 #include <cegis/seed/null_seed.h>
 #include <cegis/seed/literals_seed.h>
 #include <cegis/symex/cegis_symex_learn.h>
@@ -34,6 +33,7 @@
 #include <cegis/danger/meta/literals.h>
 #include <cegis/danger/options/danger_program_genetic_settings.h>
 #include <cegis/danger/preprocess/danger_preprocessing.h>
+#include <cegis/danger/genetic/dynamic_danger_test_runner.h>
 #include <cegis/danger/symex/learn/add_variable_refs.h>
 #include <cegis/danger/symex/learn/danger_learn_config.h>
 #include <cegis/danger/symex/learn/encoded_danger_learn_config.h>
@@ -159,9 +159,9 @@ int run_genetic_and_symex(mstreamt &os, optionst &opt,
   danger_fitness_configt converter(info_fac, prog);
   concrete_fitness_source_providert<danger_programt, danger_learn_configt> src(
       prog, lazy.max_prog_sz_provider(), DANGER_EXECUTE);
-  dynamic_test_runnert test_runner(std::ref(src),
+  dynamic_danger_test_runnert test_runner(std::ref(src),
       lazy.max_prog_sz_per_index_provider());
-  lazy_fitnesst<dynamic_test_runnert> fitness(test_runner);
+  lazy_fitnesst<dynamic_danger_test_runnert, danger_learn_configt::counterexamplet> fitness(test_runner);
   random_mutatet mutate(rnd, lazy.num_consts_provder());
   random_crosst cross(rnd);
   return run_match(os, opt, prog, rnd, info_fac, pop_size, rounds, fitness,
@@ -178,6 +178,7 @@ int run_danger(optionst &options, mstreamt &result, const symbol_tablet &st,
       is_gen ? genetic_constant_strategy : default_constant_strategy;
   danger_preprocessingt preproc(options, st, gf, str);
   const danger_programt &prog=preproc.get_danger_program();
+  std::cerr << "<loops_size>" << prog.get_loops().size() << "</loops_size>" << std::endl;
   genetic_preprocessingt<danger_preprocessingt> gen_preproc(options, preproc);
   return run_genetic_and_symex(result, options, prog, gen_preproc);
 }

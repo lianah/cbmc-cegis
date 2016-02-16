@@ -27,7 +27,7 @@ typedef bool (*symbol_comparatort)(const symbol_exprt &, const symbol_exprt &);
  *
  * @details
  */
-typedef std::set<symbol_exprt, symbol_comparatort> invaraint_symbol_set;
+typedef std::set<symbol_exprt, symbol_comparatort> invariant_symbol_set;
 
 /**
  * @brief
@@ -36,7 +36,7 @@ typedef std::set<symbol_exprt, symbol_comparatort> invaraint_symbol_set;
  *
  * @return
  */
-invaraint_symbol_set create_empty_symbol_set();
+invariant_symbol_set create_empty_symbol_set();
 
 /**
  * @brief
@@ -46,7 +46,7 @@ invaraint_symbol_set create_empty_symbol_set();
  * @param vars
  * @param program
  */
-void collect_counterexample_variables(invaraint_symbol_set &vars,
+void collect_counterexample_variables(invariant_symbol_set &vars,
     const class invariant_programt &program);
 
 /**

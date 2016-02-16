@@ -32,7 +32,7 @@ template<class preproct>
 size_t safety_program_genetic_settingst<preproct>::max_prog_sz(
     const size_t prog_index)
 {
-  return max_prog_sz(0u);
+  return max_prog_sz();
 }
 
 template<class preproct>

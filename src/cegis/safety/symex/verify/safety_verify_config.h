@@ -31,7 +31,7 @@ public:
    *
    * @details Counterexamples give a set of values used for the state variables.
    */
-  typedef std::map<const irep_idt, exprt> counterexamplet;
+  typedef class safety_goto_cet counterexamplet;
   typedef std::deque<counterexamplet> counterexamplest;
 
   /**

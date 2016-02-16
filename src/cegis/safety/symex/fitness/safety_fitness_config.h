@@ -33,7 +33,7 @@ class safety_fitness_configt
   size_t max_solution_size;
 public:
   typedef safety_goto_solutiont candidatet;
-  typedef std::map<const irep_idt, exprt> counterexamplet;
+  typedef class safety_goto_cet counterexamplet;
   typedef class program_individualt individualt;
 
   /**

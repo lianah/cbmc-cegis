@@ -1,6 +1,10 @@
 #include <algorithm>
 
+#include <util/expr_util.h>
+
 #include <cegis/invariant/util/invariant_program_helper.h>
+#include <cegis/invariant/util/invariant_constraint_variables.h>
+#include <cegis/invariant/instrument/meta_variables.h>
 #include <cegis/invariant/symex/learn/add_counterexamples.h>
 #include <cegis/invariant/symex/learn/invariant_library.h>
 #include <cegis/danger/meta/literals.h>
@@ -38,6 +42,19 @@ void danger_learn_configt::process(const counterexamplest &ces,
   invariant_add_learned_counterexamples(program, ces, create_danger_constraint,
       true);
   program.gf.update();
+}
+
+void danger_learn_configt::process(const size_t max_solution_size)
+{
+  constraint_varst ce_vars;
+  get_invariant_constraint_vars(ce_vars, program);
+  counterexamplet dummy_ce;
+  const typet type(invariant_meta_type());  // XXX: Currently single data type
+  const exprt zero(gen_zero(type));
+  for (const symbol_exprt &var : ce_vars)
+    dummy_ce.insert(std::make_pair(var.get_identifier(), zero));
+  counterexamplest empty(1, dummy_ce);
+  process(empty, max_solution_size);
 }
 
 void danger_learn_configt::set_word_width(const size_t word_width_in_bits)

@@ -1,9 +1,16 @@
+#include <algorithm>
+
+#include <util/expr_util.h>
+
 #include <cegis/danger/meta/literals.h>
 
+#include <cegis/invariant/util/invariant_constraint_variables.h>
+#include <cegis/invariant/instrument/meta_variables.h>
 #include <cegis/invariant/symex/learn/instrument_vars.h>
 #include <cegis/invariant/symex/learn/invariant_library.h>
 #include <cegis/invariant/symex/learn/add_invariant_programs_to_learn.h>
 #include <cegis/invariant/symex/learn/add_counterexamples.h>
+#include <cegis/safety/value/safety_goto_ce.h>
 #include <cegis/safety/options/safety_program_printer.h>
 #include <cegis/safety/constraint/safety_constraint_factory.h>
 #include <cegis/safety/symex/learn/add_variable_refs.h>
@@ -43,8 +50,14 @@ void safety_learn_configt::process(const counterexamplest &ces,
   const invariant_programt::invariant_loopt &first_loop=*loops.front();
   const std::string I0=get_prog_var_name(st, first_loop.meta_variables.Ix);
   execute_inv_prog(st, gf, max_sz, program.Ix0, I0);
-  invariant_add_learned_counterexamples(program, ces, create_safety_constraint,
-      false);
+  // TODO: Implement for multiple loops (change constraint, instrumentation)
+  std::deque<counterexamplet::assignmentst> first_x_only(ces.size());
+  std::transform(ces.begin(), ces.end(), first_x_only.begin(),
+      [](const counterexamplet &ce)
+      { return ce.x.front();});
+
+  invariant_add_learned_counterexamples(program, first_x_only,
+      create_safety_constraint, false);
   gf.update();
   // XXX: Debug
   std::cout << "<learn_prog>" << std::endl;
@@ -52,6 +65,20 @@ void safety_learn_configt::process(const counterexamplest &ces,
   gf.output(ns, std::cout);
   std::cout << "</learn_prog>" << std::endl;
   // XXX: Debug
+}
+
+void safety_learn_configt::process(const size_t max_solution_size)
+{
+  constraint_varst ce_vars;
+  get_invariant_constraint_vars(ce_vars, program);
+  counterexamplet dummy_ce;
+  const typet type(invariant_meta_type());  // XXX: Currently single data type
+  const exprt zero(gen_zero(type));
+  counterexamplet::assignmentst &x=dummy_ce.x.front();
+  for (const symbol_exprt &var : ce_vars)
+    x.insert(std::make_pair(var.get_identifier(), zero));
+  counterexamplest empty(1, dummy_ce);
+  process(empty, max_solution_size);
 }
 
 void safety_learn_configt::set_word_width(const size_t word_width_in_bits)
@@ -77,7 +104,6 @@ const safety_programt &safety_learn_configt::get_safety_program() const
 void safety_learn_configt::convert(candidatet &current_candidate,
     const goto_tracet &trace, const size_t max_sz)
 {
-  current_candidate.clear();
   create_safety_solution(current_candidate, program, trace, var_ids, max_sz);
 }
 

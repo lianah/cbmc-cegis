@@ -7,8 +7,8 @@
 
 \*******************************************************************/
 
-#ifndef CEGIS_GENETIC_DYNAMIC_TEST_RUNNER_H_
-#define CEGIS_GENETIC_DYNAMIC_TEST_RUNNER_H_
+#ifndef CEGIS_GENETIC_DYNAMIC_DANGER_TEST_RUNNER_H_
+#define CEGIS_GENETIC_DYNAMIC_DANGER_TEST_RUNNER_H_
 
 #include <functional>
 
@@ -22,7 +22,7 @@
  *
  * @details
  */
-class dynamic_test_runnert
+class dynamic_danger_test_runnert
 {
 public:
   typedef int (*fitness_testert)(const unsigned int[]);
@@ -45,7 +45,7 @@ public:
    * @param source_code_provider
    * @param max_prog_sz
    */
-  dynamic_test_runnert(
+  dynamic_danger_test_runnert(
       const std::function<std::string(void)> &source_code_provider,
       const std::function<size_t(size_t)> &max_prog_sz);
 
@@ -54,7 +54,7 @@ public:
    *
    * @details
    */
-  ~dynamic_test_runnert();
+  ~dynamic_danger_test_runnert();
 
   /**
    * @brief
@@ -76,4 +76,4 @@ public:
   void join();
 };
 
-#endif /* CEGIS_GENETIC_DYNAMIC_TEST_RUNNER_H_ */
+#endif /* CEGIS_GENETIC_DYNAMIC_DANGER_TEST_RUNNER_H_ */

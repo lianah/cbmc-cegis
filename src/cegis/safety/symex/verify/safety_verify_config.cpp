@@ -1,6 +1,7 @@
 #include <cegis/invariant/symex/verify/insert_constraint.h>
 #include <cegis/invariant/symex/verify/extract_counterexample.h>
 #include <cegis/safety/constraint/safety_constraint_factory.h>
+#include <cegis/safety/value/safety_goto_ce.h>
 #include <cegis/safety/symex/verify/insert_candidate.h>
 #include <cegis/safety/symex/verify/safety_verify_config.h>
 
@@ -46,5 +47,9 @@ void safety_verify_configt::convert(counterexamplest &counterexamples,
     const goto_tracet &trace)
 {
   counterexamples.push_back(counterexamplet());
-  invariant_extract_counterexample(counterexamples.back(), trace, quantifiers);
+  // TODO: Implement for multiple loops (change constraint, instrumentation)
+  counterexamplet &new_ce=counterexamples.back();
+  counterexamplet::assignments_per_loopt &x=new_ce.x;
+  x.push_back(counterexamplet::assignmentst());
+  invariant_extract_counterexample(x.back(), trace, quantifiers);
 }

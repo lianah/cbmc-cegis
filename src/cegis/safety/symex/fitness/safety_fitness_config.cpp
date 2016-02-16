@@ -3,6 +3,7 @@
 #include <cegis/invariant/instrument/meta_variables.h>
 #include <cegis/invariant/symex/learn/instrument_vars.h>
 #include <cegis/invariant/symex/verify/insert_constraint.h>
+#include <cegis/safety/value/safety_goto_ce.h>
 #include <cegis/safety/options/safety_program_printer.h>
 #include <cegis/safety/constraint/safety_constraint_factory.h>
 #include <cegis/safety/symex/learn/solution_factory.h>
@@ -26,8 +27,8 @@ void safety_fitness_configt::convert(candidatet &current_candidate,
   const symbol_tablet &st=original_program.st;
   const goto_functionst &gf=original_program.gf;
   invariant_variable_idst ids;
-  get_invariant_variable_ids(original_program.st, ids);
-  create_safety_solution(current_candidate, st, gf, ind, ids);
+  get_invariant_variable_ids(st, ids);
+  create_safety_solution(current_candidate, st, gf, ind, ids, info_fac);
 }
 
 namespace
@@ -70,11 +71,15 @@ void safety_fitness_configt::set_test_case(const counterexamplet &ce)
 {
   if (quantifiers.empty()) return;
   goto_functionst &gf=program.gf;
+  // TODO: Implement for multiple loops (change constraint, instrumentation)
+  const counterexamplet::assignmentst &ass=ce.x.back();
+  typedef counterexamplet::assignmentst counterexamplet;
+
   for (goto_programt::targett quantifier : quantifiers)
   {
     const irep_idt &var=get_affected_variable(*quantifier);
-    const counterexamplet::const_iterator it=ce.find(var);
-    if (ce.end() == it) continue;
+    const counterexamplet::const_iterator it=ass.find(var);
+    if (ass.end() == it) continue;
     symbol_tablet &st=program.st;
     if (program_contains_ce)
     {
