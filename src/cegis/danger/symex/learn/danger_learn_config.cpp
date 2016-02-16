@@ -47,7 +47,7 @@ void danger_learn_configt::process(const counterexamplest &ces,
 void danger_learn_configt::process(const size_t max_solution_size)
 {
   constraint_varst ce_vars;
-  get_invariant_constraint_vars(ce_vars, program);
+  get_invariant_constraint_vars(ce_vars, original_program);
   counterexamplet dummy_ce;
   const typet type(invariant_meta_type());  // XXX: Currently single data type
   const exprt zero(gen_zero(type));

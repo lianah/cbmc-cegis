@@ -34,7 +34,9 @@ void prepare_fitness_tester_library(fitness_lib_handlet &handle,
  * @details
  *
  * @param handle
+ * @param fitness_tester
  */
-void close_fitness_tester_library(fitness_lib_handlet &handle);
+void close_fitness_tester_library(fitness_lib_handlet &handle,
+    fitness_testert &fitness_tester);
 
 #endif /* CEGIS_DYNAMIC_TEST_RUNNER_HELPER_H_ */

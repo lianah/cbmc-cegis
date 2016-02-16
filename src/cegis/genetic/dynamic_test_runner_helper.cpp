@@ -8,9 +8,15 @@
 #include <cegis/invariant/meta/literals.h>
 #include <cegis/genetic/dynamic_test_runner_helper.h>
 
-void close_fitness_tester_library(fitness_lib_handlet &handle)
+void close_fitness_tester_library(fitness_lib_handlet &handle,
+    fitness_testert &fitness_tester)
 {
-  close_fitness_tester_library(handle);
+  if (fitness_tester && handle)
+  {
+    dlclose(handle);
+    handle=0;
+    fitness_tester=0;
+  }
 }
 
 namespace

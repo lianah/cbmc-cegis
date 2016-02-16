@@ -26,10 +26,6 @@ safety_learn_configt::~safety_learn_configt()
 {
 }
 
-// XXX: Debug
-#include <iostream>
-// XXX: Debug
-
 void safety_learn_configt::process(const counterexamplest &ces,
     const size_t max_sz)
 {
@@ -59,12 +55,6 @@ void safety_learn_configt::process(const counterexamplest &ces,
   invariant_add_learned_counterexamples(program, first_x_only,
       create_safety_constraint, false);
   gf.update();
-  // XXX: Debug
-  std::cout << "<learn_prog>" << std::endl;
-  const namespacet ns(st);
-  gf.output(ns, std::cout);
-  std::cout << "</learn_prog>" << std::endl;
-  // XXX: Debug
 }
 
 void safety_learn_configt::process(const size_t max_solution_size)

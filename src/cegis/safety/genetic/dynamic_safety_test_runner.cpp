@@ -12,7 +12,7 @@ dynamic_safety_test_runnert::dynamic_safety_test_runnert(
 
 dynamic_safety_test_runnert::~dynamic_safety_test_runnert()
 {
-  if (fitness_tester) close_fitness_tester_library(handle);
+  close_fitness_tester_library(handle, fitness_tester);
 }
 
 void dynamic_safety_test_runnert::run_test(individualt &ind,

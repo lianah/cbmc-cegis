@@ -85,7 +85,8 @@ int configure_backend(mstreamt &os, const optionst &o,
   typedef ga_learnt<match_selectt, random_mutatet, random_crosst,
       lazy_fitnesst<dynamic_safety_test_runnert, safety_goto_cet>, safety_fitness_configt> ga_learnt;
   ga_learnt ga_learn(o, select, mutate, cross, fitness, safety_fitness_config);
-#ifndef _WIN32
+#if 0
+//#ifndef _WIN32
   const individual_to_danger_solution_deserialisert deser(prog, info_fac);
   concurrent_learnt<ga_learnt, symex_learnt> learner(ga_learn, learn,
       serialise, std::ref(deser), deserialise);

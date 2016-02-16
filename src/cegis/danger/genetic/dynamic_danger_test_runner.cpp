@@ -16,7 +16,7 @@ dynamic_danger_test_runnert::dynamic_danger_test_runnert(
 
 dynamic_danger_test_runnert::~dynamic_danger_test_runnert()
 {
-  if (fitness_tester) close_fitness_tester_library(handle);
+  close_fitness_tester_library(handle, fitness_tester);
 }
 
 void dynamic_danger_test_runnert::run_test(individualt &ind,
