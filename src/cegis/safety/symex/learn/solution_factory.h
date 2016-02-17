@@ -59,7 +59,7 @@ void create_safety_solution(safety_goto_solutiont &solution,
  */
 void create_safety_solution(safety_goto_solutiont &solution,
     const symbol_tablet &st, const class goto_functionst &gf,
-    const class program_individualt &ind,
+    const program_individualt &ind,
     const invariant_variable_idst &var_ids,
     class instruction_set_info_factoryt &info_fac);
 

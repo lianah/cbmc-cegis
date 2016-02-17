@@ -19,6 +19,7 @@
 #include <cegis/symex/cegis_symex_learn.h>
 #include <cegis/symex/cegis_symex_verify.h>
 #include <cegis/seed/null_seed.h>
+#include <cegis/learn/concurrent_learn.h>
 #include <cegis/value/program_individual_serialisation.h>
 #include <cegis/invariant/options/parameters.h>
 #include <cegis/invariant/constant/constant_strategy.h>
@@ -27,6 +28,7 @@
 #include <cegis/invariant/fitness/concrete_fitness_source_provider.h>
 #include <cegis/invariant/symex/learn/invariant_body_provider.h>
 #include <cegis/safety/value/safety_goto_ce.h>
+#include <cegis/safety/value/individual_to_safety_solution_deserialiser.h>
 #include <cegis/safety/options/safety_program_genetic_settings.h>
 #include <cegis/safety/preprocessing/safety_preprocessing.h>
 #include <cegis/safety/genetic/dynamic_safety_test_runner.h>
@@ -64,7 +66,8 @@ int configure_backend(mstreamt &os, const optionst &o,
   encoded_safety_learn_configt enc(cfg);
   typedef genetic_preprocessingt<prept> preproct;
   preproct pre(o, prep);
-  cegis_symex_learnt<preproct, encoded_safety_learn_configt> learn(o, pre, enc);
+  typedef cegis_symex_learnt<preproct, encoded_safety_learn_configt> symex_learnt;
+  symex_learnt learn(o, pre, enc);
   safety_program_genetic_settingst<preproct> set(o, prog, pre);
   lazy_genetic_settingst<safety_program_genetic_settingst<preproct> > lazy(set);
   invariant_exec_body_providert<safety_programt> body(DANGER_EXECUTE, prog);
@@ -78,18 +81,18 @@ int configure_backend(mstreamt &os, const optionst &o,
       prog, lazy.max_prog_sz_provider(), DANGER_EXECUTE);
   dynamic_safety_test_runnert test_runner(std::ref(src),
       lazy.max_prog_sz_per_index_provider());
-  lazy_fitnesst<dynamic_safety_test_runnert, safety_goto_cet> fitness(test_runner);
+  lazy_fitnesst<dynamic_safety_test_runnert, safety_goto_cet> fit(test_runner);
   random_mutatet mutate(rnd, lazy.num_consts_provder());
   random_crosst cross(rnd);
-  match_selectt select(fitness.get_test_case_data(), rnd, pop_size, rounds);
+  match_selectt select(fit.get_test_case_data(), rnd, pop_size, rounds);
   typedef ga_learnt<match_selectt, random_mutatet, random_crosst,
-      lazy_fitnesst<dynamic_safety_test_runnert, safety_goto_cet>, safety_fitness_configt> ga_learnt;
-  ga_learnt ga_learn(o, select, mutate, cross, fitness, safety_fitness_config);
-#if 0
-//#ifndef _WIN32
-  const individual_to_danger_solution_deserialisert deser(prog, info_fac);
-  concurrent_learnt<ga_learnt, symex_learnt> learner(ga_learn, learn,
-      serialise, std::ref(deser), deserialise);
+      lazy_fitnesst<dynamic_safety_test_runnert, safety_goto_cet>,
+      safety_fitness_configt> ga_learnt;
+  ga_learnt ga_learn(o, select, mutate, cross, fit, safety_fitness_config);
+#ifndef _WIN32
+  const individual_to_safety_solution_deserialisert deser(prog, info_fac);
+  concurrent_learnt<ga_learnt, symex_learnt> learner(ga_learn, learn, serialise,
+      std::ref(deser), deserialise);
 #else
   // TODO: Remove once task_pool supports Windows.
   ga_learnt &learner=ga_learn;
