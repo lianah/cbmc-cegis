@@ -6,7 +6,6 @@
 
 #include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/invariant/instrument/meta_variables.h>
-#include <cegis/invariant/meta/literals.h>
 #include <cegis/invariant/options/invariant_program.h>
 #include <cegis/invariant/symex/learn/add_counterexamples.h>
 
@@ -43,13 +42,13 @@ public:
   }
 };
 
-const char X_CHOICE_PREFIX[]=CEGIS_PREFIX "x_choice_";
 void declare_x_arrays(symbol_tablet &st, goto_functionst &gf,
-    goto_programt::targett pos, const array_valuest &vals)
+    goto_programt::targett pos, const array_valuest &vals,
+    const std::string &meta_var_prefix)
 {
   for (array_valuest::const_iterator it=vals.begin(); it != vals.end(); ++it)
   {
-    std::string base_name(X_CHOICE_PREFIX);
+    std::string base_name(meta_var_prefix);
     base_name+=id2string(it->first);
     const array_exprt &value=it->second;
     const typet &type=value.type();
@@ -71,6 +70,7 @@ class assign_ce_valuet
   goto_functionst &gf;
   goto_programt::targett pos;
   goto_programt::targett goto_pos;
+  const std::string meta_var_prefix;
   const bool use_x0_ce;
 public:
   void add_x0_case(const size_t ces_size)
@@ -84,8 +84,10 @@ public:
   }
 
   assign_ce_valuet(invariant_programt &prog, const size_t ces_size,
-      const goto_programt::targett begin_pos, const bool use_x0_ce) :
-      st(prog.st), gf(prog.gf), use_x0_ce(use_x0_ce)
+      const goto_programt::targett begin_pos,
+      const std::string &meta_var_prefix, const bool use_x0_ce) :
+      st(prog.st), gf(prog.gf), meta_var_prefix(meta_var_prefix), use_x0_ce(
+          use_x0_ce)
   {
     const invariant_programt::invariant_loopst loops(prog.get_loops());
     assert(!loops.empty());
@@ -102,7 +104,7 @@ public:
 
   void operator()(const std::pair<const irep_idt, exprt> &assignment)
   {
-    std::string base_name(X_CHOICE_PREFIX);
+    std::string base_name(meta_var_prefix);
     base_name+=id2string(assignment.first);
     const std::string array_name(get_invariant_meta_name(base_name));
     const symbol_exprt array(st.lookup(array_name).symbol_expr());
@@ -141,7 +143,7 @@ void add_final_assertion(invariant_programt &prog,
 }
 
 void invariant_declare_x_choice_arrays(invariant_programt &prog,
-    const counterexamplest &ces)
+    const counterexamplest &ces, const std::string &meta_var_prefix)
 {
   array_valuest vals;
   const create_x_array_valuest create_values(vals, ces.front(), ces.size());
@@ -149,7 +151,7 @@ void invariant_declare_x_choice_arrays(invariant_programt &prog,
   symbol_tablet &st=prog.st;
   goto_functionst &gf=prog.gf;
   goto_programt::targett pos=prog.invariant_range.begin;
-  declare_x_arrays(st, gf, --pos, vals);
+  declare_x_arrays(st, gf, --pos, vals, meta_var_prefix);
 }
 
 namespace
@@ -190,11 +192,12 @@ goto_programt::targett invariant_add_ce_loop(invariant_programt &prog,
   return pos;
 }
 
-void assign_ce_values(invariant_programt &prog,
+void invariant_assign_ce_values(invariant_programt &prog,
     const counterexamplet &prototype_ce, const size_t num_ces,
-    const goto_programt::targett pos, const bool use_x0_ce)
+    const std::string &prefix, const goto_programt::targett pos,
+    const bool use_x0_ce)
 {
-  const assign_ce_valuet assign_value(prog, num_ces, pos, use_x0_ce);
+  const assign_ce_valuet assign_value(prog, num_ces, pos, prefix, use_x0_ce);
   std::for_each(prototype_ce.begin(), prototype_ce.end(), assign_value).finalize_x0_case();
 }
 
@@ -212,10 +215,11 @@ void invariant_add_learned_counterexamples(invariant_programt &prog,
 {
   // TODO: Danger counterexamples need one map<irep_idt, exprt> per loop (per quantifier)!
   if (ces.empty()) return;
-  invariant_declare_x_choice_arrays(prog, ces);
+  const std::string pre(X_CHOICE_PREFIX);
+  invariant_declare_x_choice_arrays(prog, ces, pre);
   const size_t sz=ces.size();
   const goto_programt::targett loop_end=invariant_add_ce_loop(prog, sz, x0_ce);
   const goto_programt::targett pos=prog.get_loops().front()->meta_variables.Ix;
-  assign_ce_values(prog, ces.front(), ces.size(), pos, x0_ce);
+  invariant_assign_ce_values(prog, ces.front(), ces.size(), pre, pos, x0_ce);
   invariant_add_constraint(prog, constraint, loop_end);
 }

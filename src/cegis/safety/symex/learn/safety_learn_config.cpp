@@ -5,11 +5,12 @@
 #include <cegis/danger/meta/literals.h>
 
 #include <cegis/invariant/util/invariant_constraint_variables.h>
+#include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/invariant/instrument/meta_variables.h>
 #include <cegis/invariant/symex/learn/instrument_vars.h>
 #include <cegis/invariant/symex/learn/invariant_library.h>
 #include <cegis/invariant/symex/learn/add_invariant_programs_to_learn.h>
-#include <cegis/invariant/symex/learn/add_counterexamples.h>
+#include <cegis/safety/symex/learn/add_counterexamples.h>
 #include <cegis/safety/value/safety_goto_ce.h>
 #include <cegis/safety/options/safety_program_printer.h>
 #include <cegis/safety/constraint/safety_constraint_factory.h>
@@ -46,14 +47,7 @@ void safety_learn_configt::process(const counterexamplest &ces,
   const invariant_programt::invariant_loopt &first_loop=*loops.front();
   const std::string I0=get_prog_var_name(st, first_loop.meta_variables.Ix);
   execute_inv_prog(st, gf, max_sz, program.Ix0, I0);
-  // TODO: Implement for multiple loops (change constraint, instrumentation)
-  std::deque<counterexamplet::assignmentst> first_x_only(ces.size());
-  std::transform(ces.begin(), ces.end(), first_x_only.begin(),
-      [](const counterexamplet &ce)
-      { return ce.x.front();});
-
-  invariant_add_learned_counterexamples(program, first_x_only,
-      create_safety_constraint, false);
+  safety_add_learned_counterexamples(program, ces, create_safety_constraint);
   gf.update();
 }
 
@@ -69,7 +63,15 @@ void safety_learn_configt::process(const size_t max_solution_size)
   for (const symbol_exprt &var : ce_vars)
     x.insert(std::make_pair(var.get_identifier(), zero));
   // TODO: Implement for multiple loops (change constraint, instrumentation)
-  // TODO: Add x0 choices, skolem choices
+  const safety_programt &prog=original_program;
+  const invariant_programt::const_invariant_loopst loops=prog.get_loops();
+  assert(!loops.empty());
+  // XXX: We might have to handle skolem choices explicitly at some point
+  for (const goto_programt::targett &skolem_choice : loops.front()->skolem_choices)
+    x.insert(std::make_pair(get_affected_variable(*skolem_choice), zero));
+  counterexamplet::assignmentst &x0=dummy_ce.x0;
+  for (const goto_programt::targett &x0_choice : original_program.x0_choices)
+    x0.insert(std::make_pair(get_affected_variable(*x0_choice), zero));
   counterexamplest empty(1, dummy_ce);
   process(empty, max_solution_size);
 }

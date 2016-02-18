@@ -15,6 +15,15 @@
 
 #include <util/expr.h>
 
+#include <cegis/invariant/meta/literals.h>
+
+/**
+ * @brief
+ *
+ * @details
+ */
+#define X_CHOICE_PREFIX CEGIS_PREFIX "x_choice_"
+
 /**
  * @brief Counterexample type for this CEGIS component.
  *
@@ -22,28 +31,6 @@
  */
 typedef std::map<const irep_idt, exprt> counterexamplet;
 typedef std::deque<counterexamplet> counterexamplest;
-
-/**
- * @brief
- *
- * @details
- *
- * @param prog
- * @param ces
- */
-void invariant_assign_ce_values(invariant_programt &prog,
-    const counterexamplest &ces);
-
-/**
- * @brief
- *
- * @details
- *
- * @param prog
- * @param ces
- */
-void invariant_declare_x_choice_arrays(invariant_programt &prog,
-    const counterexamplest &ces);
 
 /**
  * @brief Constraint factory function.
@@ -72,9 +59,10 @@ void invariant_add_learned_counterexamples(class invariant_programt &prog,
  *
  * @param prog
  * @param ces
+ * @param meta_var_prefix
  */
 void invariant_declare_x_choice_arrays(invariant_programt &prog,
-    const counterexamplest &ces);
+    const counterexamplest &ces, const std::string &meta_var_prefix);
 
 /**
  * @brief
@@ -98,12 +86,14 @@ goto_programt::targett invariant_add_ce_loop(invariant_programt &prog,
  * @param prog
  * @param prototype_ce
  * @param num_ces
+ * @param meta_var_prefix
  * @param pos
  * @param use_x0_ce
  */
-void assign_ce_values(invariant_programt &prog,
+void invariant_assign_ce_values(invariant_programt &prog,
     const counterexamplet &prototype_ce, const size_t num_ces,
-    const goto_programt::targett pos, const bool use_x0_ce);
+    const std::string &meta_var_prefix, const goto_programt::targett pos,
+    const bool use_x0_ce);
 
 /**
  * @brief

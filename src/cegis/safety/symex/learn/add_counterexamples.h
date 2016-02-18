@@ -19,6 +19,13 @@ typedef std::deque<safety_goto_cet> safety_goto_cest;
  * @brief
  *
  * @details
+ */
+#define X0_CHOICE_PREFIX CEGIS_PREFIX "x0_choice_"
+
+/**
+ * @brief
+ *
+ * @details
  *
  * @param prog
  * @param ces

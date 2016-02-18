@@ -144,7 +144,8 @@ bool handle_x0(std::string &source, std::string &line)
 
 bool handle_ce(std::string &source, bool &initialised, const std::string &line)
 {
-  if (!contains(line, CEGIS_PREFIX "x_choice_")
+  if (!(contains(line, CEGIS_PREFIX "x_choice_")
+      || contains(line, CEGIS_PREFIX "x0_choice_"))
       || contains(line, CEGIS_PREFIX "x_index")) return false;
   if (!initialised)
   {
