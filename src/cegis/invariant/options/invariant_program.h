@@ -52,6 +52,7 @@ public:
   {
     exprt guard;
     program_ranget body;
+    goto_programt::targetst skolem_choices;
     meta_vars_positionst meta_variables;
   };
   typedef std::vector<const invariant_loopt *> const_invariant_loopst;
@@ -69,6 +70,8 @@ public:
   exprt assertion;
   goto_programt::targett Ix0;
   goto_programt::targett Ax;
+
+  goto_programt::targetst x0_choices;
 
   /**
    * @brief

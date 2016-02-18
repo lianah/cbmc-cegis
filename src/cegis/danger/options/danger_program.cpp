@@ -54,9 +54,6 @@ public:
   {
     danger_programt::loopt result;
     fix(result, loop);
-    goto_programt::targetst &new_s=result.skolem_choices;
-    const goto_programt::targetst &old_s=loop.skolem_choices;
-    std::transform(old_s.begin(), old_s.end(), std::back_inserter(new_s), fix);
     result.danger_meta_variables=operator()(loop.danger_meta_variables);
     return result;
   }
@@ -68,9 +65,6 @@ danger_programt &assign(danger_programt &lhs, const danger_programt &rhs)
   const danger_programt::loopst &old_loops=rhs.loops;
   lhs.loops.resize(old_loops.size());
   std::transform(old_loops.begin(), old_loops.end(), lhs.loops.begin(), fix);
-  const goto_programt::targetst &old_x0=rhs.x0_choices;
-  lhs.x0_choices.resize(old_x0.size());
-  std::transform(old_x0.begin(), old_x0.end(), lhs.x0_choices.begin(), fix);
   return lhs;
 }
 }

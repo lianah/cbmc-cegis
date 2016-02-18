@@ -57,7 +57,6 @@ public:
 void invariant_extract_counterexample(counterexamplet &result,
     const goto_tracet &trace, const goto_programt::targetst &quantifiers)
 {
-  result.clear();
   const goto_tracet::stepst &s=trace.steps;
   extract_counterexamplet extract(result, quantifiers);
   typedef goto_tracet::stepst::const_iterator itt;

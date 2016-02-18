@@ -60,13 +60,16 @@ void safety_learn_configt::process(const counterexamplest &ces,
 void safety_learn_configt::process(const size_t max_solution_size)
 {
   constraint_varst ce_vars;
-  get_invariant_constraint_vars(ce_vars, program);
-  counterexamplet dummy_ce;
+  get_invariant_constraint_vars(ce_vars, original_program);
   const typet type(invariant_meta_type());  // XXX: Currently single data type
   const exprt zero(gen_zero(type));
+  counterexamplet dummy_ce;
+  dummy_ce.x.push_back(counterexamplet::assignmentst());
   counterexamplet::assignmentst &x=dummy_ce.x.front();
   for (const symbol_exprt &var : ce_vars)
     x.insert(std::make_pair(var.get_identifier(), zero));
+  // TODO: Implement for multiple loops (change constraint, instrumentation)
+  // TODO: Add x0 choices, skolem choices
   counterexamplest empty(1, dummy_ce);
   process(empty, max_solution_size);
 }

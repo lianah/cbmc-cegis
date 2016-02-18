@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/invariant/options/target_copy_helper.h>
 #include <cegis/invariant/options/invariant_program.h>
@@ -23,6 +25,9 @@ invariant_programt &assign(invariant_programt &lhs,
   lhs.assertion=rhs.assertion;
   lhs.Ix0=fix(rhs.Ix0);
   lhs.Ax=fix(rhs.Ax);
+  const goto_programt::targetst &old_x0=rhs.x0_choices;
+  lhs.x0_choices.resize(old_x0.size());
+  std::transform(old_x0.begin(), old_x0.end(), lhs.x0_choices.begin(), fix);
   return lhs;
 }
 }

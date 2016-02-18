@@ -39,7 +39,15 @@ void safety_verify_configt::convert(counterexamplest &counterexamples,
   counterexamples.push_back(counterexamplet());
   // TODO: Implement for multiple loops (change constraint, instrumentation)
   counterexamplet &new_ce=counterexamples.back();
+  invariant_extract_counterexample(new_ce.x0, trace, program.x0_choices);
   counterexamplet::assignments_per_loopt &x=new_ce.x;
   x.push_back(counterexamplet::assignmentst());
-  invariant_extract_counterexample(x.back(), trace, quantifiers);
+  counterexamplet::assignmentst &ass=x.back();
+  ass.clear();
+  invariant_extract_counterexample(ass, trace, quantifiers);
+  const safety_programt &prog=program;
+  const invariant_programt::const_invariant_loopst loops(prog.get_loops());
+  assert(!loops.empty());
+  // TODO: Implement for multiple loops (change constraint, instrumentation)
+  invariant_extract_counterexample(ass, trace, loops.front()->skolem_choices);
 }

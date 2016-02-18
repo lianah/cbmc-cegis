@@ -32,7 +32,7 @@ struct safety_goto_cet
   /**
    * @brief x assignments.
    *
-   * @detials Assignments for each loop constraint. Indicates that
+   * @details Assignments for each loop constraint. Indicates that
    * \forall_x (Si(x) && G(x) => Si'(x)) && (Si(x) && -G(x) => A(x))
    * doesn't hold.
    */

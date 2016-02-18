@@ -13,7 +13,8 @@ SRC = danger/meta/meta_variable_names.cpp danger/facade/danger_runner.cpp danger
       safety/meta/meta_variable_names.cpp safety/constraint/safety_constraint_factory.cpp \
       safety/symex/learn/safety_learn_config.cpp safety/symex/learn/solution_factory.cpp \
       safety/symex/learn/add_variable_refs.cpp safety/symex/verify/safety_verify_config.cpp \
-      safety/symex/learn/encoded_safety_learn_config.cpp safety/symex/verify/insert_candidate.cpp safety/facade/safety_runner.cpp \
+      safety/symex/learn/encoded_safety_learn_config.cpp safety/symex/learn/add_counterexamples.cpp \
+      safety/symex/verify/insert_candidate.cpp safety/facade/safety_runner.cpp \
       safety/symex/fitness/safety_fitness_config.cpp safety/value/safety_goto_ce.cpp \
       safety/value/individual_to_safety_solution_deserialiser.cpp \
       invariant/options/invariant_program.cpp invariant/options/target_copy_helper.cpp \

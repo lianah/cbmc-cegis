@@ -39,13 +39,11 @@ public:
    */
   struct loopt: public invariant_loopt
   {
-    goto_programt::targetst skolem_choices;
     danger_meta_vars_positionst danger_meta_variables;
   };
   typedef std::vector<loopt> loopst;
 
   loopst loops;
-  goto_programt::targetst x0_choices;
 
   /**
    * @brief

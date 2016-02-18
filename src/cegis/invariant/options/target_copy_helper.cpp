@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include <cegis/invariant/options/target_copy_helper.h>
 
 target_copy_helpert::target_copy_helpert(const goto_programt &old_body,
@@ -48,4 +50,8 @@ void target_copy_helpert::operator()(
   result.guard=loop.guard;
   result.body=operator()(loop.body);
   result.meta_variables=operator()(loop.meta_variables);
+  goto_programt::targetst &new_s=result.skolem_choices;
+  const goto_programt::targetst &old_s=loop.skolem_choices;
+  const auto &fix=std::ref(*this);
+  std::transform(old_s.begin(), old_s.end(), std::back_inserter(new_s), fix);
 }

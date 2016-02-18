@@ -46,6 +46,7 @@ void danger_preprocessingt::operator ()()
   goto_inline(gf, ns, null_msg);
   invariant_remove_loops_and_assertion(original_program);
   store_skolem_choices(original_program);
+  store_x0_choices(original_program);
   gf.update();
   current_program=original_program;
 }
@@ -55,7 +56,6 @@ void danger_preprocessingt::operator ()(const size_t max_length)
   current_program=original_program;
   const unsigned int max_width=constant_strategy(current_program, max_length);
   options.set_option("max-constant-width", max_width);
-  store_x0_choices(current_program);
   create_tmp_variables(current_program, max_length);
   add_invariant_variables(current_program, get_Dx0(), get_Dx, get_Dx_prime);
   add_ranking_and_skolem_variables(current_program, max_length);

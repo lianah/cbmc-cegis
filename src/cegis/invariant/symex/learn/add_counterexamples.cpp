@@ -65,8 +65,99 @@ symbol_exprt get_index(const symbol_tablet &st)
   return st.lookup(index_name).symbol_expr();
 }
 
+class assign_ce_valuet
+{
+  const symbol_tablet &st;
+  goto_functionst &gf;
+  goto_programt::targett pos;
+  goto_programt::targett goto_pos;
+  const bool use_x0_ce;
+public:
+  void add_x0_case(const size_t ces_size)
+  {
+    const typet size_type(unsigned_int_type());
+    const constant_exprt num_ces(from_integer(ces_size, size_type));
+    const symbol_exprt index(get_index(st));
+    const equal_exprt cond(index, num_ces);
+    pos->guard=cond;
+    goto_pos=pos;
+  }
+
+  assign_ce_valuet(invariant_programt &prog, const size_t ces_size,
+      const goto_programt::targett begin_pos, const bool use_x0_ce) :
+      st(prog.st), gf(prog.gf), use_x0_ce(use_x0_ce)
+  {
+    const invariant_programt::invariant_loopst loops(prog.get_loops());
+    assert(!loops.empty());
+    pos=begin_pos;
+    ++pos;
+    if (use_x0_ce)
+    {
+      pos=get_entry_body(gf).insert_after(pos);
+      pos->type=goto_program_instruction_typet::GOTO;
+      pos->source_location=default_invariant_source_location();
+      add_x0_case(ces_size);
+    }
+  }
+
+  void operator()(const std::pair<const irep_idt, exprt> &assignment)
+  {
+    std::string base_name(X_CHOICE_PREFIX);
+    base_name+=id2string(assignment.first);
+    const std::string array_name(get_invariant_meta_name(base_name));
+    const symbol_exprt array(st.lookup(array_name).symbol_expr());
+    const index_exprt rhs(array, get_index(st));
+    const symbol_exprt lhs(st.lookup(assignment.first).symbol_expr());
+    pos=invariant_assign(st, gf, pos, lhs, rhs);
+  }
+
+  void finalize_x0_case()
+  {
+    if (use_x0_ce) goto_pos->targets.push_back(++pos);
+  }
+};
+
+void create_constraints(invariant_programt &prog,
+    const constraint_factoryt &constraint)
+{
+  goto_programt::targett pos=prog.invariant_range.end;
+  std::advance(pos, -3);
+  goto_programt &body=get_entry_body(prog.gf);
+  pos=body.insert_after(pos);
+  pos->type=goto_program_instruction_typet::ASSUME;
+  pos->source_location=default_invariant_source_location();
+  pos->guard=constraint(prog.get_loops().size());
+}
+
+void add_final_assertion(invariant_programt &prog,
+    const goto_programt::targett &loop_end)
+{
+  goto_programt &body=get_entry_body(prog.gf);
+  goto_programt::targett assertion=body.insert_after(loop_end);
+  assertion->type=goto_program_instruction_typet::ASSERT;
+  assertion->source_location=default_invariant_source_location();
+  assertion->guard=false_exprt();
+}
+}
+
+void invariant_declare_x_choice_arrays(invariant_programt &prog,
+    const counterexamplest &ces)
+{
+  array_valuest vals;
+  const create_x_array_valuest create_values(vals, ces.front(), ces.size());
+  std::for_each(ces.begin(), ces.end(), create_values);
+  symbol_tablet &st=prog.st;
+  goto_functionst &gf=prog.gf;
+  goto_programt::targett pos=prog.invariant_range.begin;
+  declare_x_arrays(st, gf, --pos, vals);
+}
+
+namespace
+{
 const char X_LABEL[]=CEGIS_PREFIX"x_loop";
-goto_programt::targett add_ce_loop(invariant_programt &prog,
+}
+
+goto_programt::targett invariant_add_ce_loop(invariant_programt &prog,
     const size_t ces_size, const bool use_x0_ce)
 {
   symbol_tablet &st=prog.st;
@@ -99,104 +190,32 @@ goto_programt::targett add_ce_loop(invariant_programt &prog,
   return pos;
 }
 
-class assign_ce_valuet
+void assign_ce_values(invariant_programt &prog,
+    const counterexamplet &prototype_ce, const size_t num_ces,
+    const goto_programt::targett pos, const bool use_x0_ce)
 {
-  const symbol_tablet &st;
-  goto_functionst &gf;
-  goto_programt::targett pos;
-  goto_programt::targett goto_pos;
-  const bool use_x0_ce;
-public:
-  void add_x0_case(const size_t ces_size)
-  {
-    const typet size_type(unsigned_int_type());
-    const constant_exprt num_ces(from_integer(ces_size, size_type));
-    const symbol_exprt index(get_index(st));
-    const equal_exprt cond(index, num_ces);
-    pos->guard=cond;
-    goto_pos=pos;
-  }
-
-  assign_ce_valuet(invariant_programt &prog, const size_t ces_size,
-      const bool use_x0_ce) :
-      st(prog.st), gf(prog.gf), use_x0_ce(use_x0_ce)
-  {
-    const invariant_programt::invariant_loopst loops(prog.get_loops());
-    assert(!loops.empty());
-    pos=loops.front()->meta_variables.Ix;
-    ++pos;
-    if (use_x0_ce)
-    {
-      pos=get_entry_body(gf).insert_after(pos);
-      pos->type=goto_program_instruction_typet::GOTO;
-      pos->source_location=default_invariant_source_location();
-      add_x0_case(ces_size);
-    }
-  }
-
-  void operator()(const std::pair<const irep_idt, exprt> &assignment)
-  {
-    std::string base_name(X_CHOICE_PREFIX);
-    base_name+=id2string(assignment.first);
-    const std::string array_name(get_invariant_meta_name(base_name));
-    const symbol_exprt array(st.lookup(array_name).symbol_expr());
-    const index_exprt rhs(array, get_index(st));
-    const symbol_exprt lhs(st.lookup(assignment.first).symbol_expr());
-    pos=invariant_assign(st, gf, pos, lhs, rhs);
-  }
-
-  void finalize_x0_case()
-  {
-    if (use_x0_ce) goto_pos->targets.push_back(++pos);
-  }
-};
-
-void assign_ce_values(invariant_programt &prog, const counterexamplet &ce,
-    const size_t num_ces, const bool use_x0_ce)
-{
-  const assign_ce_valuet assign_value(prog, num_ces, use_x0_ce);
-  std::for_each(ce.begin(), ce.end(), assign_value).finalize_x0_case();
+  const assign_ce_valuet assign_value(prog, num_ces, pos, use_x0_ce);
+  std::for_each(prototype_ce.begin(), prototype_ce.end(), assign_value).finalize_x0_case();
 }
 
-void create_constraints(invariant_programt &prog,
-    const constraint_factoryt &constraint)
+void invariant_add_constraint(invariant_programt &prog,
+    const constraint_factoryt constraint,
+    const goto_programt::targett &ce_loop_end)
 {
-  goto_programt::targett pos=prog.invariant_range.end;
-  std::advance(pos, -3);
-  goto_programt &body=get_entry_body(prog.gf);
-  pos=body.insert_after(pos);
-  pos->type=goto_program_instruction_typet::ASSUME;
-  pos->source_location=default_invariant_source_location();
-  pos->guard=constraint(prog.get_loops().size());
-}
-
-void add_final_assertion(invariant_programt &prog,
-    const goto_programt::targett &loop_end)
-{
-  goto_programt &body=get_entry_body(prog.gf);
-  goto_programt::targett assertion=body.insert_after(loop_end);
-  assertion->type=goto_program_instruction_typet::ASSERT;
-  assertion->source_location=default_invariant_source_location();
-  assertion->guard=false_exprt();
-}
+  create_constraints(prog, constraint);
+  add_final_assertion(prog, ce_loop_end);
 }
 
 void invariant_add_learned_counterexamples(invariant_programt &prog,
     const counterexamplest &ces, const constraint_factoryt constraint,
     const bool x0_ce)
 {
+  // TODO: Danger counterexamples need one map<irep_idt, exprt> per loop (per quantifier)!
   if (ces.empty()) return;
-  array_valuest vals;
-  const counterexamplet &prototype=*ces.begin();
-  const size_t ces_count=ces.size();
-  const create_x_array_valuest create_values(vals, prototype, ces_count);
-  std::for_each(ces.begin(), ces.end(), create_values);
-  symbol_tablet &st=prog.st;
-  goto_functionst &gf=prog.gf;
-  goto_programt::targett pos=prog.invariant_range.begin;
-  declare_x_arrays(st, gf, --pos, vals);
-  const goto_programt::targett loop_end=add_ce_loop(prog, ces.size(), x0_ce);
-  assign_ce_values(prog, prototype, ces_count, x0_ce);
-  create_constraints(prog, constraint);
-  add_final_assertion(prog, loop_end);
+  invariant_declare_x_choice_arrays(prog, ces);
+  const size_t sz=ces.size();
+  const goto_programt::targett loop_end=invariant_add_ce_loop(prog, sz, x0_ce);
+  const goto_programt::targett pos=prog.get_loops().front()->meta_variables.Ix;
+  assign_ce_values(prog, ces.front(), ces.size(), pos, x0_ce);
+  invariant_add_constraint(prog, constraint, loop_end);
 }
