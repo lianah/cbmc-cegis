@@ -3,6 +3,11 @@
 #include <cbmc/cbmc_solvers.h>
 #include <cbmc/bmc.h>
 
+// XXX: Debug
+#include <util/ui_message.h>
+#include <iostream>
+// XXX: Debug
+
 template<class verify_configurationt>
 cegis_symex_verifyt<verify_configurationt>::cegis_symex_verifyt(
     const optionst &options, verify_configurationt &config) :
@@ -28,11 +33,20 @@ void cegis_symex_verifyt<verify_configurationt>::verify(
   config.process(candidate);
   const symbol_tablet &st=config.get_symbol_table();
   const goto_functionst &gf=config.get_goto_functions();
-  null_message_handlert msg;
+  //null_message_handlert msg;
+  ui_message_handlert msg(ui_message_handlert::PLAIN, "");
   cbmc_solverst solvers(options, st, msg);
   const std::unique_ptr<cbmc_solverst::solvert> solver=solvers.get_solver();
   bmct bmc(options, st, msg, solver->prop_conv());
+  // XXX: Debug
+  const namespacet ns(st);
+  std::cout << "<safety_prog>" << std::endl;
+  gf.output(ns, std::cout);
+  std::cout << "</safety_prog>" << std::endl;
+  std::cout << "<safety_trace>" << std::endl;
+  // XXX: Debug
   const safety_checkert::resultt result=bmc(gf);
+  std::cout << "</safety_trace>" << std::endl; // XXX: Debug
   const goto_tracet &trace=bmc.safety_checkert::error_trace;
   switch (result)
   {

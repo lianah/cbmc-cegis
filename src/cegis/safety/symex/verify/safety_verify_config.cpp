@@ -37,10 +37,10 @@ void safety_verify_configt::convert(counterexamplest &counterexamples,
     const goto_tracet &trace)
 {
   counterexamples.push_back(counterexamplet());
-  // TODO: Implement for multiple loops (change constraint, instrumentation)
   counterexamplet &new_ce=counterexamples.back();
   invariant_extract_counterexample(new_ce.x0, trace, program.x0_choices);
   counterexamplet::assignments_per_loopt &x=new_ce.x;
+  // TODO: Implement for multiple loops (change constraint, instrumentation)
   x.push_back(counterexamplet::assignmentst());
   counterexamplet::assignmentst &ass=x.back();
   ass.clear();
