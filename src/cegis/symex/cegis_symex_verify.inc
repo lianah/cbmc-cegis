@@ -40,13 +40,13 @@ void cegis_symex_verifyt<verify_configurationt>::verify(
   bmct bmc(options, st, msg, solver->prop_conv());
   // XXX: Debug
   const namespacet ns(st);
-  std::cout << "<safety_prog>" << std::endl;
+  std::cout << "<verify_prog>" << std::endl;
   gf.output(ns, std::cout);
-  std::cout << "</safety_prog>" << std::endl;
-  std::cout << "<safety_trace>" << std::endl;
+  std::cout << "</verify_prog>" << std::endl;
+  std::cout << "<verify_trace>" << std::endl;
   // XXX: Debug
   const safety_checkert::resultt result=bmc(gf);
-  std::cout << "</safety_trace>" << std::endl; // XXX: Debug
+  std::cout << "</verify_trace>" << std::endl; // XXX: Debug
   const goto_tracet &trace=bmc.safety_checkert::error_trace;
   switch (result)
   {

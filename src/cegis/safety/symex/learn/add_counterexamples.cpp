@@ -1,5 +1,6 @@
 #include <algorithm>
 
+#include <cegis/invariant/util/invariant_program_helper.h>
 #include <cegis/safety/options/safety_program.h>
 #include <cegis/safety/constraint/safety_constraint_factory.h>
 #include <cegis/safety/symex/learn/add_counterexamples.h>
@@ -24,7 +25,16 @@ void safety_add_learned_counterexamples(safety_programt &prog,
   const size_t sz=ces.size();
   const goto_programt::targett loop_end=invariant_add_ce_loop(prog, sz, false);
   goto_programt::targett pos=prog.invariant_range.begin;
-  invariant_assign_ce_values(prog, x0s.front(), x0s.size(), x0_pre, pos, false);
+  for (const goto_programt::targett x0 : prog.x0_choices)
+  {
+    const irep_idt &id=get_affected_variable(*x0);
+    const counterexamplet &ce_template=x0s.front();
+    const counterexamplet::const_iterator it=ce_template.find(id);
+    assert(ce_template.end() != it);
+    counterexamplet tmp;
+    tmp.insert(std::make_pair(id, it->second));
+    invariant_assign_ce_values(prog, tmp, x0s.size(), x0_pre, x0, false);
+  }
   pos=prog.get_loops().front()->meta_variables.Ix;
   const size_t first_loop_sz=first_loop_only.size();
   invariant_assign_ce_values(prog, first_loop_only.front(), first_loop_sz,
