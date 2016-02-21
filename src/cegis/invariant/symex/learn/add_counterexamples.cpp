@@ -64,8 +64,17 @@ symbol_exprt get_index(const symbol_tablet &st)
   return st.lookup(index_name).symbol_expr();
 }
 
+goto_programt::targett find_decl(goto_programt::targett begin,
+    const goto_programt::targett &end, const irep_idt &id)
+{
+  for (; begin != end; ++begin)
+    if (begin->is_decl() && get_affected_variable(*begin) == id) return begin;
+  return end;
+}
+
 class assign_ce_valuet
 {
+  const invariant_programt &prog;
   const symbol_tablet &st;
   goto_functionst &gf;
   goto_programt::targett pos;
@@ -86,7 +95,7 @@ public:
   assign_ce_valuet(invariant_programt &prog, const size_t ces_size,
       const goto_programt::targett begin_pos,
       const std::string &meta_var_prefix, const bool use_x0_ce) :
-      st(prog.st), gf(prog.gf), meta_var_prefix(meta_var_prefix), use_x0_ce(
+      prog(prog), st(prog.st), gf(prog.gf), meta_var_prefix(meta_var_prefix), use_x0_ce(
           use_x0_ce)
   {
     const invariant_programt::invariant_loopst loops(prog.get_loops());
@@ -109,8 +118,12 @@ public:
     const std::string array_name(get_invariant_meta_name(base_name));
     const symbol_exprt array(st.lookup(array_name).symbol_expr());
     const index_exprt rhs(array, get_index(st));
-    const symbol_exprt lhs(st.lookup(assignment.first).symbol_expr());
-    pos=invariant_assign(st, gf, pos, lhs, rhs);
+    const irep_idt &id=assignment.first;
+    const symbol_exprt lhs(st.lookup(id).symbol_expr());
+    const goto_programt::targett end(prog.invariant_range.end);
+    const goto_programt::targett decl(find_decl(pos, end, id));
+    if (end == decl) pos=invariant_assign(st, gf, pos, lhs, rhs);
+    else invariant_assign(st, gf, decl, lhs, rhs);
   }
 
   void finalize_x0_case()

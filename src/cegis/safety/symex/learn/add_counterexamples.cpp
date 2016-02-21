@@ -5,6 +5,25 @@
 #include <cegis/safety/constraint/safety_constraint_factory.h>
 #include <cegis/safety/symex/learn/add_counterexamples.h>
 
+namespace
+{
+void positional_assign(invariant_programt &prog,
+    const goto_programt::targetst &vars, const counterexamplest &values,
+    const std::string &pre)
+{
+  const counterexamplet &ce_template=values.front();
+  for (const goto_programt::targett x0 : vars)
+  {
+    const irep_idt &id=get_affected_variable(*x0);
+    const counterexamplet::const_iterator it=ce_template.find(id);
+    assert(ce_template.end() != it);
+    counterexamplet tmp;
+    tmp.insert(std::make_pair(id, it->second));
+    invariant_assign_ce_values(prog, tmp, values.size(), pre, x0, false);
+  }
+}
+}
+
 void safety_add_learned_counterexamples(safety_programt &prog,
     const safety_goto_cest &ces, constraint_factoryt constraint)
 {
@@ -24,7 +43,7 @@ void safety_add_learned_counterexamples(safety_programt &prog,
   invariant_declare_x_choice_arrays(prog, first_loop_only, x_pre);
   const size_t sz=ces.size();
   const goto_programt::targett loop_end=invariant_add_ce_loop(prog, sz, false);
-  goto_programt::targett pos=prog.invariant_range.begin;
+  positional_assign(prog, prog.x0_choices, first_loop_only, x0_pre);
   for (const goto_programt::targett x0 : prog.x0_choices)
   {
     const irep_idt &id=get_affected_variable(*x0);
@@ -35,7 +54,7 @@ void safety_add_learned_counterexamples(safety_programt &prog,
     tmp.insert(std::make_pair(id, it->second));
     invariant_assign_ce_values(prog, tmp, x0s.size(), x0_pre, x0, false);
   }
-  pos=prog.get_loops().front()->meta_variables.Ix;
+  goto_programt::targett pos=prog.get_loops().front()->meta_variables.Ix;
   const size_t first_loop_sz=first_loop_only.size();
   invariant_assign_ce_values(prog, first_loop_only.front(), first_loop_sz,
       x_pre, pos, false);

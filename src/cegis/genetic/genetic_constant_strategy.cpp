@@ -10,10 +10,6 @@
 #include <cegis/genetic/genetic_constant_strategy.h>
 #include <cegis/genetic/genetic_constant_strategy.h>
 
-// XXX: Debug
-#include <iostream>
-// XXX: Debug
-
 namespace
 {
 #if 0

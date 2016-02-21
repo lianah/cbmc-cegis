@@ -7,11 +7,6 @@
 
 #include <cegis/cegis-util/constant_width.h>
 
-// XXX: Debug
-#include <util/ui_message.h>
-#include <iostream>
-// XXX: Debug
-
 #define CONSTANT_WIDTH_OPTION "max-constant-width"
 #define CEGIS_DEFAULT_MIN_WORD_WIDTH 4u
 
@@ -46,23 +41,14 @@ const typename cegis_symex_learnt<preproct, learn_configurationt>::candidatet &c
 namespace
 {
 safety_checkert::resultt cegis_learn_run_bmc(goto_tracet &trace,
-    const symbol_tablet &st, const goto_functionst &gf, message_handlert &msg2,
+    const symbol_tablet &st, const goto_functionst &gf, message_handlert &msg,
     const optionst &opt)
 {
-  ui_message_handlert msg(ui_message_handlert::PLAIN, ""); // XXX: Debug
   cbmc_solverst solvers(opt, st, msg);
   const std::unique_ptr<cbmc_solverst::solvert> solver=solvers.get_solver();
   bmct bmc(opt, st, msg, solver->prop_conv());
 
-  // XXX: Debug
-  const namespacet ns(st);
-  std::cout << "<learn_prog>" << std::endl;
-  gf.output(ns, std::cout);
-  std::cout << "</learn_prog>" << std::endl;
-  std::cout << "<learn_trace>" << std::endl;
-  // XXX: Debug
   const safety_checkert::resultt bmc_result=bmc(gf);
-  std::cout << "</verify_trace>" << std::endl; // XXX: Debug
   if (safety_checkert::UNSAFE != bmc_result) return bmc_result;
   trace=bmc.safety_checkert::error_trace;
   return safety_checkert::UNSAFE;
